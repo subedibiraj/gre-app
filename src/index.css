@@ -1,0 +1,148 @@
+/* ─── GRE VERBAL APP — GLOBAL STYLES ───────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ─── CSS Custom Properties (from theme.js palette) ─── */
+:root {
+  --bg:       #07090F;
+  --surface:  #0C1220;
+  --card:     #111928;
+  --card-hi:  #16233A;
+  --border:   #1C2E4A;
+  --border-hi:#2A4470;
+  --gold:     #C8A535;
+  --gold-br:  #E4C060;
+  --gold-dim: #5A480F;
+  --text:     #DDD8C8;
+  --text-mid: #7A8CA0;
+  --text-dim: #3A4E68;
+  --green:    #24976A;
+  --green-bg: #061510;
+  --green-br: #2EBB80;
+  --red:      #B53028;
+  --red-bg:   #1C0808;
+  --blue:     #2B6FBF;
+  --blue-bg:  #080F22;
+}
+
+/* ─── Reset & Base ─── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ─── Scrollbar Styling ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hi);
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: var(--gold);
+  color: var(--bg);
+}
+
+/* ─── Focus States ─── */
+input:focus,
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ─── Transitions ─── */
+button {
+  transition: all 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* ─── Typing Animation for AI Tutor ─── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.typing-dots::after {
+  content: '...';
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+/* ─── Subtle Fade In for content ─── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Card hover effect ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ─── Links ─── */
+a {
+  color: var(--gold);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+a:hover {
+  color: var(--gold-br);
+}
+
+/* ─── Table base ─── */
+table {
+  border-spacing: 0;
+}
+
+/* ─── Responsive adjustments ─── */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
