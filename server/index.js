@@ -53,8 +53,9 @@ QUALITY STANDARDS:
 
     const userPrompt = `Generate adaptive GRE Verbal practice for Day ${dayNum}: "${theme}"
 
-═══ SECTION 1: DAY RECALL (current day words) ═══
-Word pool: Use ONLY these Day ${dayNum} words. Give a vivid definition/scenario — student must type the word.
+═══ SECTION 1: VOCABULARY IN CONTEXT (current day words) ═══
+For each word below, write a sophisticated sentence USING the word, then provide 4 options for what the word means IN THAT CONTEXT. Only 1 correct answer.
+Use ONLY these Day ${dayNum} words:
 ${currentWordsList}
 ${weakNote}
 ${scoreNote}
@@ -68,12 +69,12 @@ Word pool for SE: Use ONLY Day ${dayNum} words. The 2 correct answers must be fr
 ${currentWordsList}
 
 ═══ GENERATION REQUIREMENTS ═══
-• 7 day recall questions — Day ${dayNum} words ONLY, give definition/scenario, student types the word
-• 3 text completion questions — Day ${dayNum} words ONLY (1 easy single-blank, 1 medium single-blank, 1 hard double-blank)
-• 2 sentence equivalence questions — Day ${dayNum} words ONLY (select exactly 2 synonymous answers from 6 options)
+• 5 vocabulary-in-context questions — Day ${dayNum} words ONLY, each tests a DIFFERENT word
+• 5 text completion questions — Day ${dayNum} words ONLY (2 easy single-blank, 2 medium single-blank, 1 hard double-blank)
+• 3 sentence equivalence questions — Day ${dayNum} words ONLY (select exactly 2 synonymous answers from 6 options)
 
 FORMAT RULES:
-- Drill: {"id":N, "q":"vivid scenario description that does NOT contain the answer word", "a":"WORD"}
+- VIC: {"id":N, "word":"WORD", "sentence":"a sentence using WORD in context", "answer":"B", "opts":[{"l":"A","t":"meaning1"},{"l":"B","t":"meaning2"},{"l":"C","t":"meaning3"},{"l":"D","t":"meaning4"}], "explain":"Why this meaning is correct in context..."}
 - TC single-blank: use [B1] marker in stem, provide 5 options A-E
 - TC double-blank: use [B1] and [B2] markers in stem, provide A-C for blank 1, D-F for blank 2
 - SE: provide 6 options A-F, exactly 2 correct that produce equivalent meaning
@@ -81,8 +82,8 @@ FORMAT RULES:
 
 Return this EXACT JSON structure (no other text):
 {
-  "drill": [
-    {"id": 1, "q": "description", "a": "WORD"}
+  "vic": [
+    {"id": 1, "word": "WORD", "sentence": "The scholar's WORD approach to...", "answer": "B", "opts": [{"l":"A","t":"meaning1"},{"l":"B","t":"correct meaning"},{"l":"C","t":"meaning3"},{"l":"D","t":"meaning4"}], "explain": "In this context..."}
   ],
   "tc": [
     {
@@ -133,7 +134,7 @@ Return this EXACT JSON structure (no other text):
     }
 
     // Validate structure
-    if (!parsed.drill || !parsed.tc || !parsed.se) {
+    if (!parsed.vic || !parsed.tc || !parsed.se) {
       return res.status(500).json({ error: 'AI response missing required sections.' });
     }
 

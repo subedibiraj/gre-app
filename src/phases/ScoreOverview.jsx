@@ -119,7 +119,7 @@ export default function ScoreOverview({ dayScores, weakWords }) {
                 <span style={{color:C.text, fontSize:12, flex:1}}>{d.theme}</span>
                 <div style={{display:'flex', gap:6}}>
                   {sc.contrast!=null && <Tag color={C.goldBr}>Match: {sc.contrast}/{sc.contrastTotal}</Tag>}
-                  {sc.drill!=null && <Tag color={C.gold}>Recall: {sc.drill}/{sc.drillTotal}</Tag>}
+                  {sc.vic!=null && <Tag color={C.gold}>VIC: {sc.vic}/{sc.vicTotal}</Tag>}
                   {sc.tc!=null && <Tag color={C.blue}>TC: {sc.tc}/{sc.tcTotal}</Tag>}
                   {sc.se!=null && <Tag color={C.green}>SE: {sc.se}/{sc.seTotal}</Tag>}
                 </div>
