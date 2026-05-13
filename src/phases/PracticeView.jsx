@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import C from '../theme';
 import { DAYS } from '../data/days';
+import { recordPractice } from '../engine/streak';
 import Tag from '../components/Tag';
 import Btn from '../components/Btn';
 import ContrastRecall from './ContrastRecall';
@@ -13,6 +14,7 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState(null);
   const [sectionScores, setSectionScores] = useState({contrast:null, drill:null, tc:null, se:null});
+  const [timed, setTimed]     = useState(false);
 
   useEffect(() => {
     if (cachedQuestions && !qs) setQs(cachedQuestions);
@@ -61,25 +63,28 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
   const handleContrastComplete = (correct, total) => {
     setSectionScores(s=>({...s, contrast:correct}));
     onScoreUpdate(day, 'contrast', correct, total);
+    recordPractice();
   };
 
   const handleDrillComplete = (correct, total, wrongWords) => {
     setSectionScores(s=>({...s, drill:correct}));
     onWeakUpdate(wrongWords);
     onScoreUpdate(day, 'drill', correct, total);
+    recordPractice();
   };
 
   const handleTCComplete = (correct, total) => {
     setSectionScores(s=>({...s, tc:correct}));
     onScoreUpdate(day, 'tc', correct, total);
+    recordPractice();
   };
 
   const handleSEComplete = (correct, total) => {
     setSectionScores(s=>({...s, se:correct}));
     onScoreUpdate(day, 'se', correct, total);
+    recordPractice();
   };
 
-  // AI sections (Drill + TC + SE)
   const renderAISections = () => {
     if (loading) return (
       <div style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'40px 20px', gap:16}}>
@@ -114,19 +119,21 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
 
     return (
       <>
-        <div style={{display:'flex', justifyContent:'flex-end', marginBottom:16}}>
-          <Btn small variant="ghost" onClick={()=>{setQs(null);onCacheQuestions?.(null);setSectionScores(s=>({...s,drill:null,tc:null,se:null}));}}>↺ Regenerate AI Questions</Btn>
+        <div style={{display:'flex', justifyContent:'flex-end', gap:8, marginBottom:16}}>
+          <Btn small variant={timed?'blue':'ghost'} onClick={()=>setTimed(t=>!t)}>
+            {timed ? '⏱ Timed ON' : '⏱ Timed OFF'}
+          </Btn>
+          <Btn small variant="ghost" onClick={()=>{setQs(null);onCacheQuestions?.(null);setSectionScores(s=>({...s,drill:null,tc:null,se:null}));}}>↺ Regenerate</Btn>
         </div>
         <div style={{marginBottom:32}}><DrillSection questions={qs.drill} onComplete={handleDrillComplete}/></div>
-        <div style={{marginBottom:32}}><TCSection questions={qs.tc} onComplete={handleTCComplete}/></div>
-        <div style={{marginBottom:32}}><SESection questions={qs.se} onComplete={handleSEComplete}/></div>
+        <div style={{marginBottom:32}}><TCSection questions={qs.tc} onComplete={handleTCComplete} timed={timed}/></div>
+        <div style={{marginBottom:32}}><SESection questions={qs.se} onComplete={handleSEComplete} timed={timed}/></div>
       </>
     );
   };
 
   return (
     <div>
-      {/* Score summary */}
       {Object.values(sectionScores).some(v => v !== null) && (
         <div style={{display:'flex', gap:10, marginBottom:20, flexWrap:'wrap'}}>
           {sectionScores.contrast!==null&&<Tag color={C.goldBr}>Contrast: {sectionScores.contrast}/5</Tag>}
@@ -136,17 +143,14 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
         </div>
       )}
 
-      {/* Section 1: Contrast Recall (client-side, no API) */}
       <div style={{marginBottom:32}}>
         <ContrastRecall day={day} onComplete={handleContrastComplete} />
       </div>
 
-      {/* Divider */}
       <div style={{borderTop:`1px solid ${C.border}`, margin:'8px 0 24px', position:'relative'}}>
         <span style={{position:'absolute', top:-10, left:'50%', transform:'translateX(-50%)', background:C.bg, padding:'0 12px', fontSize:11, color:C.textDim, textTransform:'uppercase', letterSpacing:'0.1em'}}>AI-Generated Sections</span>
       </div>
 
-      {/* Sections 2-4: AI-generated (Drill + TC + SE) */}
       {renderAISections()}
     </div>
   );

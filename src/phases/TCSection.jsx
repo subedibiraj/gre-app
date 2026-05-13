@@ -4,17 +4,19 @@ import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';
 import StemRenderer from '../components/StemRenderer';
 import Btn from '../components/Btn';
+import Timer from '../components/Timer';
 
-export default function TCSection({ questions, onComplete }) {
+export default function TCSection({ questions, onComplete, timed = false }) {
   const [qIdx, setQIdx]       = useState(0);
   const [selections, setSel]  = useState(questions.map(q=>q.blanks.map(()=>null)));
   const [checked, setChecked] = useState(questions.map(()=>false));
   const [partScores, setPart] = useState(questions.map(()=>0));
+  const [timedOut, setTimedOut] = useState(questions.map(()=>false));
 
   const q = questions[qIdx], sel = selections[qIdx], isChecked = checked[qIdx];
 
   const select = (bIdx, l) => {
-    if (isChecked) return;
+    if (isChecked || timedOut[qIdx]) return;
     setSel(s=>{const n=s.map(x=>[...x]);n[qIdx][bIdx]=l;return n;});
   };
 
@@ -30,10 +32,18 @@ export default function TCSection({ questions, onComplete }) {
     }
   };
 
+  const handleTimeUp = () => {
+    setTimedOut(t=>{const n=[...t];n[qIdx]=true;return n;});
+    checkQ();
+  };
+
+  // GRE gives ~1.5 min per TC question
+  const timePerQ = q.blanks.length > 1 ? 120 : 90;
+
   return (
     <div>
       <SectionHead label="Text Completion" count={`${questions.length} questions · AI adaptive`} color={C.blue}/>
-      <div style={{display:'flex', gap:8, marginBottom:16}}>
+      <div style={{display:'flex', gap:8, marginBottom:16, alignItems:'center'}}>
         {questions.map((_,i) => (
           <button key={i} onClick={()=>setQIdx(i)} style={{
             width:36, height:36, borderRadius:6, border:'none', cursor:'pointer',
@@ -42,11 +52,21 @@ export default function TCSection({ questions, onComplete }) {
             color: i===qIdx?'#fff':checked[i]?C.greenBr:C.textMid,
           }}>Q{i+1}</button>
         ))}
+        {timed && !isChecked && (
+          <div style={{marginLeft:'auto'}}>
+            <Timer key={qIdx} seconds={timePerQ} onTimeUp={handleTimeUp} label="⏱" />
+          </div>
+        )}
       </div>
       <Card>
         <p style={{fontSize:11, color:C.textDim, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:14}}>
           ◆ Find the pivot word or clue phrase — then pick each option
         </p>
+        {timedOut[qIdx] && !checked[qIdx] && (
+          <div style={{background:C.redBg, border:`1px solid ${C.red}44`, borderRadius:6, padding:'8px 12px', marginBottom:12}}>
+            <span style={{color:C.red, fontSize:12, fontWeight:700}}>⏱ Time's up! Answer auto-submitted.</span>
+          </div>
+        )}
         <StemRenderer stem={q.stem} blanks={q.blanks} selections={sel} isChecked={isChecked}/>
         {q.blanks.map((blank, bIdx) => (
           <div key={bIdx} style={{marginBottom:14}}>

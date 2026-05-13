@@ -2,12 +2,12 @@ import { useState, useMemo } from 'react';
 import C from '../theme';
 import { DAYS } from '../data/days';
 import { clusterColor } from '../utils';
+import { updateWordSR } from '../engine/spaced';
 import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';
 import Btn from '../components/Btn';
 import Tag from '../components/Tag';
 
-// Shuffle array (Fisher-Yates)
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -18,52 +18,45 @@ function shuffle(arr) {
 }
 
 export default function ContrastRecall({ day, onComplete }) {
+  const [seed, setSeed] = useState(0); // change seed to reshuffle
   const allWords = useMemo(() => DAYS.slice(0, day).flatMap(d => d.words), [day]);
 
-  // Pick 5 random pairs from all days
-  const pairs = useMemo(() => {
+  const questions = useMemo(() => {
     const pool = shuffle(allWords).slice(0, 10);
     const result = [];
     for (let i = 0; i < pool.length - 1; i += 2) {
-      result.push({ left: pool[i], right: pool[i + 1] });
+      const swap = Math.random() > 0.5;
+      const wordA = swap ? pool[i + 1] : pool[i];
+      const wordB = swap ? pool[i] : pool[i + 1];
+      result.push({
+        id: i,
+        wordA: wordA.w, wordB: wordB.w,
+        defA: wordA.def, defB: wordB.def,
+        clusterA: wordA.cluster, clusterB: wordB.cluster,
+        correctA: wordA.w, correctB: wordB.w,
+      });
     }
     return result;
-  }, [allWords]);
-
-  // For each pair, randomly decide which word goes with which definition
-  const questions = useMemo(() => {
-    return pairs.map((pair, idx) => {
-      const swap = Math.random() > 0.5;
-      const wordA = swap ? pair.right : pair.left;
-      const wordB = swap ? pair.left : pair.right;
-      return {
-        id: idx,
-        wordA: wordA.w,
-        wordB: wordB.w,
-        defA: wordA.def,
-        defB: wordB.def,
-        clusterA: wordA.cluster,
-        clusterB: wordB.cluster,
-        // correct mapping: defA -> wordA, defB -> wordB
-        correctA: wordA.w,
-        correctB: wordB.w,
-      };
-    });
-  }, [pairs]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allWords, seed]);
 
   const [answers, setAnswers] = useState(questions.map(() => ({ top: null, bottom: null })));
   const [checked, setChecked] = useState(false);
+
+  // Reset answers when questions change (reshuffle)
+  const reshuffle = () => {
+    setSeed(s => s + 1);
+    setAnswers(questions.map(() => ({ top: null, bottom: null })));
+    setChecked(false);
+  };
 
   const selectAnswer = (qIdx, slot, word) => {
     if (checked) return;
     setAnswers(prev => {
       const n = [...prev];
       const curr = { ...n[qIdx] };
-      // If clicking the same word, deselect
-      if (curr[slot] === word) {
-        curr[slot] = null;
-      } else {
-        // Remove word from other slot if already there
+      if (curr[slot] === word) { curr[slot] = null; }
+      else {
         if (curr.top === word) curr.top = null;
         if (curr.bottom === word) curr.bottom = null;
         curr[slot] = word;
@@ -78,6 +71,14 @@ export default function ContrastRecall({ day, onComplete }) {
     const correct = questions.filter((q, i) =>
       answers[i].top === q.correctA && answers[i].bottom === q.correctB
     ).length;
+
+    // Update SR for all words seen
+    questions.forEach((q, i) => {
+      const gotIt = answers[i].top === q.correctA && answers[i].bottom === q.correctB;
+      updateWordSR(q.wordA, gotIt);
+      updateWordSR(q.wordB, gotIt);
+    });
+
     onComplete?.(correct, questions.length);
   };
 
@@ -86,20 +87,21 @@ export default function ContrastRecall({ day, onComplete }) {
 
   return (
     <div>
-      <SectionHead label="Contrast Recall" count={`${questions.length} pairs · all days`} color={C.goldBr} />
+      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4}}>
+        <SectionHead label="Contrast Recall" count={`${questions.length} pairs · all days`} color={C.goldBr} />
+        <Btn small variant="ghost" onClick={reshuffle}>🔀 Reshuffle</Btn>
+      </div>
       <p style={{ color: C.textMid, fontSize: 12, marginBottom: 18, lineHeight: 1.6 }}>
-        Match each word to its correct definition. These pairs test your cumulative vocabulary across all {day} days.
+        Match each word to its correct definition. Tests cumulative vocabulary across all {day} days.
       </p>
 
       {questions.map((q, i) => {
         const ans = answers[i];
         const isCorrectTop = checked && ans.top === q.correctA;
         const isCorrectBot = checked && ans.bottom === q.correctB;
-        const isWrongTop = checked && ans.top && ans.top !== q.correctA;
-        const isWrongBot = checked && ans.bottom && ans.bottom !== q.correctB;
 
         return (
-          <Card key={q.id} style={{ marginBottom: 12 }}>
+          <Card key={`${seed}-${q.id}`} style={{ marginBottom: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <Tag color={C.gold}>Pair {i + 1}</Tag>
               <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, color: clusterColor(q.clusterA), fontSize: 14 }}>{q.wordA}</span>
@@ -168,9 +170,12 @@ export default function ContrastRecall({ day, onComplete }) {
             {allAnswered ? 'Check All Pairs →' : `Match all pairs first`}
           </Btn>
         ) : (
-          <Btn variant="success" onClick={() => {}}>
-            ✓ {score}/{questions.length} pairs correct — scroll down ↓
-          </Btn>
+          <div style={{display:'flex', gap:8, justifyContent:'flex-end'}}>
+            <Btn variant="ghost" onClick={reshuffle}>🔀 New Pairs</Btn>
+            <Btn variant="success" onClick={() => {}}>
+              ✓ {score}/{questions.length} correct — scroll down ↓
+            </Btn>
+          </div>
         )}
       </div>
     </div>

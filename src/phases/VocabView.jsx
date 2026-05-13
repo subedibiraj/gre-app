@@ -2,6 +2,7 @@ import { useState } from 'react';
 import C from '../theme';
 import { DAYS } from '../data/days';
 import { clusterColor } from '../utils';
+import { getSRLevel } from '../engine/spaced';
 import Card from '../components/Card';
 import Tag from '../components/Tag';
 import SectionHead from '../components/SectionHead';
@@ -44,17 +45,19 @@ export default function VocabView({ day }) {
         const cc = clusterColor(v.cluster);
         const isOpen = expanded===v.w;
         const isToday = displayDay.words.some(w=>w.w===v.w);
+        const sr = getSRLevel(v.w);
         return (
           <div key={v.w} onClick={()=>setExpanded(isOpen?null:v.w)} style={{marginBottom:8, cursor:'pointer'}}>
             <Card style={{borderColor:isOpen?cc+'66':C.border, background:isOpen?C.cardHi:C.card, transition:'all 0.2s'}}>
               <div style={{display:'flex', alignItems:'center', gap:10}}>
                 <div style={{width:3, height:32, background:cc, borderRadius:2, flexShrink:0}}/>
                 <div style={{flex:1}}>
-                  <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:2}}>
+                  <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:2, flexWrap:'wrap'}}>
                     <span style={{fontFamily:'Courier New,monospace', fontSize:15, fontWeight:700, color:cc, letterSpacing:'0.08em'}}>{v.w}</span>
                     <Tag color={cc}>{v.pos}</Tag>
                     <Tag color={cc}>{v.cluster}</Tag>
                     {!isToday && <Tag color={C.textDim}>Day {DAYS.findIndex(d=>d.words.some(w=>w.w===v.w))+1}</Tag>}
+                    <Tag color={sr.color}>{sr.label}</Tag>
                   </div>
                   {!isOpen && <p style={{color:C.textMid, fontSize:12, margin:0, lineHeight:1.5}}>{v.def}</p>}
                 </div>

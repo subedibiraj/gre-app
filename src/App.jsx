@@ -1,8 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
 import C from './theme';
 import { DAYS } from './data/days';
+import { getStreak } from './engine/streak';
+import { getSRStats } from './engine/spaced';
 import Tag from './components/Tag';
 import AiTutor from './components/AiTutor';
+import WarmupModal from './components/WarmupModal';
 import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
@@ -19,14 +22,29 @@ export default function App() {
   const [tab, setTab]               = useState('vocab');
   const [weakWords, setWeakWords]   = useState(() => loadJSON('gre_weakWords', []));
   const [dayScores, setDayScores]   = useState(() => loadJSON('gre_dayScores', {}));
-  // Cache generated questions per day so tab/day switching doesn't lose them
   const [cachedQs, setCachedQs]     = useState({});
+  const [showWarmup, setShowWarmup] = useState(() => {
+    // Show warm-up once per session
+    const shown = sessionStorage.getItem('gre_warmupShown');
+    return !shown;
+  });
 
-  // Persist to localStorage on change
+  const [streak, setStreak]   = useState(getStreak());
+  const [srStats, setSRStats] = useState(getSRStats());
+
+  // Refresh streak/SR display periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStreak(getStreak());
+      setSRStats(getSRStats());
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => saveJSON('gre_weakWords', weakWords), [weakWords]);
   useEffect(() => saveJSON('gre_dayScores', dayScores), [dayScores]);
 
-  const totalWords = DAYS.slice(0, currentDay > 0 ? currentDay : DAYS.length).reduce((a,d)=>a+d.words.length, 0);
+  const totalWords = DAYS.reduce((a,d)=>a+d.words.length, 0);
 
   const addWeakWords = useCallback((words) => {
     setWeakWords(prev => [...new Set([...prev, ...words])].slice(0, 20));
@@ -37,17 +55,29 @@ export default function App() {
       ...prev,
       [day]: {...(prev[day]||{}), [section]: correct, [`${section}Total`]: total}
     }));
+    // Refresh stats after score update
+    setTimeout(() => {
+      setStreak(getStreak());
+      setSRStats(getSRStats());
+    }, 100);
   }, []);
 
-  // Cache questions for a day so switching tabs doesn't lose them
   const cacheQuestionsForDay = useCallback((day, questions) => {
     setCachedQs(prev => ({...prev, [day]: questions}));
   }, []);
+
+  const closeWarmup = () => {
+    setShowWarmup(false);
+    sessionStorage.setItem('gre_warmupShown', 'true');
+  };
 
   const day = currentDay > 0 ? DAYS[currentDay-1] : null;
 
   return (
     <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif", background:C.bg, minHeight:'100vh', color:C.text, display:'flex', flexDirection:'column'}}>
+
+      {/* Warm-up Modal */}
+      {showWarmup && <WarmupModal onClose={closeWarmup}/>}
 
       {/* Header */}
       <div style={{background:C.surface, borderBottom:`1px solid ${C.border}`, padding:'12px 20px', display:'flex', alignItems:'center', gap:16, position:'sticky', top:0, zIndex:20}}>
@@ -56,17 +86,36 @@ export default function App() {
             <span style={{fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:C.gold, letterSpacing:'0.03em'}}>GRE Verbal</span>
             {day && <Tag color={C.gold}>Day {currentDay}</Tag>}
             <Tag color={C.blue}>{totalWords} words</Tag>
-            {weakWords.length>0 && <Tag color={C.red}>{weakWords.length} weak</Tag>}
+            {srStats.due > 0 && <Tag color={C.red}>{srStats.due} due</Tag>}
+            {weakWords.length>0 && <Tag color={'#E4A060'}>{weakWords.length} weak</Tag>}
           </div>
           <p style={{color:C.textMid, fontSize:11, margin:'2px 0 0'}}>
-            {day ? `${day.theme}  ·  ${day.date}  ·  ` : ''}Target: 160 floor · 165 stretch
+            {day ? `${day.theme}  ·  ` : ''}Target: 160 floor · 165 stretch
+            {srStats.mastered > 0 && `  ·  ${srStats.mastered} mastered`}
           </p>
         </div>
-        <div style={{marginLeft:'auto', display:'flex', gap:8, alignItems:'center'}}>
-          <div style={{width:100, height:5, background:C.border, borderRadius:3, overflow:'hidden'}}>
-            <div style={{height:'100%', background:C.gold, borderRadius:3, width:`${((currentDay>0?currentDay:7)/7)*100}%`, transition:'width 0.4s'}}/>
+        <div style={{marginLeft:'auto', display:'flex', gap:12, alignItems:'center'}}>
+          {/* Streak */}
+          {streak.current > 0 && (
+            <div style={{
+              display:'flex', alignItems:'center', gap:6,
+              background:C.goldDim+'33', border:`1px solid ${C.goldDim}`,
+              borderRadius:20, padding:'4px 12px',
+            }}>
+              <span style={{fontSize:16}}>🔥</span>
+              <span style={{fontFamily:'Courier New,monospace', fontWeight:700, fontSize:14, color:C.gold}}>
+                {streak.current}
+              </span>
+              <span style={{color:C.textDim, fontSize:10}}>day{streak.current!==1?'s':''}</span>
+            </div>
+          )}
+          {/* Progress bar */}
+          <div style={{textAlign:'right'}}>
+            <div style={{width:80, height:4, background:C.border, borderRadius:3, overflow:'hidden', marginBottom:2}}>
+              <div style={{height:'100%', background:C.gold, borderRadius:3, width:`${(srStats.mastered/Math.max(totalWords,1))*100}%`, transition:'width 0.4s'}}/>
+            </div>
+            <span style={{color:C.textDim, fontSize:10}}>{srStats.mastered}/{totalWords} mastered</span>
           </div>
-          <span style={{color:C.textDim, fontSize:11}}>Day {currentDay>0?currentDay:7}/7</span>
         </div>
       </div>
 

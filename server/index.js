@@ -40,11 +40,12 @@ ABSOLUTE RULES — VIOLATION OF ANY RULE INVALIDATES YOUR OUTPUT:
 5. TC stems must contain a clear pivot word (despite, although, yet, however, while, surprisingly, nevertheless) OR a clear definitional clue that points to exactly one answer.
 6. SE pairs must produce sentences that are alike in meaning — not just both grammatically correct.
 7. Distractors must be plausible but clearly wrong upon careful analysis.
+8. CONFUSABLE PAIRS: When building distractors, deliberately include words that students commonly confuse (e.g., DEPRECATE vs DEPRECIATE, DISINTERESTED vs UNINTERESTED, ENORMITY vs ENORMOUSNESS). This tests precision.
 
 QUALITY STANDARDS:
 - Write stems that feel like actual GRE passages — sophisticated syntax, academic register
 - Vary sentence structures: some with subordinate clauses, some with appositives, some with parallel construction
-- Include cross-day words to test cumulative knowledge
+- Include cross-day words as distractors to test cumulative knowledge
 - Mix difficulty: 2 easy, 3 medium, 2 hard for drill; 1 easy, 1 medium, 1 hard for TC
 - For weak words: create questions that test the EXACT nuance the student likely confused`;
 
