@@ -9,6 +9,7 @@ import WarmupModal from './components/WarmupModal';
 import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
+import MockExam from './phases/MockExam';
 
 // ─── PERSISTENCE HELPERS ──────────────────────────────────────────────────────
 const loadJSON = (key, fallback) => {
@@ -145,7 +146,14 @@ export default function App() {
               </button>
             );
           })}
-          <div style={{marginTop:'auto', paddingTop:16}}>
+          <div style={{marginTop:'auto', paddingTop:16, display:'flex', flexDirection:'column', gap:4}}>
+            <button onClick={()=>{setCurrentDay(-1);setTab('mock');}}
+              style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
+                border:'none', cursor:'pointer', transition:'all 0.15s',
+                background: currentDay===-1?C.gold+'33':'transparent',
+                color: currentDay===-1?C.gold:C.textMid}}>
+              <span style={{fontSize:13}}>🎯  Mock Exam</span>
+            </button>
             <button onClick={()=>{setCurrentDay(0);setTab('overview');}}
               style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
                 border:'none', cursor:'pointer', transition:'all 0.15s',
@@ -158,7 +166,9 @@ export default function App() {
 
         {/* Main Content */}
         <div style={{flex:1, overflow:'auto', padding:'24px 28px 100px'}}>
-          {currentDay===0 ? (
+          {currentDay===-1 ? (
+            <MockExam/>
+          ) : currentDay===0 ? (
             <ScoreOverview dayScores={dayScores} weakWords={weakWords}/>
           ) : (
             <>

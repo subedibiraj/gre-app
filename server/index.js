@@ -154,16 +154,13 @@ Return this EXACT JSON structure (no other text):
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages, systemPrompt } = req.body;
-
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ error: 'GEMINI_API_KEY not configured in .env' });
     }
-
     const contents = messages.map(m => ({
       role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }],
     }));
-
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents,
@@ -173,7 +170,6 @@ app.post('/api/chat', async (req, res) => {
         maxOutputTokens: 1024,
       },
     });
-
     res.json({ response: response.text || 'No response generated.' });
   } catch (error) {
     console.error('Chat error:', error.message);
@@ -181,8 +177,123 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// ─── MOCK EXAM ENDPOINT ───────────────────────────────────────────────────────
+app.post('/api/mock-exam', async (req, res) => {
+  try {
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'GEMINI_API_KEY not configured in .env' });
+    }
+
+    const systemPrompt = `You are an expert GRE Verbal question writer for ETS.
+You create questions indistinguishable from real GRE questions.
+Use sophisticated, academic-register vocabulary and varied sentence structures.
+Every question must have exactly ONE unambiguous correct answer.
+TC stems must contain clear pivot words or definitional clues.
+SE pairs must produce sentences alike in meaning.
+RC passages should be 80-120 words, drawn from academic topics (science, humanities, social science).
+RC questions should test: main idea, inference, author's purpose, vocabulary in context, or logical structure.`;
+
+    const userPrompt = `Generate a COMPLETE GRE Verbal Reasoning section — 20 questions total.
+
+Use ANY GRE-level vocabulary. Do NOT limit to any specific word list. This is a real mock exam.
+
+═══ SECTION BREAKDOWN ═══
+
+1. TEXT COMPLETION: 6 questions
+   - Q1-Q2: Single-blank (easy) — 5 options A-E
+   - Q3-Q4: Single-blank (medium) — 5 options A-E
+   - Q5: Double-blank (hard) — [B1] and [B2], options A-C for blank 1, D-F for blank 2
+   - Q6: Triple-blank (hard) — [B1], [B2], [B3], options A-C for each blank
+
+2. SENTENCE EQUIVALENCE: 4 questions
+   - Q7-Q10: 6 options A-F, exactly 2 correct that create equivalent meaning
+
+3. READING COMPREHENSION: 2 passages with questions
+   - Passage 1: 80-100 word academic passage + 3 multiple-choice questions (4 options A-D each)
+   - Passage 2: 100-120 word academic passage + 2 multiple-choice questions (4 options A-D each)
+
+Total: 6 TC + 4 SE + 5 RC = 15 scored items (but presented as 20 interaction points)
+
+═══ FORMAT ═══
+
+Return EXACT JSON:
+{
+  "tc": [
+    {
+      "id": 1,
+      "stem": "sentence with [B1] marker",
+      "blanks": [{"label":"Blank 1","answer":"B","opts":[{"l":"A","t":"word"},{"l":"B","t":"word"},{"l":"C","t":"word"},{"l":"D","t":"word"},{"l":"E","t":"word"}]}],
+      "explain": "The pivot word X signals..."
+    }
+  ],
+  "se": [
+    {
+      "id": 7,
+      "stem": "sentence with _______ blank",
+      "answers": ["C","E"],
+      "opts": [{"l":"A","t":"word"},{"l":"B","t":"word"},{"l":"C","t":"word"},{"l":"D","t":"word"},{"l":"E","t":"word"},{"l":"F","t":"word"}],
+      "explain": "Both X and Y mean..."
+    }
+  ],
+  "rc": [
+    {
+      "id": 1,
+      "passage": "Full academic passage text here...",
+      "topic": "Brief topic label",
+      "questions": [
+        {
+          "id": 1,
+          "q": "Question text",
+          "answer": "A",
+          "opts": [{"l":"A","t":"option1"},{"l":"B","t":"option2"},{"l":"C","t":"option3"},{"l":"D","t":"option4"}],
+          "explain": "Explanation..."
+        }
+      ]
+    }
+  ]
+}`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      config: {
+        systemInstruction: systemPrompt,
+        temperature: 0.8,
+        maxOutputTokens: 16384,
+        responseMimeType: 'application/json',
+      },
+    });
+
+    const text = response.text || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch (parseErr) {
+      console.error('Mock exam JSON parse failed. Length:', clean.length);
+      return res.status(500).json({ error: 'AI returned incomplete response. Try again.' });
+    }
+
+    if (!parsed.tc || !parsed.se || !parsed.rc) {
+      return res.status(500).json({ error: 'Mock exam missing required sections.' });
+    }
+
+    res.json(parsed);
+  } catch (error) {
+    console.error('Mock exam error:', error.message);
+    let msg = error.message || 'Failed to generate mock exam';
+    if (msg.includes('429') || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
+      return res.status(429).json({ error: 'API rate limit. Wait 30 seconds.' });
+    }
+    res.status(500).json({ error: msg });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`\n  🤖 GRE API server on http://localhost:${PORT}`);
-  console.log(`  📡 POST /api/generate — AI question generation`);
-  console.log(`  💬 POST /api/chat    — AI tutor chat\n`);
+  console.log(`  📡 POST /api/generate    — AI question generation`);
+  console.log(`  🎯 POST /api/mock-exam   — Full mock exam`);
+  console.log(`  💬 POST /api/chat        — AI tutor chat\n`);
 });
+
