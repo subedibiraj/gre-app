@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import C from './theme';
 import { DAYS } from './data/days';
+import { QUANT_TOPICS } from './data/quant-topics';
 import { getStreak } from './engine/streak';
 import { getSRStats } from './engine/spaced';
 import Tag from './components/Tag';
@@ -12,6 +13,9 @@ import ScoreOverview from './phases/ScoreOverview';
 import MockExam from './phases/MockExam';
 import WordRelations from './phases/WordRelations';
 import RootsModule from './phases/RootsModule';
+import QuantPractice from './phases/quant/QuantPractice';
+import QuantMock from './phases/quant/QuantMock';
+import FormulaSheet from './phases/quant/FormulaSheet';
 
 // ─── PERSISTENCE HELPERS ──────────────────────────────────────────────────────
 const loadJSON = (key, fallback) => {
@@ -21,199 +25,249 @@ const loadJSON = (key, fallback) => {
 const saveJSON = (key, val) => localStorage.setItem(key, JSON.stringify(val));
 
 export default function App() {
+  const [section, setSection]       = useState('verbal'); // verbal | quant
   const [currentDay, setCurrentDay] = useState(7);
   const [tab, setTab]               = useState('vocab');
   const [weakWords, setWeakWords]   = useState(() => loadJSON('gre_weakWords', []));
   const [dayScores, setDayScores]   = useState(() => loadJSON('gre_dayScores', {}));
   const [cachedQs, setCachedQs]     = useState({});
+  const [quantPage, setQuantPage]   = useState(null); // null=topic list, topic id, 'mock', 'formulas', 'progress'
+  const [quantScores, setQuantScores] = useState(() => loadJSON('gre_quantScores', {}));
   const [showWarmup, setShowWarmup] = useState(() => {
-    // Show warm-up once per session
-    const shown = sessionStorage.getItem('gre_warmupShown');
-    return !shown;
+    const key = `gre_warmup_${new Date().toDateString()}`;
+    if (sessionStorage.getItem(key)) return false;
+    return true;
   });
 
-  const [streak, setStreak]   = useState(getStreak());
-  const [srStats, setSRStats] = useState(getSRStats());
-
-  // Refresh streak/SR display periodically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStreak(getStreak());
-      setSRStats(getSRStats());
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => saveJSON('gre_weakWords', weakWords), [weakWords]);
-  useEffect(() => saveJSON('gre_dayScores', dayScores), [dayScores]);
-
-  const totalWords = DAYS.reduce((a,d)=>a+d.words.length, 0);
-
-  const addWeakWords = useCallback((words) => {
-    setWeakWords(prev => [...new Set([...prev, ...words])].slice(0, 20));
-  }, []);
-
-  const updateScore = useCallback((day, section, correct, total) => {
-    setDayScores(prev => ({
-      ...prev,
-      [day]: {...(prev[day]||{}), [section]: correct, [`${section}Total`]: total}
-    }));
-    // Refresh stats after score update
-    setTimeout(() => {
-      setStreak(getStreak());
-      setSRStats(getSRStats());
-    }, 100);
-  }, []);
-
-  const cacheQuestionsForDay = useCallback((day, questions) => {
-    setCachedQs(prev => ({...prev, [day]: questions}));
-  }, []);
-
   const closeWarmup = () => {
+    sessionStorage.setItem(`gre_warmup_${new Date().toDateString()}`, '1');
     setShowWarmup(false);
-    sessionStorage.setItem('gre_warmupShown', 'true');
   };
 
+  const streak = getStreak();
+  const srStats = getSRStats();
+  const totalWords = DAYS.flatMap(d => d.words).length;
   const day = currentDay > 0 ? DAYS[currentDay-1] : null;
+
+  // ─── Verbal callbacks ───
+  const addWeakWords = useCallback((words) => {
+    setWeakWords(prev => {
+      const s = new Set([...prev, ...words]);
+      const next = [...s];
+      saveJSON('gre_weakWords', next);
+      return next;
+    });
+  }, []);
+
+  const updateScore = useCallback((dayNum, section, correct, total) => {
+    setDayScores(prev => {
+      const next = { ...prev, [dayNum]: { ...prev[dayNum], [section]: correct, [`${section}Total`]: total } };
+      saveJSON('gre_dayScores', next);
+      return next;
+    });
+  }, []);
+
+  const cacheQuestionsForDay = useCallback((dayNum, qs) => {
+    setCachedQs(prev => ({ ...prev, [dayNum]: qs }));
+  }, []);
+
+  // ─── Quant callbacks ───
+  const updateQuantScore = useCallback((topicId, correct, total) => {
+    setQuantScores(prev => {
+      const next = { ...prev, [topicId]: { correct, total, date: new Date().toISOString() } };
+      saveJSON('gre_quantScores', next);
+      return next;
+    });
+  }, []);
 
   return (
     <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif", background:C.bg, minHeight:'100vh', color:C.text, display:'flex', flexDirection:'column'}}>
 
-      {/* Warm-up Modal */}
       {showWarmup && <WarmupModal onClose={closeWarmup}/>}
 
       {/* Header */}
       <div style={{background:C.surface, borderBottom:`1px solid ${C.border}`, padding:'12px 20px', display:'flex', alignItems:'center', gap:16, position:'sticky', top:0, zIndex:20}}>
         <div>
           <div style={{display:'flex', alignItems:'center', gap:10}}>
-            <span style={{fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:C.gold, letterSpacing:'0.03em'}}>GRE Verbal</span>
-            {day && <Tag color={C.gold}>Day {currentDay}</Tag>}
-            <Tag color={C.blue}>{totalWords} words</Tag>
-            {srStats.due > 0 && <Tag color={C.red}>{srStats.due} due</Tag>}
-            {weakWords.length>0 && <Tag color={'#E4A060'}>{weakWords.length} weak</Tag>}
+            <span style={{fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:C.gold, letterSpacing:'0.03em'}}>GRE Complete</span>
+            {/* Section Switcher */}
+            <div style={{display:'flex', background:C.bg, borderRadius:6, border:`1px solid ${C.border}`, overflow:'hidden'}}>
+              {[{id:'verbal',label:'V'},{id:'quant',label:'Q'}].map(s=>(
+                <button key={s.id} onClick={()=>{setSection(s.id);if(s.id==='quant')setQuantPage(null);if(s.id==='verbal'){setCurrentDay(7);setTab('vocab');}}} style={{
+                  padding:'4px 14px', border:'none', cursor:'pointer', fontSize:12, fontWeight:700,
+                  background: section===s.id?C.gold:'transparent',
+                  color: section===s.id?'#07090F':C.textMid, transition:'all 0.15s',
+                }}>{s.label}</button>
+              ))}
+            </div>
+            {section==='verbal' && day && <Tag color={C.gold}>Day {currentDay}</Tag>}
+            {section==='verbal' && <Tag color={C.blue}>{totalWords} words</Tag>}
+            {section==='verbal' && srStats.due > 0 && <Tag color={C.red}>{srStats.due} due</Tag>}
           </div>
           <p style={{color:C.textMid, fontSize:11, margin:'2px 0 0'}}>
-            {day ? `${day.theme}  ·  ` : ''}Target: 160 floor · 165 stretch
-            {srStats.mastered > 0 && `  ·  ${srStats.mastered} mastered`}
+            {section==='verbal'
+              ? `${day ? `${day.theme}  ·  ` : ''}Target: 165+ Verbal${srStats.mastered > 0 ? `  ·  ${srStats.mastered} mastered` : ''}`
+              : 'Target: 165+ Quant  ·  Master all 4 topics'
+            }
           </p>
         </div>
         <div style={{marginLeft:'auto', display:'flex', gap:12, alignItems:'center'}}>
-          {/* Streak */}
           {streak.current > 0 && (
-            <div style={{
-              display:'flex', alignItems:'center', gap:6,
-              background:C.goldDim+'33', border:`1px solid ${C.goldDim}`,
-              borderRadius:20, padding:'4px 12px',
-            }}>
+            <div style={{display:'flex', alignItems:'center', gap:6, background:C.goldDim+'33', border:`1px solid ${C.goldDim}`, borderRadius:20, padding:'4px 12px'}}>
               <span style={{fontSize:16}}>🔥</span>
-              <span style={{fontFamily:'Courier New,monospace', fontWeight:700, fontSize:14, color:C.gold}}>
-                {streak.current}
-              </span>
+              <span style={{fontFamily:'Courier New,monospace', fontWeight:700, fontSize:14, color:C.gold}}>{streak.current}</span>
               <span style={{color:C.textDim, fontSize:10}}>day{streak.current!==1?'s':''}</span>
             </div>
           )}
-          {/* Progress bar */}
-          <div style={{textAlign:'right'}}>
-            <div style={{width:80, height:4, background:C.border, borderRadius:3, overflow:'hidden', marginBottom:2}}>
-              <div style={{height:'100%', background:C.gold, borderRadius:3, width:`${(srStats.mastered/Math.max(totalWords,1))*100}%`, transition:'width 0.4s'}}/>
+          {section==='verbal' && (
+            <div style={{textAlign:'right'}}>
+              <div style={{width:80, height:4, background:C.border, borderRadius:3, overflow:'hidden', marginBottom:2}}>
+                <div style={{height:'100%', background:C.gold, borderRadius:3, width:`${(srStats.mastered/Math.max(totalWords,1))*100}%`, transition:'width 0.4s'}}/>
+              </div>
+              <span style={{color:C.textDim, fontSize:10}}>{srStats.mastered}/{totalWords} mastered</span>
             </div>
-            <span style={{color:C.textDim, fontSize:10}}>{srStats.mastered}/{totalWords} mastered</span>
-          </div>
+          )}
         </div>
       </div>
 
       <div style={{display:'flex', flex:1, overflow:'hidden'}}>
 
-        {/* Sidebar */}
+        {/* ═══ SIDEBAR ═══ */}
         <div style={{width:190, borderRight:`1px solid ${C.border}`, padding:'16px 10px', overflowY:'auto', flexShrink:0, background:C.surface, display:'flex', flexDirection:'column', gap:4}}>
-          <p style={{fontSize:10, color:C.textDim, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8, paddingLeft:8}}>Days</p>
-          {DAYS.map(d => {
-            const sc = dayScores[d.day];
-            const hasSc = sc && Object.keys(sc).length > 0;
-            const isCurrent = currentDay===d.day;
-            return (
-              <button key={d.day} onClick={()=>{setCurrentDay(d.day);setTab('vocab');}} style={{
-                width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
-                border:'none', cursor:'pointer', transition:'all 0.15s',
-                background: isCurrent?C.gold:'transparent',
-                color: isCurrent?'#07090F':hasSc?C.greenBr:C.textMid,
-              }}>
-                <div style={{display:'flex', alignItems:'center', gap:8}}>
-                  <span style={{fontSize:13, fontWeight:700, width:20}}>{hasSc?'✓':`D${d.day}`}</span>
-                  <div>
-                    <p style={{fontSize:11, fontWeight:isCurrent?700:400, margin:0}}>{d.theme}</p>
-                    <p style={{fontSize:10, margin:0, opacity:0.7}}>{d.words.length} words</p>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-          <div style={{marginTop:'auto', paddingTop:16, display:'flex', flexDirection:'column', gap:4}}>
-            <button onClick={()=>{setCurrentDay(-1);setTab('mock');}}
-              style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
-                border:'none', cursor:'pointer', transition:'all 0.15s',
-                background: currentDay===-1?C.gold+'33':'transparent',
-                color: currentDay===-1?C.gold:C.textMid}}>
-              <span style={{fontSize:13}}>🎯  Mock Exam</span>
-            </button>
-            <button onClick={()=>{setCurrentDay(-2);setTab('relations');}}
-              style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
-                border:'none', cursor:'pointer', transition:'all 0.15s',
-                background: currentDay===-2?C.gold+'33':'transparent',
-                color: currentDay===-2?C.gold:C.textMid}}>
-              <span style={{fontSize:13}}>🔗  Word Map</span>
-            </button>
-            <button onClick={()=>{setCurrentDay(-3);setTab('roots');}}
-              style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
-                border:'none', cursor:'pointer', transition:'all 0.15s',
-                background: currentDay===-3?C.gold+'33':'transparent',
-                color: currentDay===-3?C.gold:C.textMid}}>
-              <span style={{fontSize:13}}>🌱  Roots</span>
-            </button>
-            <button onClick={()=>{setCurrentDay(0);setTab('overview');}}
-              style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
-                border:'none', cursor:'pointer', transition:'all 0.15s',
-                background: currentDay===0?C.green+'33':'transparent',
-                color: currentDay===0?C.greenBr:C.textMid}}>
-              <span style={{fontSize:13}}>📊  Progress</span>
-            </button>
-          </div>
+
+          {section === 'verbal' ? (
+            <>
+              <p style={{fontSize:10, color:C.textDim, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8, paddingLeft:8}}>Days</p>
+              {DAYS.map(d => {
+                const sc = dayScores[d.day];
+                const hasSc = sc && Object.keys(sc).length > 0;
+                const isCurrent = currentDay===d.day;
+                return (
+                  <button key={d.day} onClick={()=>{setCurrentDay(d.day);setTab('vocab');}} style={{
+                    width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
+                    border:'none', cursor:'pointer', transition:'all 0.15s',
+                    background: isCurrent?C.gold:'transparent',
+                    color: isCurrent?'#07090F':hasSc?C.greenBr:C.textMid,
+                  }}>
+                    <div style={{display:'flex', alignItems:'center', gap:8}}>
+                      <span style={{fontSize:13, fontWeight:700, width:20}}>{hasSc?'✓':`D${d.day}`}</span>
+                      <div>
+                        <p style={{fontSize:11, fontWeight:isCurrent?700:400, margin:0}}>{d.theme}</p>
+                        <p style={{fontSize:10, margin:0, opacity:0.7}}>{d.words.length} words</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+              <div style={{marginTop:'auto', paddingTop:16, display:'flex', flexDirection:'column', gap:4}}>
+                <button onClick={()=>{setCurrentDay(-1);setTab('mock');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===-1?C.gold+'33':'transparent', color:currentDay===-1?C.gold:C.textMid}}>
+                  <span style={{fontSize:13}}>🎯  Mock Exam</span>
+                </button>
+                <button onClick={()=>{setCurrentDay(-2);setTab('relations');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===-2?C.gold+'33':'transparent', color:currentDay===-2?C.gold:C.textMid}}>
+                  <span style={{fontSize:13}}>🔗  Word Map</span>
+                </button>
+                <button onClick={()=>{setCurrentDay(-3);setTab('roots');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===-3?C.gold+'33':'transparent', color:currentDay===-3?C.gold:C.textMid}}>
+                  <span style={{fontSize:13}}>🌱  Roots</span>
+                </button>
+                <button onClick={()=>{setCurrentDay(0);setTab('overview');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===0?C.green+'33':'transparent', color:currentDay===0?C.greenBr:C.textMid}}>
+                  <span style={{fontSize:13}}>📊  Progress</span>
+                </button>
+              </div>
+            </>
+          ) : (
+            /* ─── QUANT SIDEBAR ─── */
+            <>
+              <p style={{fontSize:10, color:C.textDim, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8, paddingLeft:8}}>Topics</p>
+              {QUANT_TOPICS.map(t => {
+                const sc = quantScores[t.id];
+                const isCurrent = quantPage===t.id;
+                return (
+                  <button key={t.id} onClick={()=>setQuantPage(t.id)} style={{
+                    width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
+                    border:'none', cursor:'pointer', transition:'all 0.15s',
+                    background: isCurrent?C.gold:'transparent',
+                    color: isCurrent?'#07090F':sc?C.greenBr:C.textMid,
+                  }}>
+                    <div style={{display:'flex', alignItems:'center', gap:8}}>
+                      <span style={{fontSize:16}}>{t.icon}</span>
+                      <div>
+                        <p style={{fontSize:11, fontWeight:isCurrent?700:400, margin:0}}>{t.label}</p>
+                        <p style={{fontSize:10, margin:0, opacity:0.7}}>{t.subtopics.length} subtopics</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+              <div style={{marginTop:'auto', paddingTop:16, display:'flex', flexDirection:'column', gap:4}}>
+                <button onClick={()=>setQuantPage('mock')} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:quantPage==='mock'?C.gold+'33':'transparent', color:quantPage==='mock'?C.gold:C.textMid}}>
+                  <span style={{fontSize:13}}>🧮  Mock Exam</span>
+                </button>
+                <button onClick={()=>setQuantPage('formulas')} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:quantPage==='formulas'?C.gold+'33':'transparent', color:quantPage==='formulas'?C.gold:C.textMid}}>
+                  <span style={{fontSize:13}}>📐  Formulas</span>
+                </button>
+                <button onClick={()=>setQuantPage('progress')} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:quantPage==='progress'?C.green+'33':'transparent', color:quantPage==='progress'?C.greenBr:C.textMid}}>
+                  <span style={{fontSize:13}}>📊  Progress</span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Main Content */}
+        {/* ═══ MAIN CONTENT ═══ */}
         <div style={{flex:1, overflow:'auto', padding:'24px 28px 100px'}}>
-          {currentDay===-1 ? (
-            <MockExam/>
-          ) : currentDay===-2 ? (
-            <WordRelations day={DAYS.length}/>
-          ) : currentDay===-3 ? (
-            <RootsModule/>
-          ) : currentDay===0 ? (
-            <ScoreOverview dayScores={dayScores} weakWords={weakWords}/>
-          ) : (
+
+          {section === 'verbal' ? (
+            /* ─── VERBAL CONTENT ─── */
             <>
-              <div style={{display:'flex', gap:8, marginBottom:24, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
-                {[{id:'vocab',label:'📖  Vocabulary'},{id:'practice',label:'⚔️  Practice'}].map(t=>(
-                  <button key={t.id} onClick={()=>setTab(t.id)} style={{
-                    padding:'10px 20px', border:'none', cursor:'pointer',
-                    fontFamily:'Georgia,serif', fontWeight:700, fontSize:13,
-                    background:'transparent', transition:'all 0.15s',
-                    borderBottom: tab===t.id?`2px solid ${C.gold}`:'2px solid transparent',
-                    color: tab===t.id?C.gold:C.textMid, marginBottom:-1,
-                  }}>{t.label}</button>
-                ))}
-              </div>
-              {tab==='vocab' && <VocabView day={currentDay}/>}
-              {tab==='practice' && (
-                <PracticeView
-                  day={currentDay}
-                  weakWords={weakWords}
-                  onWeakUpdate={addWeakWords}
-                  onScoreUpdate={updateScore}
-                  dayScores={dayScores[currentDay]}
-                  cachedQuestions={cachedQs[currentDay] || null}
-                  onCacheQuestions={(qs) => cacheQuestionsForDay(currentDay, qs)}
-                />
+              {currentDay===-1 ? (
+                <MockExam/>
+              ) : currentDay===-2 ? (
+                <WordRelations day={DAYS.length}/>
+              ) : currentDay===-3 ? (
+                <RootsModule/>
+              ) : currentDay===0 ? (
+                <ScoreOverview dayScores={dayScores} weakWords={weakWords}/>
+              ) : (
+                <>
+                  <div style={{display:'flex', gap:8, marginBottom:24, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
+                    {[{id:'vocab',label:'📖  Vocabulary'},{id:'practice',label:'⚔️  Practice'}].map(t=>(
+                      <button key={t.id} onClick={()=>setTab(t.id)} style={{
+                        padding:'10px 20px', border:'none', cursor:'pointer',
+                        fontFamily:'Georgia,serif', fontWeight:700, fontSize:13,
+                        background:'transparent', transition:'all 0.15s',
+                        borderBottom: tab===t.id?`2px solid ${C.gold}`:'2px solid transparent',
+                        color: tab===t.id?C.gold:C.textMid, marginBottom:-1,
+                      }}>{t.label}</button>
+                    ))}
+                  </div>
+                  {tab==='vocab' && <VocabView day={currentDay}/>}
+                  {tab==='practice' && (
+                    <PracticeView
+                      day={currentDay}
+                      weakWords={weakWords}
+                      onWeakUpdate={addWeakWords}
+                      onScoreUpdate={updateScore}
+                      dayScores={dayScores[currentDay]}
+                      cachedQuestions={cachedQs[currentDay] || null}
+                      onCacheQuestions={(qs) => cacheQuestionsForDay(currentDay, qs)}
+                    />
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            /* ─── QUANT CONTENT ─── */
+            <>
+              {quantPage === 'mock' ? (
+                <QuantMock/>
+              ) : quantPage === 'formulas' ? (
+                <FormulaSheet/>
+              ) : quantPage === 'progress' ? (
+                <QuantProgressView scores={quantScores}/>
+              ) : quantPage && QUANT_TOPICS.find(t=>t.id===quantPage) ? (
+                <QuantPractice topic={quantPage} onScoreUpdate={updateQuantScore}/>
+              ) : (
+                <QuantLanding onSelectTopic={setQuantPage} scores={quantScores}/>
               )}
             </>
           )}
@@ -221,6 +275,89 @@ export default function App() {
       </div>
 
       <AiTutor/>
+    </div>
+  );
+}
+
+// ─── QUANT LANDING PAGE ───────────────────────────────────────────────────────
+function QuantLanding({ onSelectTopic, scores }) {
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:24}}>
+        <p style={{fontSize:40, marginBottom:4}}>🧮</p>
+        <h2 style={{fontFamily:'Georgia,serif', fontSize:22, color:C.gold, marginBottom:8}}>GRE Quantitative Reasoning</h2>
+        <p style={{color:C.textMid, fontSize:13}}>Master all 4 topics. Practice with AI-generated questions.</p>
+      </div>
+      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', gap:16}}>
+        {QUANT_TOPICS.map(t => {
+          const sc = scores[t.id];
+          return (
+            <div key={t.id} onClick={()=>onSelectTopic(t.id)} style={{
+              background:C.card, border:`1px solid ${C.border}`, borderRadius:12,
+              padding:'20px 16px', cursor:'pointer', transition:'all 0.2s',
+              borderLeft:`4px solid ${C.gold}`,
+            }}>
+              <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:12}}>
+                <span style={{fontSize:28}}>{t.icon}</span>
+                <div>
+                  <p style={{fontFamily:'Georgia,serif', fontSize:16, fontWeight:700, color:C.text, margin:0}}>{t.label}</p>
+                  <p style={{color:C.textDim, fontSize:11, margin:0}}>{t.subtopics.length} subtopics</p>
+                </div>
+                {sc && <Tag color={C.greenBr} style={{marginLeft:'auto'}}>{sc.correct}/{sc.total}</Tag>}
+              </div>
+              <div style={{display:'flex', flexWrap:'wrap', gap:4}}>
+                {t.subtopics.slice(0,3).map(s=>(
+                  <span key={s} style={{fontSize:10, color:C.textDim, background:C.surface, padding:'2px 8px', borderRadius:4}}>{s}</span>
+                ))}
+                {t.subtopics.length>3 && <span style={{fontSize:10, color:C.textDim}}>+{t.subtopics.length-3} more</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── QUANT PROGRESS ───────────────────────────────────────────────────────────
+function QuantProgressView({ scores }) {
+  const topics = QUANT_TOPICS;
+  const totalCorrect = Object.values(scores).reduce((a, s) => a + (s.correct || 0), 0);
+  const totalQs = Object.values(scores).reduce((a, s) => a + (s.total || 0), 0);
+
+  return (
+    <div>
+      <div style={{textAlign:'center', marginBottom:24}}>
+        <p style={{fontFamily:'Georgia,serif', fontSize:20, color:C.gold, marginBottom:4}}>Quant Progress</p>
+        {totalQs > 0 && <p style={{color:C.textMid, fontSize:14}}>{totalCorrect}/{totalQs} overall ({Math.round(totalCorrect/totalQs*100)}%)</p>}
+      </div>
+      <div style={{display:'grid', gap:12}}>
+        {topics.map(t => {
+          const sc = scores[t.id];
+          const pct = sc ? Math.round(sc.correct / sc.total * 100) : 0;
+          return (
+            <div key={t.id} style={{background:C.card, border:`1px solid ${C.border}`, borderRadius:10, padding:'16px 18px', display:'flex', alignItems:'center', gap:14}}>
+              <span style={{fontSize:24}}>{t.icon}</span>
+              <div style={{flex:1}}>
+                <p style={{color:C.text, fontSize:14, fontWeight:700, margin:0}}>{t.label}</p>
+                <div style={{width:'100%', height:6, background:C.border, borderRadius:3, overflow:'hidden', marginTop:6}}>
+                  <div style={{height:'100%', background: pct>=80?C.green:pct>=50?C.gold:pct>0?C.red:C.border, borderRadius:3, width:`${pct}%`, transition:'width 0.4s'}}/>
+                </div>
+              </div>
+              <div style={{textAlign:'right'}}>
+                {sc ? (
+                  <>
+                    <p style={{fontFamily:'Courier New,monospace', fontSize:18, fontWeight:700, color: pct>=80?C.greenBr:pct>=50?C.gold:C.red, margin:0}}>{pct}%</p>
+                    <p style={{color:C.textDim, fontSize:10, margin:0}}>{sc.correct}/{sc.total}</p>
+                  </>
+                ) : (
+                  <p style={{color:C.textDim, fontSize:12}}>Not practiced</p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

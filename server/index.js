@@ -167,6 +167,161 @@ Return this EXACT JSON structure (no other text):
   }
 });
 
+// ─── QUANT PRACTICE ENDPOINT ──────────────────────────────────────────────────
+app.post('/api/quant-generate', async (req, res) => {
+  try {
+    const { topicId, topicLabel, subtopics, weakAreas } = req.body;
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'GEMINI_API_KEY not configured in .env' });
+    }
+
+    const weakNote = weakAreas?.length ? `\nThe student struggles with: ${weakAreas.join(', ')}. Generate harder questions on these.` : '';
+
+    const systemPrompt = `You are an expert GRE Quantitative Reasoning question writer.
+Create questions that are mathematically precise and unambiguous.
+Every answer must be numerically verifiable.
+Use GRE-standard difficulty: mix of easy, medium, and hard.
+Include common GRE traps (sign errors, edge cases, assuming positive values).
+All explanations must show complete step-by-step solutions.`;
+
+    const userPrompt = `Generate GRE Quant practice for topic: ${topicLabel}
+Subtopics: ${subtopics.join(', ')}
+${weakNote}
+
+═══ GENERATE THESE SECTIONS ═══
+
+1. QUANTITATIVE COMPARISON (5 questions)
+   - Show Quantity A and Quantity B
+   - Answer is always one of: "A","B","C","D" where A=Qty A greater, B=Qty B greater, C=Equal, D=Cannot determine
+   - Mix difficulties: 2 easy, 2 medium, 1 hard
+   - At least 1 question should have "D" (Cannot determine) as answer
+
+2. MULTIPLE CHOICE — SINGLE ANSWER (3 questions)
+   - Standard problem with 5 options A-E, exactly 1 correct
+   - Include word problems and pure computation
+
+3. NUMERIC ENTRY (2 questions)
+   - Student types the numeric answer (integer or decimal)
+   - Provide answer as a number (e.g., 42, 3.5, -7)
+
+═══ EXPLANATION FORMAT (CRITICAL) ═══
+Every "explain" field MUST show:
+1. Complete step-by-step solution
+2. Why the correct answer is right
+3. Common mistakes to avoid
+
+Return this EXACT JSON (no other text):
+{
+  "qc": [
+    {"id":1, "qtyA":"expression or description", "qtyB":"expression or description", "info":"any given information or constraints (optional, can be empty string)", "answer":"A", "explain":"Step 1:... Step 2:... Therefore Qty A > Qty B. Common trap: ..."}
+  ],
+  "mc": [
+    {"id":1, "q":"question text", "opts":[{"l":"A","t":"option"},{"l":"B","t":"option"},{"l":"C","t":"option"},{"l":"D","t":"option"},{"l":"E","t":"option"}], "answer":"B", "explain":"Step 1:... The answer is B because..."}
+  ],
+  "ne": [
+    {"id":1, "q":"question text", "answer":"42", "explain":"Step 1:... The answer is 42."}
+  ]
+}`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      config: {
+        systemInstruction: systemPrompt,
+        temperature: 0.7,
+        maxOutputTokens: 16384,
+        responseMimeType: 'application/json',
+      },
+    });
+
+    const text = response.text || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    let parsed;
+    try { parsed = JSON.parse(clean); }
+    catch { return res.status(500).json({ error: 'AI returned incomplete response. Try again.' }); }
+
+    if (!parsed.qc || !parsed.mc || !parsed.ne) {
+      return res.status(500).json({ error: 'Quant response missing required sections.' });
+    }
+    res.json(parsed);
+  } catch (error) {
+    console.error('Quant generate error:', error.message);
+    let msg = error.message;
+    if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED'))
+      return res.status(429).json({ error: 'API rate limit. Wait 30 seconds.' });
+    res.status(500).json({ error: msg });
+  }
+});
+
+// ─── QUANT MOCK EXAM ENDPOINT ─────────────────────────────────────────────────
+app.post('/api/quant-mock', async (req, res) => {
+  try {
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'GEMINI_API_KEY not configured in .env' });
+    }
+
+    const systemPrompt = `You are an expert GRE Quantitative Reasoning question writer for ETS.
+Create a complete Quant section matching real GRE difficulty and distribution.
+Questions must be mathematically precise with unambiguous answers.
+Cover all 4 topics: Arithmetic, Algebra, Geometry, Data Analysis.
+Include GRE traps and edge cases.`;
+
+    const userPrompt = `Generate a COMPLETE GRE Quantitative Reasoning section — 20 questions total.
+
+═══ SECTION BREAKDOWN ═══
+1. QUANTITATIVE COMPARISON: 8 questions (2 Arithmetic, 2 Algebra, 2 Geometry, 2 Data)
+2. MULTIPLE CHOICE SINGLE: 7 questions (mix of all topics, 5 options A-E each)
+3. MULTIPLE CHOICE MULTI: 2 questions (3-5 options, "select ALL that apply", specify all correct)
+4. NUMERIC ENTRY: 3 questions (type the answer)
+
+Time limit: 35 minutes (shown to user)
+
+Return EXACT JSON:
+{
+  "qc": [
+    {"id":1, "qtyA":"...", "qtyB":"...", "info":"given info", "answer":"A", "topic":"Arithmetic", "explain":"..."}
+  ],
+  "mc": [
+    {"id":9, "q":"...", "opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."},{"l":"D","t":"..."},{"l":"E","t":"..."}], "answer":"C", "topic":"Algebra", "explain":"..."}
+  ],
+  "mcm": [
+    {"id":16, "q":"... Select ALL that apply.", "opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."}], "answers":["A","C"], "topic":"Data", "explain":"..."}
+  ],
+  "ne": [
+    {"id":18, "q":"...", "answer":"15", "topic":"Geometry", "explain":"..."}
+  ]
+}`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+      config: {
+        systemInstruction: systemPrompt,
+        temperature: 0.7,
+        maxOutputTokens: 16384,
+        responseMimeType: 'application/json',
+      },
+    });
+
+    const text = response.text || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    let parsed;
+    try { parsed = JSON.parse(clean); }
+    catch { return res.status(500).json({ error: 'AI returned incomplete response. Try again.' }); }
+
+    if (!parsed.qc || !parsed.mc || !parsed.ne) {
+      return res.status(500).json({ error: 'Quant mock missing required sections.' });
+    }
+    res.json(parsed);
+  } catch (error) {
+    console.error('Quant mock error:', error.message);
+    let msg = error.message;
+    if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED'))
+      return res.status(429).json({ error: 'API rate limit. Wait 30 seconds.' });
+    res.status(500).json({ error: msg });
+  }
+});
+
 // ─── CHAT ENDPOINT (AI TUTOR) ─────────────────────────────────────────────────
 app.post('/api/chat', async (req, res) => {
   try {
