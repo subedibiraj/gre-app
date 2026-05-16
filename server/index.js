@@ -463,9 +463,11 @@ Return EXACT JSON:
 });
 
 app.listen(PORT, () => {
-  console.log(`\n  🤖 GRE API server on http://localhost:${PORT}`);
-  console.log(`  📡 POST /api/generate    — AI question generation`);
-  console.log(`  🎯 POST /api/mock-exam   — Full mock exam`);
-  console.log(`  💬 POST /api/chat        — AI tutor chat\n`);
+  console.log(`\n  🤖 GRE Complete API on http://localhost:${PORT}`);
+  console.log(`  📡 POST /api/generate       — Verbal practice`);
+  console.log(`  🎯 POST /api/mock-exam      — Verbal mock`);
+  console.log(`  🔢 POST /api/quant-generate — Quant practice`);
+  console.log(`  🧮 POST /api/quant-mock     — Quant mock`);
+  console.log(`  💬 POST /api/chat           — AI tutor\n`);
 });
 

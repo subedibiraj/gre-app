@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import C from '../../theme';
 import Card from '../../components/Card';
 import SectionHead from '../../components/SectionHead';
@@ -7,19 +7,18 @@ import Tag from '../../components/Tag';
 
 function ExamTimer({ totalSeconds, onTimeUp, active }) {
   const [remaining, setRemaining] = useState(totalSeconds);
-  const ref = { current: null };
+  const intervalRef = useRef(null);
 
-  useState(() => {
+  useEffect(() => {
     if (!active) return;
-    const id = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setRemaining(prev => {
-        if (prev <= 1) { clearInterval(id); onTimeUp?.(); return 0; }
+        if (prev <= 1) { clearInterval(intervalRef.current); onTimeUp?.(); return 0; }
         return prev - 1;
       });
     }, 1000);
-    ref.current = id;
-    return () => clearInterval(id);
-  });
+    return () => clearInterval(intervalRef.current);
+  }, [active, onTimeUp]);
 
   const mins = Math.floor(remaining / 60);
   const secs = remaining % 60;

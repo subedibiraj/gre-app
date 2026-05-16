@@ -4,9 +4,12 @@ import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
 import { getStreak } from './engine/streak';
 import { getSRStats } from './engine/spaced';
+import { getOverallStats } from './engine/history';
 import Tag from './components/Tag';
 import AiTutor from './components/AiTutor';
 import WarmupModal from './components/WarmupModal';
+import ErrorBoundary from './components/ErrorBoundary';
+import SettingsPanel from './components/SettingsPanel';
 import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
@@ -33,11 +36,42 @@ export default function App() {
   const [cachedQs, setCachedQs]     = useState({});
   const [quantPage, setQuantPage]   = useState(null); // null=topic list, topic id, 'mock', 'formulas', 'progress'
   const [quantScores, setQuantScores] = useState(() => loadJSON('gre_quantScores', {}));
+  const [showSettings, setShowSettings] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showWarmup, setShowWarmup] = useState(() => {
     const key = `gre_warmup_${new Date().toDateString()}`;
     if (sessionStorage.getItem(key)) return false;
     return true;
   });
+
+  // Dynamic page title
+  useEffect(() => {
+    const base = 'GRE Complete';
+    if (section === 'verbal') {
+      if (currentDay > 0) document.title = `${base} — Day ${currentDay}: ${DAYS[currentDay-1]?.theme}`;
+      else if (currentDay === -1) document.title = `${base} — Verbal Mock`;
+      else document.title = `${base} — Verbal`;
+    } else {
+      if (quantPage === 'mock') document.title = `${base} — Quant Mock`;
+      else if (quantPage) document.title = `${base} — ${quantPage}`;
+      else document.title = `${base} — Quant`;
+    }
+  }, [section, currentDay, quantPage]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      const key = e.key.toLowerCase();
+      if (key === 'escape') { setShowSettings(false); return; }
+      if (key === 'v') { setSection('verbal'); setCurrentDay(7); setTab('vocab'); return; }
+      if (key === 'q') { setSection('quant'); setQuantPage(null); return; }
+      if (key === 'p' && section === 'verbal' && currentDay > 0) { setTab('practice'); return; }
+      if (key >= '1' && key <= '7' && section === 'verbal') { setCurrentDay(parseInt(key)); setTab('vocab'); return; }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [section, currentDay]);
 
   const closeWarmup = () => {
     sessionStorage.setItem(`gre_warmup_${new Date().toDateString()}`, '1');
@@ -127,13 +161,17 @@ export default function App() {
               <span style={{color:C.textDim, fontSize:10}}>{srStats.mastered}/{totalWords} mastered</span>
             </div>
           )}
+          {/* Sidebar toggle for mobile */}
+          <button onClick={()=>setSidebarOpen(s=>!s)} style={{display:'none', padding:'4px 8px', borderRadius:4, border:'none', cursor:'pointer', background:C.surface, color:C.textMid, fontSize:16}} className='sidebar-toggle'>☰</button>
+          {/* Settings gear */}
+          <button onClick={()=>setShowSettings(true)} style={{padding:'4px 8px', borderRadius:4, border:'none', cursor:'pointer', background:'transparent', color:C.textDim, fontSize:16, transition:'all 0.15s'}} title='Settings & Study Plan'>⚙️</button>
         </div>
       </div>
 
       <div style={{display:'flex', flex:1, overflow:'hidden'}}>
 
         {/* ═══ SIDEBAR ═══ */}
-        <div style={{width:190, borderRight:`1px solid ${C.border}`, padding:'16px 10px', overflowY:'auto', flexShrink:0, background:C.surface, display:'flex', flexDirection:'column', gap:4}}>
+        <div className='app-sidebar' style={{width:sidebarOpen?190:0, borderRight:sidebarOpen?`1px solid ${C.border}`:'none', padding:sidebarOpen?'16px 10px':'0', overflowY:'auto', overflowX:'hidden', flexShrink:0, background:C.surface, display:'flex', flexDirection:'column', gap:4, transition:'width 0.2s ease, padding 0.2s ease'}}>
 
           {section === 'verbal' ? (
             <>
@@ -215,6 +253,7 @@ export default function App() {
 
         {/* ═══ MAIN CONTENT ═══ */}
         <div style={{flex:1, overflow:'auto', padding:'24px 28px 100px'}}>
+         <ErrorBoundary>
 
           {section === 'verbal' ? (
             /* ─── VERBAL CONTENT ─── */
@@ -271,9 +310,11 @@ export default function App() {
               )}
             </>
           )}
+         </ErrorBoundary>
         </div>
       </div>
 
+      <SettingsPanel open={showSettings} onClose={()=>setShowSettings(false)}/>
       <AiTutor/>
     </div>
   );
