@@ -70,6 +70,39 @@ export const CONCEPTS = {
       ],
       traps: ['Thinking x² > x always (fails for 0 < x < 1)', 'Forgetting that (-2)^2 = 4 but -2^2 = -4 (order of operations)'],
     },
+    {
+      title: 'GCD, LCM & Prime Factorization',
+      freq: 'High',
+      core: 'GCD = greatest common factor. LCM = least common multiple. Both come from prime factorization. GRE loves "how many factors" questions.',
+      rules: [
+        'GCF: take the LOWEST power of shared primes',
+        'LCM: take the HIGHEST power of ALL primes',
+        'LCM(a,b) × GCF(a,b) = a × b',
+        'Number of factors: prime factorize, add 1 to each exponent, multiply',
+      ],
+      examples: [
+        { q: 'How many positive factors does 360 have?', work: '360 = 2³ × 3² × 5¹. Factors = (3+1)(2+1)(1+1) = 4×3×2 = 24.', ans: '24', trick: 'Prime factorize → add 1 to each exponent → multiply.' },
+        { q: 'LCM of 12 and 18?', work: '12 = 2² × 3. 18 = 2 × 3². LCM = 2² × 3² = 36.', ans: '36', trick: 'Take the HIGHEST power of each prime factor.' },
+        { q: 'GCF of 48 and 180?', work: '48 = 2⁴ × 3. 180 = 2² × 3² × 5. GCF = 2² × 3 = 12.', ans: '12', trick: 'Take the LOWEST power of SHARED primes only.' },
+      ],
+      traps: ['Confusing GCF and LCM (GCF ≤ both numbers, LCM ≥ both)', 'Forgetting to include 1 and the number itself as factors'],
+    },
+    {
+      title: 'Sequences & Patterns',
+      freq: 'Medium',
+      core: 'Arithmetic sequences (constant difference) and geometric sequences (constant ratio). GRE tests whether you can spot the pattern quickly.',
+      rules: [
+        'Arithmetic: aₙ = a₁ + (n-1)d, Sum = n(a₁+aₙ)/2',
+        'Geometric: aₙ = a₁ × rⁿ⁻¹, Sum = a₁(1-rⁿ)/(1-r)',
+        'Sum of first n integers: n(n+1)/2',
+        'Sum of first n squares: n(n+1)(2n+1)/6',
+      ],
+      examples: [
+        { q: 'What is the sum of integers from 1 to 100?', work: 'n(n+1)/2 = 100(101)/2 = 5050.', ans: '5050', trick: 'Gauss formula: n(n+1)/2. Works for 1 to any n.' },
+        { q: 'In sequence 3, 7, 11, 15, ..., what is the 20th term?', work: 'd = 4, a₁ = 3. a₂₀ = 3 + (20-1)×4 = 3 + 76 = 79.', ans: '79', trick: 'aₙ = a₁ + (n-1)d. Don\'t add d one too many times.' },
+      ],
+      traps: ['Off-by-one errors with (n-1) vs n', 'Confusing arithmetic (add d) with geometric (multiply r)'],
+    },
   ],
 
   algebra: [
@@ -121,6 +154,22 @@ export const CONCEPTS = {
         { q: 'Driving 60mph for 2hr, then 40mph for 3hr. Average speed?', work: 'Total dist = 120+120 = 240mi. Total time = 5hr. Avg speed = 240/5 = 48mph.', ans: '48 mph (not 50!)', trick: 'NEVER average the speeds. Always use total distance / total time.' },
       ],
       traps: ['Averaging speeds instead of using total distance/total time', 'Forgetting to convert units (minutes to hours, etc.)'],
+    },
+    {
+      title: 'Functions & Absolute Value',
+      freq: 'High',
+      core: 'Function notation, domain/range, absolute value equations. GRE tests whether you substitute correctly and handle |x| properly.',
+      rules: [
+        'f(a) means: plug a into every x in f(x)',
+        'f(x+1) ≠ f(x) + 1. Always substitute the ENTIRE expression.',
+        '|x| < a means −a < x < a (AND). |x| > a means x < −a OR x > a.',
+        '|a − b| = distance between a and b on the number line',
+      ],
+      examples: [
+        { q: 'If f(x) = 2x² − 3, what is f(−2)?', work: 'f(−2) = 2(−2)² − 3 = 2(4) − 3 = 8 − 3 = 5.', ans: '5', trick: 'Parenthesize the substitution: (−2)² = 4, not −4.' },
+        { q: 'Solve |3x − 6| ≤ 9', work: 'Case: −9 ≤ 3x−6 ≤ 9. Add 6: −3 ≤ 3x ≤ 15. Divide by 3: −1 ≤ x ≤ 5.', ans: '−1 ≤ x ≤ 5', trick: '|expr| ≤ a → sandwich: −a ≤ expr ≤ a.' },
+      ],
+      traps: ['Forgetting to square the negative sign: (−3)² = 9, not −9', 'Writing |x| < 5 as x < 5 (missing the −5 bound)'],
     },
   ],
 
@@ -174,6 +223,38 @@ export const CONCEPTS = {
         { q: 'A line has slope 3 and passes through (1,5). What is the y-intercept?', work: 'y = mx + b → 5 = 3(1) + b → b = 2. Line: y = 3x + 2.', ans: 'b = 2', trick: 'Plug the known point into y=mx+b to find b.' },
       ],
       traps: ['Subtracting coordinates in different order (inconsistent signs)', 'Forgetting vertical lines have undefined slope (not 0)'],
+    },
+    {
+      title: 'Similar Triangles & Proportions',
+      freq: 'High',
+      core: 'Similar triangles have equal angles and proportional sides. Area ratio = (side ratio)². This appears in almost every geometry section.',
+      rules: [
+        'AA similarity: if two angles match, triangles are similar',
+        'Side ratios are equal: a₁/a₂ = b₁/b₂ = c₁/c₂',
+        'Area ratio = (side ratio)²',
+        'A line parallel to one side of a triangle creates similar triangles',
+      ],
+      examples: [
+        { q: 'Two similar triangles have sides in ratio 2:5. If smaller has area 12, find larger area.', work: 'Area ratio = (2/5)² = 4/25. So 12/A = 4/25 → A = 12 × 25/4 = 75.', ans: '75', trick: 'Area scales as the SQUARE of the side ratio.' },
+        { q: 'A 6ft person casts an 8ft shadow. A tree casts a 32ft shadow. How tall?', work: 'Similar triangles: 6/8 = h/32. h = 6×32/8 = 24ft.', ans: '24 ft', trick: 'Shadow problems = similar triangles. Set up the proportion.' },
+      ],
+      traps: ['Using side ratio for area (must square it)', 'Assuming same-looking triangles are similar without checking angles'],
+    },
+    {
+      title: '3D Shapes: Volume & Surface Area',
+      freq: 'Medium',
+      core: 'Cylinders, rectangular solids, cubes. Know volume AND surface area formulas. GRE sometimes tests space diagonals.',
+      rules: [
+        'Cylinder: V = πr²h, SA = 2πr² + 2πrh',
+        'Rectangular solid: V = lwh, SA = 2(lw+lh+wh)',
+        'Cube: V = s³, SA = 6s², Space diagonal = s√3',
+        'Sphere (rare): V = (4/3)πr³, SA = 4πr²',
+      ],
+      examples: [
+        { q: 'A cylinder has radius 3 and height 10. What is its volume?', work: 'V = πr²h = π(9)(10) = 90π.', ans: '90π', trick: 'Just plug in. Always leave answer as a multiple of π unless told otherwise.' },
+        { q: 'A cube has volume 64. What is its surface area?', work: 's³ = 64 → s = 4. SA = 6(4²) = 6(16) = 96.', ans: '96', trick: 'Extract s from volume first, then plug into SA formula.' },
+      ],
+      traps: ['Confusing radius and diameter in cylinder problems', 'Forgetting the 2 circular faces in cylinder surface area'],
     },
   ],
 
@@ -242,6 +323,38 @@ export const CONCEPTS = {
         { q: 'Pie chart: 200 students. "Science" slice is 72°. How many study science?', work: '72/360 = 1/5 of total. 200 × 1/5 = 40 students.', ans: '40', trick: 'Degrees/360 = fraction of total. Or: every 3.6° = 1%.' },
       ],
       traps: ['Misreading axis scales (especially if they don\'t start at 0)', 'Using the wrong base for percent calculations'],
+    },
+    {
+      title: 'Standard Deviation & Distribution',
+      freq: 'High',
+      core: 'SD measures spread from the mean. GRE doesn\'t ask you to compute SD — it tests whether you understand what CHANGES it.',
+      rules: [
+        'Adding a constant to ALL values: mean changes, SD stays SAME',
+        'Multiplying ALL values by k: mean × k, SD × |k|',
+        'More spread out = higher SD. All values equal = SD is 0.',
+        'Normal distribution: 68% within 1 SD, 95% within 2 SD',
+      ],
+      examples: [
+        { q: 'Set A: {2,4,6,8,10}. Set B: {12,14,16,18,20}. Compare SDs.', work: 'B = A + 10 (constant added). SD is unchanged. Same spread → same SD.', ans: 'Equal SDs', trick: 'Adding/subtracting a constant to every value does NOT change SD.' },
+        { q: 'Scores are normally distributed: mean=500, SD=100. What % score between 300 and 700?', work: '300 = mean−2SD, 700 = mean+2SD. Within 2 SD = 95%.', ans: '95%', trick: 'Memorize: 1SD=68%, 2SD=95%, 3SD=99.7%.' },
+      ],
+      traps: ['Thinking adding 10 to all values changes SD (it doesn\'t)', 'Confusing variance (SD²) with SD'],
+    },
+    {
+      title: 'Sets, Venn Diagrams & Overlapping Groups',
+      freq: 'High',
+      core: 'Counting elements in overlapping groups. Formula: |A ∪ B| = |A| + |B| − |A ∩ B|. Draw a Venn diagram EVERY time.',
+      rules: [
+        'Two groups: Total = A + B − Both + Neither',
+        'Three groups: Total = A+B+C − AB − AC − BC + ABC + Neither',
+        'ALWAYS draw the Venn diagram and fill from the inside out',
+        '"Only A" = A − (A∩B)',
+      ],
+      examples: [
+        { q: '60 students: 35 play soccer, 25 play tennis, 10 play both. How many play neither?', work: 'Total = Soccer + Tennis − Both + Neither. 60 = 35 + 25 − 10 + Neither. Neither = 10.', ans: '10', trick: 'Formula: Total = A + B − Both + Neither. Plug in and solve.' },
+        { q: 'Of 100 people, 60 like coffee, 40 like tea, 20 like both. How many like ONLY coffee?', work: 'Only coffee = Coffee − Both = 60 − 20 = 40.', ans: '40', trick: '"Only A" always means subtract the overlap.' },
+      ],
+      traps: ['Forgetting to subtract the overlap (double-counting)', 'Confusing "A or B" (union) with "A and B" (intersection)'],
     },
   ],
 };
