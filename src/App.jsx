@@ -10,6 +10,7 @@ import AiTutor from './components/AiTutor';
 import WarmupModal from './components/WarmupModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import SettingsPanel from './components/SettingsPanel';
+import XPBar from './components/XPBar';
 import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
@@ -155,6 +156,7 @@ export default function App() {
               <span style={{color:C.textDim, fontSize:10}}>day{streak.current!==1?'s':''}</span>
             </div>
           )}
+          <XPBar/>
           {section==='verbal' && (
             <div style={{textAlign:'right'}}>
               <div style={{width:80, height:4, background:C.border, borderRadius:3, overflow:'hidden', marginBottom:2}}>
