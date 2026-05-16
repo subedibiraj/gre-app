@@ -58,17 +58,17 @@ export const CONCEPTS = {
       freq: 'High',
       core: 'Exponent rules, simplifying radicals, fractional exponents. GRE loves testing whether you know 0 < x < 1 behavior.',
       rules: [
-        'a^m × a^n = a^(m+n), a^m / a^n = a^(m-n)',
-        '(a^m)^n = a^(mn), (ab)^n = a^n × b^n',
-        'a^0 = 1 (for a≠0), a^(-n) = 1/a^n',
-        'a^(1/n) = ⁿ√a, a^(m/n) = (ⁿ√a)^m',
+        'aᵐ × aⁿ = aᵐ⁺ⁿ,  aᵐ ÷ aⁿ = aᵐ⁻ⁿ',
+        '(aᵐ)ⁿ = aᵐⁿ,  (ab)ⁿ = aⁿ × bⁿ',
+        'a⁰ = 1 (for a≠0),  a⁻ⁿ = 1/aⁿ',
+        'a¹ᐟⁿ = ⁿ√a,  aᵐᐟⁿ = (ⁿ√a)ᵐ',
         'If 0 < x < 1: x² < x < √x',
       ],
       examples: [
-        { q: 'Simplify: (2^15 - 2^14) / 2^14', work: 'Factor: 2^14(2-1) / 2^14 = 1.', ans: '1', trick: 'Factor out the SMALLER power. This is a classic GRE move.' },
+        { q: 'Simplify: (2¹⁵ − 2¹⁴) / 2¹⁴', work: 'Factor: 2¹⁴(2−1) / 2¹⁴ = 1.', ans: '1', trick: 'Factor out the SMALLER power. This is a classic GRE move.' },
         { q: 'If 0 < x < 1, rank: x, x², x³, √x', work: 'Try x=0.5: √0.5≈0.71, x=0.5, x²=0.25, x³=0.125. Order: √x > x > x² > x³.', ans: '√x > x > x² > x³', trick: 'For 0<x<1, higher powers make it SMALLER, roots make it LARGER. Opposite of x>1.' },
       ],
-      traps: ['Thinking x² > x always (fails for 0 < x < 1)', 'Forgetting that (-2)^2 = 4 but -2^2 = -4 (order of operations)'],
+      traps: ['Thinking x² > x always (fails for 0 < x < 1)', 'Forgetting that (−2)² = 4 but −2² = −4 (order of operations)'],
     },
     {
       title: 'GCD, LCM & Prime Factorization',
@@ -300,7 +300,7 @@ export const CONCEPTS = {
         'Permutation: nPr = n!/(n-r)! — arrangements, order matters',
         'Combination: nCr = n!/(r!(n-r)!) — selections, order doesn\'t matter',
         'Keyword test: "arrange", "order", "rank" → permutation. "choose", "select", "group" → combination',
-        'With repetition: n^r (r picks from n options with replacement)',
+        'With repetition: nʳ (r picks from n options with replacement)',
       ],
       examples: [
         { q: 'How many ways to choose 3 people from 8 for a committee?', work: 'Committee = no order → combination. 8C3 = 8!/(3!5!) = (8×7×6)/(3×2×1) = 56.', ans: '56', trick: 'Committee/group = combination. Lineup/ranking = permutation.' },
@@ -407,7 +407,7 @@ export const STRATEGIES = [
     name: 'Smart Number Picking',
     when: 'QC or "must be true" with constraints like "x is a positive even integer"',
     how: 'Pick the SMALLEST number that satisfies ALL constraints. Then test the WEIRDEST edge case.',
-    example: 'Q: x is a positive integer. Qty A: (-1)^x  Qty B: (-1)^(x+1)\nIf x=1: A=-1, B=1 → B>A. If x=2: A=1, B=-1 → A>B. Answer: D.',
+    example: 'Q: x is a positive integer. Qty A: (−1)ˣ  Qty B: (−1)ˣ⁺¹\nIf x=1: A=−1, B=1 → B>A. If x=2: A=1, B=−1 → A>B. Answer: D.',
     level: '170 essential',
   },
   {

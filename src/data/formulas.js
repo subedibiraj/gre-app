@@ -13,7 +13,7 @@ export const FORMULAS = [
       { name: 'Simple Interest', formula: 'I = P × r × t', note: 'P = principal, r = annual rate (decimal), t = time in years.' },
       { name: 'Compound Interest', formula: 'A = P(1 + r/n)ⁿᵗ', note: 'n = compounds per year. Annual: n=1, Monthly: n=12.' },
       { name: 'Exponent Rules', formula: 'aᵐ × aⁿ = aᵐ⁺ⁿ   aᵐ ÷ aⁿ = aᵐ⁻ⁿ   (aᵐ)ⁿ = aᵐⁿ', note: 'a⁰ = 1 (a≠0). a⁻ⁿ = 1/aⁿ. (ab)ⁿ = aⁿbⁿ.' },
-      { name: 'Root Rules', formula: '√(ab) = √a × √b   √(a/b) = √a / √b', note: 'a^(1/n) = ⁿ√a. For 0<x<1: x² < x < √x.' },
+      { name: 'Root Rules', formula: '√(ab) = √a × √b   √(a/b) = √a / √b', note: 'a¹ᐟⁿ = ⁿ√a. For 0<x<1: x² < x < √x.' },
       { name: 'Divisibility Tests', formula: '2: even  3: digit sum÷3  5: ends 0,5  9: digit sum÷9', note: '4: last 2 digits÷4. 6: divisible by both 2 and 3. 8: last 3 digits÷8.' },
       { name: 'Number of Factors', formula: 'N = p₁ᵃ × p₂ᵇ → (a+1)(b+1) factors', note: 'Prime factorize first. Example: 12 = 2² × 3¹ → 3×2 = 6 factors.' },
       { name: 'LCM & GCF', formula: 'LCM(a,b) × GCF(a,b) = a × b', note: 'LCM = smallest common multiple. GCF = largest common factor. LCM ≥ max.' },
