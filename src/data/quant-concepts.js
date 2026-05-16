@@ -290,4 +290,18 @@ export const STRATEGIES = [
     example: 'Qty A: (-3)⁴  Qty B: (-3)⁵\nEven power of negative = positive. Odd power = negative. Positive > Negative → A.',
     level: '165+',
   },
+  {
+    name: 'Smart Number Picking',
+    when: 'QC or "must be true" with constraints like "x is a positive even integer"',
+    how: 'Pick the SMALLEST number that satisfies ALL constraints. Then test the WEIRDEST edge case.',
+    example: 'Q: x is a positive integer. Qty A: (-1)^x  Qty B: (-1)^(x+1)\nIf x=1: A=-1, B=1 → B>A. If x=2: A=1, B=-1 → A>B. Answer: D.',
+    level: '170 essential',
+  },
+  {
+    name: 'Rewrite & Recognize Patterns',
+    when: 'Ugly expressions that look hard to compute',
+    how: 'Factor, rewrite fractions, spot difference of squares or sum formulas.',
+    example: 'Q: (√5 + √3)(√5 - √3) = ?\nThis is (a+b)(a-b) = a² - b² = 5 - 3 = 2. No calculator needed.',
+    level: '170 essential',
+  },
 ];
