@@ -11,6 +11,8 @@ import WarmupModal from './components/WarmupModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import SettingsPanel from './components/SettingsPanel';
 import XPBar from './components/XPBar';
+import AchievementToast from './components/AchievementToast';
+import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
 import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
@@ -39,6 +41,7 @@ export default function App() {
   const [quantPage, setQuantPage]   = useState(null);
   const [quantScores, setQuantScores] = useState(() => loadJSON('gre_quantScores', {}));
   const [quantTab, setQuantTab]     = useState('learn'); // learn | practice
+  const [achToast, setAchToast]     = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showWarmup, setShowWarmup] = useState(() => {
@@ -102,7 +105,12 @@ export default function App() {
       saveJSON('gre_dayScores', next);
       return next;
     });
-  }, []);
+    // Award XP
+    addXP(correct * XP_VALUES.practice_correct + (total-correct) * XP_VALUES.practice_wrong, 'Verbal practice');
+    addXP(XP_VALUES.complete_practice, 'Practice completed');
+    const achs = checkAchievements({ practiceCompleted:true, streak:streak.current, wordsStudied:totalWords, perfectScore:correct===total });
+    if(achs.length) setAchToast(achs[0]);
+  }, [streak, totalWords]);
 
   const cacheQuestionsForDay = useCallback((dayNum, qs) => {
     setCachedQs(prev => ({ ...prev, [dayNum]: qs }));
@@ -115,7 +123,12 @@ export default function App() {
       saveJSON('gre_quantScores', next);
       return next;
     });
-  }, []);
+    addXP(correct * XP_VALUES.practice_correct + (total-correct) * XP_VALUES.practice_wrong, 'Quant practice');
+    addXP(XP_VALUES.complete_practice, 'Practice completed');
+    const practiceTopics = Object.keys({...quantScores, [topicId]:true});
+    const achs = checkAchievements({ practiceCompleted:true, streak:streak.current, allQuantTopics:practiceTopics.length>=4, perfectScore:correct===total });
+    if(achs.length) setAchToast(achs[0]);
+  }, [streak, quantScores]);
 
   return (
     <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif", background:C.bg, minHeight:'100vh', color:C.text, display:'flex', flexDirection:'column'}}>
@@ -336,6 +349,7 @@ export default function App() {
       </div>
 
       <SettingsPanel open={showSettings} onClose={()=>setShowSettings(false)}/>
+      <AchievementToast achievement={achToast} onDone={()=>setAchToast(null)}/>
       <AiTutor/>
     </div>
   );
