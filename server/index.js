@@ -68,35 +68,42 @@ ${currentWordsList}
 Word pool for SE: Use ONLY Day ${dayNum} words. The 2 correct answers must be from today's word list.
 ${currentWordsList}
 
+═══ SECTION 4: READING COMPREHENSION (any vocabulary) ═══
+Write 1 short academic passage (80-120 words) on any topic (science, humanities, social science, arts).
+Then create 3 questions testing: main idea, inference, and vocabulary in context.
+Use GRE-level vocabulary (NOT limited to today's words).
+
 ═══ GENERATION REQUIREMENTS ═══
 • 5 vocabulary-in-context questions — Day ${dayNum} words ONLY, each tests a DIFFERENT word
-• 5 text completion questions — Day ${dayNum} words ONLY (2 easy single-blank, 2 medium single-blank, 1 hard double-blank)
+• 4 text completion questions — Day ${dayNum} words ONLY (2 easy single-blank, 1 medium single-blank, 1 hard double-blank)
 • 3 sentence equivalence questions — Day ${dayNum} words ONLY (select exactly 2 synonymous answers from 6 options)
+• 1 reading comprehension passage with 3 questions — ANY GRE vocabulary
+
+═══ EXPLANATION FORMAT (CRITICAL) ═══
+Every "explain" field MUST include:
+1. Why the correct answer is right
+2. Why EACH wrong answer is wrong (e.g., "A is wrong because 'verbose' implies excessive length, but the passage describes brevity")
+This is the #1 learning tool for 165+ scorers. Do NOT skip wrong-answer analysis.
 
 FORMAT RULES:
-- VIC: {"id":N, "word":"WORD", "sentence":"a sentence using WORD in context", "answer":"B", "opts":[{"l":"A","t":"meaning1"},{"l":"B","t":"meaning2"},{"l":"C","t":"meaning3"},{"l":"D","t":"meaning4"}], "explain":"Why this meaning is correct in context..."}
+- VIC: {"id":N, "word":"WORD", "sentence":"sentence using WORD", "answer":"B", "opts":[{"l":"A","t":"meaning1"},{"l":"B","t":"meaning2"},{"l":"C","t":"meaning3"},{"l":"D","t":"meaning4"}], "explain":"Correct: B because... | A wrong: ... | C wrong: ... | D wrong: ..."}
 - TC single-blank: use [B1] marker in stem, provide 5 options A-E
 - TC double-blank: use [B1] and [B2] markers in stem, provide A-C for blank 1, D-F for blank 2
 - SE: provide 6 options A-F, exactly 2 correct that produce equivalent meaning
-- Each TC/SE must include an "explain" field with step-by-step reasoning
+- RC: passage text + 3 questions with 4 options A-D each
+- ALL explain fields must include wrong-answer analysis
 
 Return this EXACT JSON structure (no other text):
 {
   "vic": [
-    {"id": 1, "word": "WORD", "sentence": "The scholar's WORD approach to...", "answer": "B", "opts": [{"l":"A","t":"meaning1"},{"l":"B","t":"correct meaning"},{"l":"C","t":"meaning3"},{"l":"D","t":"meaning4"}], "explain": "In this context..."}
+    {"id": 1, "word": "WORD", "sentence": "...", "answer": "B", "opts": [{"l":"A","t":"m1"},{"l":"B","t":"m2"},{"l":"C","t":"m3"},{"l":"D","t":"m4"}], "explain": "Correct: B... | A wrong: ... | C wrong: ... | D wrong: ..."}
   ],
   "tc": [
     {
       "id": 1,
       "stem": "sentence with [B1] marker",
-      "blanks": [
-        {
-          "label": "Blank 1",
-          "answer": "B",
-          "opts": [{"l":"A","t":"word1"},{"l":"B","t":"word2"},{"l":"C","t":"word3"},{"l":"D","t":"word4"},{"l":"E","t":"word5"}]
-        }
-      ],
-      "explain": "Step-by-step: The clue word X signals Y. Therefore Z is correct because..."
+      "blanks": [{"label":"Blank 1","answer":"B","opts":[{"l":"A","t":"w1"},{"l":"B","t":"w2"},{"l":"C","t":"w3"},{"l":"D","t":"w4"},{"l":"E","t":"w5"}]}],
+      "explain": "Correct: B because... | A wrong: ... | C wrong: ... | D wrong: ... | E wrong: ..."
     }
   ],
   "se": [
@@ -104,8 +111,18 @@ Return this EXACT JSON structure (no other text):
       "id": 1,
       "stem": "sentence with _______ blank",
       "answers": ["C","D"],
-      "opts": [{"l":"A","t":"word1"},{"l":"B","t":"word2"},{"l":"C","t":"word3"},{"l":"D","t":"word4"},{"l":"E","t":"word5"},{"l":"F","t":"word6"}],
-      "explain": "Both X and Y mean Z in this context. Test: 'sentence with X' ✓ 'sentence with Y' ✓ Same meaning."
+      "opts": [{"l":"A","t":"w1"},{"l":"B","t":"w2"},{"l":"C","t":"w3"},{"l":"D","t":"w4"},{"l":"E","t":"w5"},{"l":"F","t":"w6"}],
+      "explain": "C and D both mean X. | A wrong: ... | B wrong: ... | E wrong: ... | F wrong: ..."
+    }
+  ],
+  "rc": [
+    {
+      "id": 1,
+      "passage": "Full academic passage...",
+      "topic": "Topic label",
+      "questions": [
+        {"id": 1, "q": "Question", "answer": "A", "opts": [{"l":"A","t":"opt1"},{"l":"B","t":"opt2"},{"l":"C","t":"opt3"},{"l":"D","t":"opt4"}], "explain": "A is correct because... | B wrong: ... | C wrong: ... | D wrong: ..."}
+      ]
     }
   ]
 }`;

@@ -117,11 +117,12 @@ export default function ScoreOverview({ dayScores, weakWords }) {
               <div key={d.day} style={{display:'flex', alignItems:'center', gap:12, padding:'10px 12px', background:C.surface, borderRadius:8}}>
                 <span style={{fontFamily:'Courier New,monospace', fontWeight:700, color:C.greenBr, width:24}}>D{d.day}</span>
                 <span style={{color:C.text, fontSize:12, flex:1}}>{d.theme}</span>
-                <div style={{display:'flex', gap:6}}>
+                <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
                   {sc.contrast!=null && <Tag color={C.goldBr}>Match: {sc.contrast}/{sc.contrastTotal}</Tag>}
                   {sc.vic!=null && <Tag color={C.gold}>VIC: {sc.vic}/{sc.vicTotal}</Tag>}
                   {sc.tc!=null && <Tag color={C.blue}>TC: {sc.tc}/{sc.tcTotal}</Tag>}
                   {sc.se!=null && <Tag color={C.green}>SE: {sc.se}/{sc.seTotal}</Tag>}
+                  {sc.rc!=null && <Tag color={C.greenBr}>RC: {sc.rc}/{sc.rcTotal}</Tag>}
                 </div>
               </div>
             );

@@ -10,6 +10,8 @@ import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
 import MockExam from './phases/MockExam';
+import WordRelations from './phases/WordRelations';
+import RootsModule from './phases/RootsModule';
 
 // ─── PERSISTENCE HELPERS ──────────────────────────────────────────────────────
 const loadJSON = (key, fallback) => {
@@ -154,6 +156,20 @@ export default function App() {
                 color: currentDay===-1?C.gold:C.textMid}}>
               <span style={{fontSize:13}}>🎯  Mock Exam</span>
             </button>
+            <button onClick={()=>{setCurrentDay(-2);setTab('relations');}}
+              style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
+                border:'none', cursor:'pointer', transition:'all 0.15s',
+                background: currentDay===-2?C.gold+'33':'transparent',
+                color: currentDay===-2?C.gold:C.textMid}}>
+              <span style={{fontSize:13}}>🔗  Word Map</span>
+            </button>
+            <button onClick={()=>{setCurrentDay(-3);setTab('roots');}}
+              style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
+                border:'none', cursor:'pointer', transition:'all 0.15s',
+                background: currentDay===-3?C.gold+'33':'transparent',
+                color: currentDay===-3?C.gold:C.textMid}}>
+              <span style={{fontSize:13}}>🌱  Roots</span>
+            </button>
             <button onClick={()=>{setCurrentDay(0);setTab('overview');}}
               style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
                 border:'none', cursor:'pointer', transition:'all 0.15s',
@@ -168,6 +184,10 @@ export default function App() {
         <div style={{flex:1, overflow:'auto', padding:'24px 28px 100px'}}>
           {currentDay===-1 ? (
             <MockExam/>
+          ) : currentDay===-2 ? (
+            <WordRelations day={DAYS.length}/>
+          ) : currentDay===-3 ? (
+            <RootsModule/>
           ) : currentDay===0 ? (
             <ScoreOverview dayScores={dayScores} weakWords={weakWords}/>
           ) : (

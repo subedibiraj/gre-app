@@ -8,12 +8,13 @@ import ContrastRecall from './ContrastRecall';
 import VocabInContext from './VocabInContext';
 import TCSection from './TCSection';
 import SESection from './SESection';
+import RCSection from './RCSection';
 
 export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpdate, dayScores, cachedQuestions, onCacheQuestions }) {
   const [qs, setQs]           = useState(cachedQuestions);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState(null);
-  const [sectionScores, setSectionScores] = useState({contrast:null, vic:null, tc:null, se:null});
+  const [sectionScores, setSectionScores] = useState({contrast:null, vic:null, tc:null, se:null, rc:null});
   const [timed, setTimed]     = useState(false);
 
   useEffect(() => {
@@ -85,6 +86,12 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
     recordPractice();
   };
 
+  const handleRCComplete = (correct, total) => {
+    setSectionScores(s=>({...s, rc:correct}));
+    onScoreUpdate(day, 'rc', correct, total);
+    recordPractice();
+  };
+
   const renderAISections = () => {
     if (loading) return (
       <div style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'40px 20px', gap:16}}>
@@ -106,8 +113,8 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
     if (!qs) return (
       <div style={{padding:30, textAlign:'center'}}>
         <p style={{color:C.textMid, fontSize:14, marginBottom:8}}>AI-generated practice adapted to your performance</p>
-        <p style={{color:C.textMid, fontSize:13, marginBottom:4}}>5 Vocab in Context + 5 Text Completion + 3 Sentence Equivalence</p>
-        <p style={{color:C.textDim, fontSize:12, marginBottom:20}}>= 13 GRE-format questions per session</p>
+        <p style={{color:C.textMid, fontSize:13, marginBottom:4}}>5 VIC + 4 TC + 3 SE + 1 RC passage</p>
+        <p style={{color:C.textDim, fontSize:12, marginBottom:20}}>= 15 GRE-format questions per session</p>
         {weakWords.length > 0 && (
           <div style={{background:C.redBg, border:`1px solid ${C.red}44`, borderRadius:8, padding:'10px 16px', marginBottom:20, display:'inline-block'}}>
             <p style={{color:C.red, fontSize:12, marginBottom:4, fontWeight:700}}>Words being prioritized:</p>
@@ -124,11 +131,12 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
           <Btn small variant={timed?'blue':'ghost'} onClick={()=>setTimed(t=>!t)}>
             {timed ? '⏱ Timed ON' : '⏱ Timed OFF'}
           </Btn>
-          <Btn small variant="ghost" onClick={()=>{setQs(null);onCacheQuestions?.(null);setSectionScores(s=>({...s,vic:null,tc:null,se:null}));}}>↺ Regenerate</Btn>
+          <Btn small variant="ghost" onClick={()=>{setQs(null);onCacheQuestions?.(null);setSectionScores(s=>({...s,vic:null,tc:null,se:null,rc:null}));}}>↺ Regenerate</Btn>
         </div>
         <div style={{marginBottom:32}}><VocabInContext questions={qs.vic} onComplete={handleVICComplete} timed={timed}/></div>
         <div style={{marginBottom:32}}><TCSection questions={qs.tc} onComplete={handleTCComplete} timed={timed}/></div>
         <div style={{marginBottom:32}}><SESection questions={qs.se} onComplete={handleSEComplete} timed={timed}/></div>
+        {qs.rc && qs.rc.length > 0 && <div style={{marginBottom:32}}><RCSection passages={qs.rc} onComplete={handleRCComplete} timed={timed}/></div>}
       </>
     );
   };
@@ -141,6 +149,7 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
           {sectionScores.vic!==null&&qs&&<Tag color={C.gold}>VIC: {sectionScores.vic}/{qs.vic.length}</Tag>}
           {sectionScores.tc!==null&&qs&&<Tag color={C.blue}>TC: {sectionScores.tc}/{qs.tc.reduce((a,q)=>a+q.blanks.length,0)}</Tag>}
           {sectionScores.se!==null&&qs&&<Tag color={C.green}>SE: {sectionScores.se}/{qs.se.length}</Tag>}
+          {sectionScores.rc!==null&&qs&&qs.rc&&<Tag color={C.greenBr}>RC: {sectionScores.rc}/{qs.rc.reduce((a,p)=>a+p.questions.length,0)}</Tag>}
         </div>
       )}
 

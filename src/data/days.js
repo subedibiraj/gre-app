@@ -199,3057 +199,563 @@ export const DAYS = [
     ]
   },
   {
-    day: 9,
-    theme: "Change, Stability & Time",
-    date: "May 13, 2026",
-
-    patterns: [
-      "Volatile = unstable and potentially explosive · Mercurial = rapid personality/mood shifts · Capricious = impulsively unpredictable · Fickle = changing loyalties/preferences",
-
-      "Ephemeral / transient / fleeting / evanescent all mean temporary — but with different texture:",
-      "Ephemeral = brief existence · Fleeting = quick passing moment · Evanescent = fading away delicately · Transient = temporary state or condition",
-
-      "Static = lacking movement or growth · Immutable = incapable of change · Invariable = reliably constant",
-
-      "Wane = gradual weakening · Atrophy = weakening from disuse · Deteriorate = general worsening · Oscillate = repeated movement between extremes",
-
-      "GRE loves contrasts between dynamic vs static societies, enduring vs ephemeral trends, and volatile vs stable systems."
+    "day": 9,
+    "theme": "Words About Change",
+    "date": "May 13, 2026",
+    "patterns": [
+      "Transient/Ephemeral/Evanescent/Transitory = all mean short-lived — distinguished by degree and context",
+      "Immutable (can never change) vs Steadfast (chooses not to change) — external vs internal",
+      "Protean = changes FORM to adapt (positive/neutral) — not the same as being fickle",
+      "Vacillate = mentally wavering between choices · Fluctuate = up-and-down movement of things"
     ],
-
-    words: [
-
-      // ================= UNSTABLE =================
-
-      {
-        w: "VOLATILE",
-        pos: "adj",
-        cluster: "Unstable",
-        def: "Liable to change rapidly and unpredictably, often violently or dangerously.",
-        ex: "The volatile political climate made long-term planning nearly impossible.",
-        tip: "Most intense instability — explosive, dangerous, unstable energy."
-      },
-
-      {
-        w: "MERCURIAL",
-        pos: "adj",
-        cluster: "Unstable",
-        def: "Changing suddenly and unpredictably in mood, behavior, or mind.",
-        ex: "The mercurial actor could shift from charm to fury within minutes.",
-        tip: "Usually describes PEOPLE and temperament. Emotional unpredictability."
-      },
-
-      {
-        w: "CAPRICIOUS",
-        pos: "adj",
-        cluster: "Unstable",
-        def: "Given to sudden, impulsive, and seemingly unmotivated changes.",
-        ex: "The capricious supervisor kept altering deadlines without explanation.",
-        tip: "Driven by whim rather than reason. Random unpredictability."
-      },
-
-      {
-        w: "FICKLE",
-        pos: "adj",
-        cluster: "Unstable",
-        def: "Frequently changing loyalties, affections, or opinions.",
-        ex: "Public opinion proved fickle, turning against the candidate within weeks.",
-        tip: "Usually about preferences, loyalties, tastes, or allegiances."
-      },
-
-      {
-        w: "ERRATIC",
-        pos: "adj",
-        cluster: "Unstable",
-        def: "Inconsistent, irregular, and unpredictable in movement or behavior.",
-        ex: "Erratic internet access disrupted the research team's work.",
-        tip: "Suggests lack of pattern or reliability."
-      },
-
-      {
-        w: "VACILLATE",
-        pos: "v",
-        cluster: "Unstable",
-        def: "To waver between different opinions, decisions, or actions.",
-        ex: "The administration vacillated between aggressive reform and cautious delay.",
-        tip: "Indecisive swinging between choices."
-      },
-
-      // ================= TEMPORARY =================
-
-      {
-        w: "EPHEMERAL",
-        pos: "adj",
-        cluster: "Temporary",
-        def: "Lasting for a very short time.",
-        ex: "The startup's success proved ephemeral once competitors entered the market.",
-        tip: "One of the highest-frequency GRE words for temporary existence."
-      },
-
-      {
-        w: "TRANSIENT",
-        pos: "adj/n",
-        cluster: "Temporary",
-        def: "Temporary; passing quickly away rather than enduring.",
-        ex: "Economists warned that the apparent recovery might be transient.",
-        tip: "Often used for conditions, trends, or populations."
-      },
-
-      {
-        w: "FLEETING",
-        pos: "adj",
-        cluster: "Temporary",
-        def: "Passing swiftly and lasting only briefly.",
-        ex: "She experienced a fleeting sense of triumph before doubt returned.",
-        tip: "Often used for emotions, expressions, glimpses, or moments."
-      },
-
-      {
-        w: "EVANESCENT",
-        pos: "adj",
-        cluster: "Temporary",
-        def: "Quickly fading, vanishing, or dissolving from sight or memory.",
-        ex: "The novelist captured the evanescent beauty of childhood memories.",
-        tip: "More literary and elegant than ephemeral; emphasizes fading away."
-      },
-
-      {
-        w: "MOMENTARY",
-        pos: "adj",
-        cluster: "Temporary",
-        def: "Lasting for only a brief moment.",
-        ex: "A momentary distraction caused the pilot to miss the signal.",
-        tip: "Very short interruption or duration."
-      },
-
-      {
-        w: "PERPETUAL",
-        pos: "adj",
-        cluster: "Stable",
-        def: "Continuing indefinitely or occurring repeatedly without interruption.",
-        ex: "The region seemed trapped in perpetual political conflict.",
-        tip: "GRE often uses this for endless cycles or constant states."
-      },
-
-      // ================= STABLE =================
-
-      {
-        w: "STATIC",
-        pos: "adj",
-        cluster: "Stable",
-        def: "Lacking movement, growth, or meaningful change.",
-        ex: "Without innovation, the once dominant industry became static.",
-        tip: "GRE often contrasts static systems with dynamic ones."
-      },
-
-      {
-        w: "IMMUTABLE",
-        pos: "adj",
-        cluster: "Stable",
-        def: "Incapable of change or alteration.",
-        ex: "The philosopher regarded mathematical truths as immutable.",
-        tip: "Stronger than stable — literally unchangeable."
-      },
-
-      {
-        w: "INVARIABLE",
-        pos: "adj",
-        cluster: "Stable",
-        def: "Never changing; always consistent or the same.",
-        ex: "Her invariable discipline impressed even her harshest critics.",
-        tip: "Predictably constant every single time."
-      },
-
-      {
-        w: "ENDURING",
-        pos: "adj",
-        cluster: "Stable",
-        def: "Continuing over a long period of time; lasting.",
-        ex: "The scientist's enduring influence shaped generations of researchers.",
-        tip: "Suggests persistence through time."
-      },
-
-      {
-        w: "CONSTANT",
-        pos: "adj",
-        cluster: "Stable",
-        def: "Occurring continuously or remaining unchanged.",
-        ex: "The refugees lived under constant threat of displacement.",
-        tip: "Common GRE clue for uninterrupted persistence."
-      },
-
-      // ================= DECLINE =================
-
-      {
-        w: "WANE",
-        pos: "v",
-        cluster: "Decline",
-        def: "To decrease gradually in strength, intensity, or popularity.",
-        ex: "Interest in the once celebrated theory began to wane.",
-        tip: "Wax = grow stronger · Wane = grow weaker."
-      },
-
-      {
-        w: "ATROPHY",
-        pos: "v/n",
-        cluster: "Decline",
-        def: "To weaken or waste away through neglect, disuse, or lack of stimulation.",
-        ex: "Without regular debate, the student's analytical abilities atrophied.",
-        tip: "Can describe muscles, institutions, skills, or creativity."
-      },
-
-      {
-        w: "DETERIORATE",
-        pos: "v",
-        cluster: "Decline",
-        def: "To become progressively worse in quality or condition.",
-        ex: "Diplomatic relations deteriorated after the failed negotiations.",
-        tip: "Broadest word for gradual worsening."
-      },
-
-      {
-        w: "DECAY",
-        pos: "v/n",
-        cluster: "Decline",
-        def: "To decline into ruin or decomposition over time.",
-        ex: "The abandoned district slowly decayed after factories closed.",
-        tip: "Suggests physical or moral breakdown over time."
-      },
-
-      // ================= MOVEMENT / FLUCTUATION =================
-
-      {
-        w: "OSCILLATE",
-        pos: "v",
-        cluster: "Movement",
-        def: "To swing repeatedly between different states, opinions, or positions.",
-        ex: "The negotiations oscillated between cautious optimism and hostility.",
-        tip: "Back-and-forth fluctuation between extremes."
-      },
-
-      {
-        w: "FLUCTUATE",
-        pos: "v",
-        cluster: "Movement",
-        def: "To rise and fall irregularly in number, level, or intensity.",
-        ex: "Oil prices fluctuated sharply throughout the crisis.",
-        tip: "Common for prices, temperatures, moods, or statistics."
-      }
+    "words": [
+      { "w": "TRANSIENT", "pos": "adj/n", "cluster": "Fleeting", "def": "Lasting only for a short time; passing quickly", "ex": "The transient nature of fame meant yesterday's celebrity was today's forgotten face.", "tip": "Transient = short duration, often implies passing through. Can describe people (transient workers) or states." },
+      { "w": "EPHEMERAL", "pos": "adj", "cluster": "Fleeting", "def": "Lasting for a very short time; short-lived", "ex": "The ephemeral beauty of cherry blossoms draws millions precisely because it fades so fast.", "tip": "Ephemeral is the GRE's favorite 'short-lived' word. Root: epi (on) + hemera (day) = lasting only a day." },
+      { "w": "EVANESCENT", "pos": "adj", "cluster": "Fleeting", "def": "Soon passing out of sight or memory; quickly fading or disappearing", "ex": "The evanescent mist dissolved within minutes of the sun appearing.", "tip": "Evanescent = fading as you try to grasp it. More poetic than ephemeral. Often used for memories, feelings, light." },
+      { "w": "TRANSITORY", "pos": "adj", "cluster": "Fleeting", "def": "Not permanent; lasting only for a short time", "ex": "The CEO warned staff that the upturn in profits was transitory, not structural.", "tip": "Transitory ≈ transient but used more for states and phases. 'Transitory phase' is a common GRE collocation." },
+      { "w": "FLEETING", "pos": "adj", "cluster": "Fleeting", "def": "Lasting for a very short time; passing swiftly", "ex": "She caught a fleeting glimpse of the figure before it vanished into the crowd.", "tip": "Fleeting = very brief moment. Less formal than ephemeral but GRE uses it in RC passages." },
+      { "w": "IMMUTABLE", "pos": "adj", "cluster": "Stable", "def": "Unchanging over time; unable to be changed", "ex": "The laws of physics are immutable — no amount of wishful thinking alters them.", "tip": "Immutable = CANNOT change. Root: im (not) + mutare (to change). External constraint." },
+      { "w": "STEADFAST", "pos": "adj", "cluster": "Stable", "def": "Resolutely firm and unwavering; refusing to change despite pressure", "ex": "Despite intense criticism, she remained steadfast in her conviction that the policy was right.", "tip": "Steadfast = CHOOSES not to change. Internal resolve. Positive connotation — admirable." },
+      { "w": "MUTABLE", "pos": "adj", "cluster": "Changing", "def": "Liable to change; able to be altered", "ex": "Human nature, the philosopher argued, was far more mutable than people liked to believe.", "tip": "Mutable = capable of change. Root: mutare (to change). Neutral — just describes capacity for change." },
+      { "w": "PROTEAN", "pos": "adj", "cluster": "Changing", "def": "Tending or able to change form to suit different situations; versatile", "ex": "The protean actress moved effortlessly from comedy to tragedy to action.", "tip": "Named after Proteus, Greek sea-god who changed shape at will. Protean = adaptable versatility — positive." },
+      { "w": "VICISSITUDE", "pos": "n", "cluster": "Changing", "def": "A change of circumstances or fortune, typically one that is unwelcome", "ex": "After the vicissitudes of a difficult decade, she finally found professional stability.", "tip": "Almost always plural: 'the vicissitudes of life/fate.' Implies difficult unpredictable changes." },
+      { "w": "VACILLATE", "pos": "v", "cluster": "Changing", "def": "To waver between different opinions or actions; to be indecisive", "ex": "He vacillated for weeks before finally deciding to resign.", "tip": "Vacillate = mental wavering between CHOICES. Fluctuate = up-and-down movement of quantities." },
+      { "w": "FLUCTUATE", "pos": "v", "cluster": "Changing", "def": "To rise and fall irregularly in number or amount; to vary", "ex": "Stock prices fluctuated wildly throughout the day before closing marginally higher.", "tip": "Fluctuate = irregular up-and-down movement. Usually for prices, temperatures, moods, numbers." },
+      { "w": "FLUX", "pos": "n", "cluster": "Changing", "def": "The action or state of continuous change; unstable movement", "ex": "With the merger unresolved, the entire company was in a state of flux.", "tip": "'In a state of flux' = GRE's favorite phrase. Flux alone = noun meaning continuous change." },
+      { "w": "INCONSTANT", "pos": "adj", "cluster": "Changing", "def": "Frequently changing; not faithful or dependable", "ex": "His inconstant affection — warm one week, distant the next — kept her perpetually unsettled.", "tip": "Inconstant = unreliable because always changing. Implies betrayal of trust. More negative than mutable." },
+      { "w": "FITFUL", "pos": "adj", "cluster": "Changing", "def": "Active or occurring spasmodically; not regular or sustained", "ex": "Her fitful attempts at reform produced brief improvements followed by long relapses.", "tip": "Fitful = irregular, starts and stops. 'Fitful sleep' = waking repeatedly. Not continuous." }
     ]
   },
   {
-    day: 10,
-    theme: "Support, Opposition & Conflict",
-    date: "May 13, 2026",
-
-    patterns: [
-      "Bolster = strengthen an existing position · Corroborate = support with confirming evidence · Substantiate = establish with proof",
-
-      "Refute = prove false with evidence · Rebut = counter-argue · Gainsay = formally deny or contradict · Impugn = attack motives or integrity",
-
-      "Advocate = publicly support beforehand · Vindicate = later prove correct after criticism or doubt",
-
-      "Alienate = emotionally distance people · Antagonize = actively provoke hostility",
-
-      "GRE passages frequently revolve around intellectual conflict: scholars refute theories, critics impugn motives, evidence corroborates claims, and later discoveries vindicate controversial figures."
+    "day": 10,
+    "theme": "Words About Support & Opposition",
+    "date": "May 14, 2026",
+    "patterns": [
+      "SANCTION is a GRE contronym — means BOTH to officially approve AND to penalize. Read context carefully.",
+      "Bolster/Buttress = strengthen something already existing · Advocate/Espouse = actively push for something",
+      "Impugn (attack credibility) vs Refute (disprove with evidence) vs Gainsay (simply deny or contradict)",
+      "Belie = give a false impression of — 'her smile belied her anger' = her smile contradicted/hid her anger"
     ],
-
-    words: [
-
-      // ================= SUPPORT =================
-
-      {
-        w: "ADVOCATE",
-        pos: "v/n",
-        cluster: "Support",
-        def: "To publicly support, recommend, or argue in favor of something.",
-        ex: "The economist advocated stricter regulations to prevent future financial crises.",
-        tip: "Often appears in RC passages involving reformers, theorists, or activists."
-      },
-
-      {
-        w: "ENDORSE",
-        pos: "v",
-        cluster: "Support",
-        def: "To publicly approve, support, or recommend.",
-        ex: "Several prominent journals endorsed the controversial proposal.",
-        tip: "Formal or institutional approval."
-      },
-
-      {
-        w: "BOLSTER",
-        pos: "v",
-        cluster: "Support",
-        def: "To strengthen, reinforce, or support something already existing.",
-        ex: "New archaeological evidence bolstered the historian's interpretation.",
-        tip: "Strengthens an existing argument, belief, or structure."
-      },
-
-      {
-        w: "CORROBORATE",
-        pos: "v",
-        cluster: "Support",
-        def: "To confirm or support a statement, theory, or finding with additional evidence.",
-        ex: "Independent studies corroborated the scientist's original findings.",
-        tip: "Evidence supporting evidence. Very high-frequency GRE word."
-      },
-
-      {
-        w: "SUBSTANTIATE",
-        pos: "v",
-        cluster: "Support",
-        def: "To provide sufficient evidence proving something is true or valid.",
-        ex: "The researcher struggled to substantiate the sweeping claims in her paper.",
-        tip: "More formal and proof-oriented than corroborate."
-      },
-
-      {
-        w: "BUTTRESS",
-        pos: "v",
-        cluster: "Support",
-        def: "To support, strengthen, or reinforce.",
-        ex: "Economic data buttressed the administration's optimistic forecasts.",
-        tip: "Elegant GRE synonym for bolster."
-      },
-
-      {
-        w: "CHAMPION",
-        pos: "v/n",
-        cluster: "Support",
-        def: "To passionately support, defend, or fight for a cause.",
-        ex: "The journalist championed greater transparency in government.",
-        tip: "Stronger and more passionate than advocate."
-      },
-
-      // ================= OPPOSITION =================
-
-      {
-        w: "GAINSAY",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To deny, dispute, or contradict.",
-        ex: "Few historians could gainsay the importance of the discovery.",
-        tip: "Classic formal GRE word for contradiction or denial."
-      },
-
-      {
-        w: "REFUTE",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To prove a statement, theory, or claim false through evidence or logic.",
-        ex: "Subsequent experiments refuted the widely accepted hypothesis.",
-        tip: "Requires evidence or reasoning — stronger than merely disagreeing."
-      },
-
-      {
-        w: "REBUT",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To counter an argument or accusation with contrary reasoning or evidence.",
-        ex: "The attorney systematically rebutted each allegation.",
-        tip: "Focused on argumentative response rather than definitive proof."
-      },
-
-      {
-        w: "IMPUGN",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To call into question someone's integrity, motives, or credibility.",
-        ex: "Critics impugned the researcher's objectivity after the funding scandal.",
-        tip: "Attacks character, honesty, or motives rather than directly disproving facts."
-      },
-
-      {
-        w: "REPUDIATE",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To reject, renounce, or refuse association with something.",
-        ex: "The philosopher later repudiated many of his earlier theories.",
-        tip: "Strong public rejection or disavowal."
-      },
-
-      {
-        w: "DENOUNCE",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To publicly condemn or criticize forcefully.",
-        ex: "Activists denounced the policy as ethically indefensible.",
-        tip: "Public moral condemnation."
-      },
-
-      {
-        w: "DETRACT",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To diminish the value, quality, or reputation of something.",
-        ex: "Minor methodological flaws detracted from the study's credibility.",
-        tip: "Reduces impact or worth rather than directly attacking."
-      },
-
-      // ================= RESOLUTION / JUSTIFICATION =================
-
-      {
-        w: "VINDICATE",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To prove correct, justified, or innocent after criticism, suspicion, or doubt.",
-        ex: "Later discoveries vindicated the once ridiculed scientist.",
-        tip: "Time or evidence eventually proves someone right."
-      },
-
-      {
-        w: "EXONERATE",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To officially clear someone from blame, guilt, or accusation.",
-        ex: "DNA evidence exonerated the wrongly convicted prisoner.",
-        tip: "Usually legal innocence."
-      },
-
-      {
-        w: "JUSTIFY",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To show or prove something to be reasonable, right, or warranted.",
-        ex: "The dramatic results justified the risky investment.",
-        tip: "Explains why an action or belief was acceptable."
-      },
-
-      {
-        w: "RECONCILE",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To restore harmony between opposing people or ideas; to make compatible.",
-        ex: "The theorist attempted to reconcile scientific evidence with religious doctrine.",
-        tip: "Can reconcile people, ideas, theories, or contradictions."
-      },
-
-      // ================= CONFLICT =================
-
-      {
-        w: "ALIENATE",
-        pos: "v",
-        cluster: "Conflict",
-        def: "To cause someone to feel isolated, estranged, or hostile.",
-        ex: "The leader's arrogance alienated many former supporters.",
-        tip: "Pushes people away emotionally or socially."
-      },
-
-      {
-        w: "ANTAGONIZE",
-        pos: "v",
-        cluster: "Conflict",
-        def: "To provoke hostility, resentment, or active opposition.",
-        ex: "The abrupt reforms antagonized influential political groups.",
-        tip: "Creates direct hostility or conflict."
-      },
-
-      {
-        w: "QUELL",
-        pos: "v",
-        cluster: "Conflict",
-        def: "To suppress, calm, or put an end to disorder or resistance.",
-        ex: "The government struggled to quell widespread unrest.",
-        tip: "Frequently used for rebellions, fears, protests, or violence."
-      },
-
-      {
-        w: "MITIGATE",
-        pos: "v",
-        cluster: "Conflict",
-        def: "To make less severe, serious, or painful.",
-        ex: "Diplomats sought to mitigate tensions before negotiations collapsed.",
-        tip: "Reduces severity without fully eliminating the problem."
-      }
+    "words": [
+      { "w": "ADVOCATE", "pos": "v/n", "cluster": "Support", "def": "To publicly recommend or support a cause; a person who pleads on behalf of another", "ex": "The senator advocated tirelessly for healthcare reform despite fierce opposition from her own party.", "tip": "Advocate as a verb = actively speak for. As a noun = a supporter or lawyer. Both GRE tested." },
+      { "w": "ESPOUSE", "pos": "v", "cluster": "Support", "def": "To adopt or support a cause, belief, or way of life; to embrace publicly", "ex": "The philosopher had espoused radical pacifism since his twenties, never wavering even during wartime.", "tip": "Espouse = commit to and publicly identify with. Stronger than merely supporting — you make it your own." },
+      { "w": "CHAMPION", "pos": "v/n", "cluster": "Support", "def": "To vigorously support or defend a person or cause; one who fights for a cause", "ex": "She championed the rights of undocumented workers long before it was politically fashionable.", "tip": "Champion as a verb = actively fight for. More vigorous and personal than advocate." },
+      { "w": "BOLSTER", "pos": "v", "cluster": "Support", "def": "To support or strengthen something that already exists; to prop up", "ex": "The new data bolstered the argument that the treatment was effective, adding to earlier findings.", "tip": "Bolster = reinforce something already standing. Always strengthening an existing thing." },
+      { "w": "BUTTRESS", "pos": "v/n", "cluster": "Support", "def": "To support or reinforce; to prop up an argument or structure", "ex": "The lawyer buttressed her case with three independent expert testimonies.", "tip": "Root: architectural buttress = wall support. Buttressing an argument = adding structural support." },
+      { "w": "CORROBORATE", "pos": "v", "cluster": "Validate", "def": "To confirm or support a statement or theory with evidence; to make more certain", "ex": "Three witnesses corroborated the defendant's alibi, making the prosecution's case nearly impossible.", "tip": "Corroborate = confirm with ADDITIONAL evidence. Not just agree — provide new supporting proof." },
+      { "w": "SUBSTANTIATE", "pos": "v", "cluster": "Validate", "def": "To provide evidence to prove the truth or existence of something", "ex": "The journalist spent months gathering documents to substantiate the allegations before publishing.", "tip": "Substantiate = make something substantial/real with proof. More formal than corroborate." },
+      { "w": "VINDICATE", "pos": "v", "cluster": "Validate", "def": "To clear of blame or suspicion; to show a belief or claim to have been correct", "ex": "The DNA evidence vindicated him completely after twelve years of wrongful imprisonment.", "tip": "Vindicate = two meanings: (1) clear of blame, (2) prove you were right. Both GRE tested." },
+      { "w": "RATIFY", "pos": "v", "cluster": "Validate", "def": "To give formal consent to; to make officially valid by signing or voting", "ex": "The Senate ratified the treaty after six months of contentious debate.", "tip": "Ratify = official institutional approval, usually of a treaty, law, or agreement." },
+      { "w": "SANCTION", "pos": "v/n", "cluster": "Validate", "def": "To officially approve; OR a penalty imposed on a country or person", "ex": "The committee sanctioned the experiment; separately, economic sanctions were imposed on the regime.", "tip": "CRITICAL GRE TRAP: Sanction means BOTH to approve AND to punish. Read context very carefully." },
+      { "w": "IMPUGN", "pos": "v", "cluster": "Oppose", "def": "To dispute the truth, validity, or honesty of; to call into question", "ex": "The defense attorney impugned the witness's credibility by revealing inconsistencies in prior testimony.", "tip": "Impugn = attack the credibility or integrity of something. Does not disprove — just casts doubt." },
+      { "w": "GAINSAY", "pos": "v", "cluster": "Oppose", "def": "To deny or contradict; to speak against or oppose", "ex": "No one could gainsay the evidence — it was overwhelming and undisputed.", "tip": "Gainsay = simply deny or contradict. Less strong than refute — gainsay doesn't require proof." },
+      { "w": "CONTRAVENE", "pos": "v", "cluster": "Oppose", "def": "To violate or conflict with a law, rule, or treaty", "ex": "The new regulation contravened existing international agreements, triggering immediate diplomatic protest.", "tip": "Contravene = go against a rule or law. More formal than 'violate.' Often in legal/formal contexts." },
+      { "w": "REFUTE", "pos": "v", "cluster": "Oppose", "def": "To prove a statement or person to be wrong; to disprove with evidence", "ex": "The scientist refuted the hypothesis with three carefully controlled experiments.", "tip": "Refute = disprove WITH evidence. GRE often misuses it to mean 'deny' — on the GRE, refute = disprove." },
+      { "w": "BELIE", "pos": "v", "cluster": "Oppose", "def": "To fail to give a true impression of something; to contradict or show to be false", "ex": "Her composed exterior belied the panic she felt as the deadline approached.", "tip": "Belie = the surface contradicts the reality. 'Her smile belied her fury' = smile hid/contradicted fury." }
     ]
   },
   {
-    day: 11,
-    theme: "Clarity, Complexity & Knowledge",
-    date: "May 14, 2026",
-    patterns: [
-      "Lucid/pellucid = crystal clear · Abstruse/recondite = difficult to understand",
-      "Esoteric = understood by a small specialized group",
-      "Pedantic = showing off knowledge in an annoying way",
-      "Convoluted prose usually signals obscurity, not intelligence"
+    "day": 11,
+    "theme": "Clarity vs Obscurity",
+    "date": "May 15, 2026",
+    "patterns": [
+      "Lucid/Pellucid/Perspicuous = clear in meaning · Limpid = clear like still water (also used for prose)",
+      "Esoteric (for a select group only) vs Arcane (ancient and secret) vs Recondite (obscure and unknown)",
+      "Abstruse = difficult to understand (the content itself is hard) · Opaque = impenetrable to understanding",
+      "Cryptic (coded, using hidden meaning) vs Enigmatic (mysterious, puzzling) vs Nebulous (vaguely unclear)"
     ],
-    words: [
-      {
-        w: "LUCID",
-        pos: "adj",
-        cluster: "Clear",
-        def: "Expressed clearly; easy to understand.",
-        ex: "The professor gave a lucid explanation of quantum theory.",
-        tip: "One of GRE's favorite positive writing words."
-      },
-      {
-        w: "PELLUCID",
-        pos: "adj",
-        cluster: "Clear",
-        def: "Exceptionally clear in style or meaning.",
-        ex: "Her pellucid prose made even difficult philosophy accessible.",
-        tip: "Stronger and more elegant than lucid."
-      },
-      {
-        w: "COGENT",
-        pos: "adj",
-        cluster: "Clear",
-        def: "Clear, logical, and convincing.",
-        ex: "The lawyer presented a cogent defense.",
-        tip: "Not just understandable — persuasive."
-      },
-      {
-        w: "LIMPID",
-        pos: "adj",
-        cluster: "Clear",
-        def: "Completely clear and transparent in style or expression.",
-        ex: "The memoir's limpid prose concealed deep emotional complexity.",
-        tip: "Elegant literary clarity."
-      },
-
-      {
-        w: "ABSTRUSE",
-        pos: "adj",
-        cluster: "Obscure",
-        def: "Difficult to understand because highly complex.",
-        ex: "The article's abstruse terminology discouraged readers.",
-        tip: "Complexity itself causes the difficulty."
-      },
-      {
-        w: "RECONDITE",
-        pos: "adj",
-        cluster: "Obscure",
-        def: "Little known and difficult to understand.",
-        ex: "Only specialists appreciated the scholar's recondite arguments.",
-        tip: "Rare specialized knowledge."
-      },
-      {
-        w: "ESOTERIC",
-        pos: "adj",
-        cluster: "Obscure",
-        def: "Intended for or understood by only a small specialized group.",
-        ex: "The lecture became increasingly esoteric.",
-        tip: "Not necessarily hard — just specialized."
-      },
-      {
-        w: "ARCANE",
-        pos: "adj",
-        cluster: "Obscure",
-        def: "Known or understood by very few people.",
-        ex: "The tax code's arcane rules confused even accountants.",
-        tip: "Secretive or highly specialized knowledge."
-      },
-      {
-        w: "CRYPTIC",
-        pos: "adj",
-        cluster: "Obscure",
-        def: "Mysterious and difficult to interpret.",
-        ex: "The critic's cryptic remarks puzzled the audience.",
-        tip: "Feels intentionally unclear."
-      },
-
-      {
-        w: "ERUDITE",
-        pos: "adj",
-        cluster: "Knowledge",
-        def: "Having extensive scholarly knowledge.",
-        ex: "The erudite historian quoted texts in six languages.",
-        tip: "Deep academic learning."
-      },
-      {
-        w: "PEDANTIC",
-        pos: "adj",
-        cluster: "Knowledge",
-        def: "Overly concerned with displaying minor knowledge or rules.",
-        ex: "His pedantic corrections irritated the entire seminar.",
-        tip: "Knowledge used obnoxiously."
-      },
-      {
-        w: "DIDACTIC",
-        pos: "adj",
-        cluster: "Knowledge",
-        def: "Intended primarily to teach or instruct.",
-        ex: "The novel became so didactic that readers lost interest in the story.",
-        tip: "Teaching often at expense of artistry."
-      },
-      {
-        w: "SCHOLARLY",
-        pos: "adj",
-        cluster: "Knowledge",
-        def: "Characteristic of serious academic study.",
-        ex: "Her scholarly approach impressed the review committee.",
-        tip: "Neutral-positive academic rigor."
-      },
-      {
-        w: "CONVOLUTED",
-        pos: "adj",
-        cluster: "Complexity",
-        def: "Extremely complex and difficult to follow.",
-        ex: "The convoluted plot confused even attentive readers.",
-        tip: "Twisted complexity."
-      }
+    "words": [
+      { "w": "LUCID", "pos": "adj", "cluster": "Clear", "def": "Expressed clearly and easy to understand; also: mentally clear and rational", "ex": "Her lucid explanation of quantum mechanics made the concept accessible even to non-scientists.", "tip": "Lucid = clear in two senses: clear writing AND clear thinking. 'A lucid mind' = sharp, rational." },
+      { "w": "PELLUCID", "pos": "adj", "cluster": "Clear", "def": "Translucently clear; easily understood; of the highest clarity", "ex": "The judge praised the brief for its pellucid reasoning, calling it the clearest argument he had seen.", "tip": "Pellucid = even clearer than lucid. Often used for exceptional prose clarity. Root: per (through) + lucid." },
+      { "w": "PERSPICUOUS", "pos": "adj", "cluster": "Clear", "def": "Clearly expressed and easily understood; transparent in meaning", "ex": "His perspicuous writing style made complex economic theory accessible to general readers.", "tip": "Perspicuous = clear expression (of writing/speech). Distinct from perspicacious = sharp perception." },
+      { "w": "LIMPID", "pos": "adj", "cluster": "Clear", "def": "(of liquid) completely clear; (of writing) crystal clear and easy to understand", "ex": "The biographer's limpid prose made even the most complicated events in the statesman's life feel simple.", "tip": "Limpid = GRE uses this for both clear water AND clear prose. Always positive." },
+      { "w": "COHERENT", "pos": "adj", "cluster": "Clear", "def": "Logical and consistent; clearly expressed and easy to follow", "ex": "Despite her exhaustion, she managed a surprisingly coherent account of the events.", "tip": "Coherent = logically holds together. An argument can be clear but incoherent if the logic doesn't connect." },
+      { "w": "ABSTRUSE", "pos": "adj", "cluster": "Obscure", "def": "Difficult to understand; obscure in meaning because of complexity", "ex": "The philosopher's abstruse treatise was read only by specialists willing to untangle its dense arguments.", "tip": "Abstruse = the CONTENT is genuinely difficult. Not deliberately hidden — just intellectually demanding." },
+      { "w": "RECONDITE", "pos": "adj", "cluster": "Obscure", "def": "Not known by many people; (of a subject) little known; obscure", "ex": "He impressed dinner guests with recondite knowledge of medieval Icelandic farming practices.", "tip": "Recondite = obscure because it's UNKNOWN to most people. Specialized, niche knowledge." },
+      { "w": "ARCANE", "pos": "adj", "cluster": "Obscure", "def": "Understood by few; mysterious or secret; requiring special knowledge", "ex": "The contract contained arcane legal clauses that even experienced lawyers struggled to interpret.", "tip": "Arcane = mysterious and secret, often with an ancient or specialized origin. More mystical than recondite." },
+      { "w": "ESOTERIC", "pos": "adj", "cluster": "Obscure", "def": "Intended for or likely to be understood by only a small number with specialized knowledge", "ex": "The journal's esoteric articles were written for academic specialists, not general readers.", "tip": "Esoteric = designed for an in-group. The knowledge is deliberately or necessarily limited to a few." },
+      { "w": "OPAQUE", "pos": "adj", "cluster": "Obscure", "def": "Not transparent; not clear in meaning; hard to understand or make sense of", "ex": "The politician's opaque answers frustrated journalists who could extract no concrete meaning from them.", "tip": "Opaque = impenetrable to understanding. The opposite of transparent/lucid. Often used for language." },
+      { "w": "CRYPTIC", "pos": "adj", "cluster": "Vague", "def": "Having a meaning that is mysterious or obscure; using code or hidden meaning", "ex": "Her cryptic final message — 'Look where you least expect the truth' — baffled investigators for years.", "tip": "Cryptic = deliberately encoded or hidden. There IS a meaning — it's just concealed." },
+      { "w": "ENIGMATIC", "pos": "adj", "cluster": "Vague", "def": "Difficult to interpret or understand; mysterious; puzzling", "ex": "The enigmatic smile in the painting has prompted centuries of speculation about the subject's identity.", "tip": "Enigmatic = mysterious by nature — not necessarily hiding something, just hard to read or understand." },
+      { "w": "AMBIGUOUS", "pos": "adj", "cluster": "Vague", "def": "Open to more than one interpretation; not having one obvious meaning", "ex": "The treaty's ambiguous language created loopholes that both sides later exploited.", "tip": "Ambiguous = multiple possible meanings. The GRE often pairs this with equivocal (deliberate ambiguity)." },
+      { "w": "NEBULOUS", "pos": "adj", "cluster": "Vague", "def": "Not clearly defined or established; vague and ill-formed", "ex": "His business plan was too nebulous to attract investors — all vision, no specifics.", "tip": "Nebulous = vague and cloudy, like a nebula in space. Ideas are there but not clearly formed." },
+      { "w": "CONVOLUTED", "pos": "adj", "cluster": "Vague", "def": "Extremely complex and difficult to follow; intricately and unnecessarily complicated", "ex": "The convoluted legal argument spanned forty pages and ultimately convinced no one.", "tip": "Convoluted = complex through excessive twisting and turning. Often implies unnecessarily complicated." }
     ]
   },
   {
-    day: 12,
-    theme: "Excess, Scarcity & Moderation",
-    date: "May 15, 2026",
-    patterns: [
-      "Profligate = reckless wastefulness · Frugal = careful economy · Parsimonious = stingy unwillingness to spend",
-      "Dearth/paucity both mean scarcity — paucity is more formal and abstract",
-      "Superfluous = unnecessary excess, not merely abundance",
-      "Temperate/moderate clues often oppose extravagant or profligate behavior"
+    "day": 12,
+    "theme": "Excess & Lack",
+    "date": "May 17, 2026",
+    "patterns": [
+      "Profligate (reckless moral AND financial excess) vs Prodigal (recklessly wasteful of money/resources)",
+      "Plethora/Surfeit/Glut = too much of something — distinguished by whether it's abstract, concrete, or market-related",
+      "Paucity vs Dearth vs Scant: paucity = insufficient quantity · dearth = severe scarcity · scant = barely enough",
+      "Superfluous (more than enough, therefore unnecessary) vs Redundant (repetitive and unnecessary)"
     ],
-    words: [
-      {
-        w: "PROFLIGATE",
-        pos: "adj",
-        cluster: "Excess",
-        def: "Recklessly wasteful or wildly extravagant.",
-        ex: "The dictator's profligate spending bankrupted the nation within a decade.",
-        tip: "GRE almost always uses it for wasteful spending or moral recklessness."
-      },
-      {
-        w: "EXTRAVAGANT",
-        pos: "adj",
-        cluster: "Excess",
-        def: "Excessively elaborate, expensive, or wasteful.",
-        ex: "The startup's extravagant headquarters alarmed investors.",
-        tip: "Can describe spending, praise, claims, or design."
-      },
-      {
-        w: "IMMODERATE",
-        pos: "adj",
-        cluster: "Excess",
-        def: "Excessive; lacking reasonable limits or restraint.",
-        ex: "His immoderate ambition exhausted even loyal supporters.",
-        tip: "Formal GRE word for 'too much.'"
-      },
-      {
-        w: "SUPERFLUOUS",
-        pos: "adj",
-        cluster: "Excess",
-        def: "Unnecessary because more than enough already exists.",
-        ex: "Most of the report's charts were superfluous.",
-        tip: "Not merely extra — uselessly extra."
-      },
-      {
-        w: "INDISCRIMINATE",
-        pos: "adj",
-        cluster: "Excess",
-        def: "Done without careful judgment or restraint.",
-        ex: "Indiscriminate expansion nearly destroyed the company.",
-        tip: "Too broad, uncontrolled, careless."
-      },
-
-      {
-        w: "DEARTH",
-        pos: "n",
-        cluster: "Scarcity",
-        def: "A scarcity or lack of something.",
-        ex: "The region suffered a dearth of qualified teachers.",
-        tip: "One of ETS's favorite scarcity words."
-      },
-      {
-        w: "PAUCITY",
-        pos: "n",
-        cluster: "Scarcity",
-        def: "The presence of too little of something; scarcity.",
-        ex: "A paucity of evidence weakened the prosecution's case.",
-        tip: "More abstract and formal than dearth."
-      },
-      {
-        w: "MEAGER",
-        pos: "adj",
-        cluster: "Scarcity",
-        def: "Lacking in quantity or quality; insufficient.",
-        ex: "The researchers worked with meager funding for years.",
-        tip: "Suggests disappointing insufficiency."
-      },
-      {
-        w: "SPARSE",
-        pos: "adj",
-        cluster: "Scarcity",
-        def: "Thinly distributed or scattered; not dense.",
-        ex: "Sparse rainfall devastated crops.",
-        tip: "Often physical distribution."
-      },
-      {
-        w: "SCANT",
-        pos: "adj",
-        cluster: "Scarcity",
-        def: "Barely sufficient; minimal.",
-        ex: "The biography relied on scant historical records.",
-        tip: "Almost not enough."
-      },
-
-      {
-        w: "FRUGAL",
-        pos: "adj",
-        cluster: "Moderation",
-        def: "Economical and careful in the use of resources.",
-        ex: "Her frugal habits allowed her to retire early.",
-        tip: "Positive careful spending."
-      },
-      {
-        w: "THRIFTY",
-        pos: "adj",
-        cluster: "Moderation",
-        def: "Using money and resources carefully and efficiently.",
-        ex: "The thrifty student repaired old furniture instead of buying new pieces.",
-        tip: "Practical economy without negative stinginess."
-      },
-      {
-        w: "PARSIMONIOUS",
-        pos: "adj",
-        cluster: "Moderation",
-        def: "Unwilling to spend money; excessively stingy.",
-        ex: "The parsimonious landlord refused even necessary repairs.",
-        tip: "Negative unlike frugal."
-      },
-      {
-        w: "PENURIOUS",
-        pos: "adj",
-        cluster: "Moderation",
-        def: "Extremely poor or miserly.",
-        ex: "Despite his wealth, the penurious millionaire reused paper towels.",
-        tip: "Can mean poor OR absurdly stingy."
-      },
-      {
-        w: "TEMPERATE",
-        pos: "adj",
-        cluster: "Moderation",
-        def: "Moderate and restrained; avoiding excess.",
-        ex: "Her temperate response prevented the argument from escalating.",
-        tip: "Controlled moderation in emotion or behavior."
-      }
+    "words": [
+      { "w": "PROFLIGATE", "pos": "adj/n", "cluster": "Excessive", "def": "Recklessly extravagant and wasteful; lacking moral restraint; a person given to dissipation", "ex": "His profligate spending on yachts and private jets left the company technically bankrupt within three years.", "tip": "Profligate = both financial AND moral recklessness. The strongest excess word. Often used for public figures." },
+      { "w": "PRODIGAL", "pos": "adj/n", "cluster": "Excessive", "def": "Spending money or resources recklessly; wastefully extravagant", "ex": "The prodigal heir burned through a century of family wealth in less than a decade.", "tip": "Prodigal = reckless financial waste. Root: prodigere (to drive away). The Prodigal Son = classic reference." },
+      { "w": "INORDINATE", "pos": "adj", "cluster": "Excessive", "def": "Unusually or disproportionately large; exceeding reasonable limits", "ex": "She devoted an inordinate amount of time to perfecting the opening paragraph of a five-hundred-page novel.", "tip": "Inordinate = disproportionate to what's warranted. 'Inordinate amount of time/money/attention.'" },
+      { "w": "EXORBITANT", "pos": "adj", "cluster": "Excessive", "def": "Unreasonably high in price or amount; grossly excessive", "ex": "The legal fees were so exorbitant that winning the case still left the plaintiff financially ruined.", "tip": "Exorbitant = almost always about price or cost. Root: ex (out of) + orbita (orbit) = out of all bounds." },
+      { "w": "IMMODERATE", "pos": "adj", "cluster": "Excessive", "def": "Not sensible or restrained; excessive; going beyond what is acceptable", "ex": "His immoderate consumption of rich food and wine had predictable consequences for his health.", "tip": "Immoderate = lacking moderation/restraint. Applies to behavior, habits, emotions. Opposite of temperate." },
+      { "w": "PLETHORA", "pos": "n", "cluster": "Abundance", "def": "A large or excessive amount of something; an overabundance", "ex": "The report cited a plethora of studies, but most were small-scale and methodologically weak.", "tip": "Plethora = excessive abundance, often implying more than needed or useful. Always a noun." },
+      { "w": "SURFEIT", "pos": "n/v", "cluster": "Abundance", "def": "An excessive amount of something; to cause disgust through overindulgence", "ex": "After a surfeit of holiday celebrations, she welcomed the quiet austerity of January.", "tip": "Surfeit = excess that leads to satiation or disgust. More evocative than plethora — implies negative result." },
+      { "w": "GLUT", "pos": "n/v", "cluster": "Abundance", "def": "An excessively large supply; to fill to excess; to supply far beyond demand", "ex": "A glut of cheap imports flooded the market, forcing domestic manufacturers to cut prices or close.", "tip": "Glut = almost always about markets or supply. 'A glut of oil/housing/labor.' Economic context is the tell." },
+      { "w": "SUPERFLUOUS", "pos": "adj", "cluster": "Abundance", "def": "Unnecessary, especially through being more than enough; beyond what is needed", "ex": "The editor removed three superfluous chapters, tightening the narrative without losing any substance.", "tip": "Superfluous = extra, beyond what's needed. Root: super (above) + fluere (to flow) = overflowing." },
+      { "w": "REDUNDANT", "pos": "adj", "cluster": "Abundance", "def": "No longer needed or useful; repetitive; repeating what has already been said", "ex": "The final paragraph was entirely redundant, repeating points made more effectively in the introduction.", "tip": "Redundant = repetitive AND unnecessary. In British English also means 'laid off from a job.'" },
+      { "w": "PAUCITY", "pos": "n", "cluster": "Lacking", "def": "The presence of something only in small or insufficient quantities; scarcity", "ex": "The paucity of reliable evidence made any definitive conclusion impossible.", "tip": "Paucity = insufficient quantity. 'A paucity of evidence/resources/talent.' Always a noun." },
+      { "w": "DEARTH", "pos": "n", "cluster": "Lacking", "def": "A scarcity or lack of something; a severe shortage", "ex": "There is a dearth of qualified nurses in rural hospitals — a crisis that has worsened for a decade.", "tip": "Dearth = more severe than paucity. Root: Old English 'dearthe' = famine. Implies genuine crisis-level lack." },
+      { "w": "MEAGER", "pos": "adj", "cluster": "Lacking", "def": "Lacking in quantity or quality; deficient; insufficient", "ex": "The survivors subsisted on meager rations — a handful of crackers and shared water — for three days.", "tip": "Meager = both small in amount AND poor in quality. 'Meager wages/rations/returns.'" },
+      { "w": "SPARSE", "pos": "adj", "cluster": "Lacking", "def": "Thinly dispersed or scattered; not dense; occurring at wide intervals", "ex": "The sparse audience — barely thirty people in a hall built for five hundred — unnerved the performers.", "tip": "Sparse = spread thinly, not concentrated. Often physical distribution. 'Sparse population/vegetation.'" },
+      { "w": "SCANT", "pos": "adj", "cluster": "Lacking", "def": "Barely sufficient or adequate; insufficient; barely reaching", "ex": "The committee paid scant attention to the environmental impact report, approving the project in minutes.", "tip": "Scant = barely enough, almost not enough. 'Scant evidence/regard/attention.' Often implies dismissiveness." }
     ]
   },
   {
-    day: 13,
-    theme: "Intellect, Learning & Mental Ability",
-    date: "May 16, 2026",
-    patterns: [
-      "Erudite = deep scholarly learning · Pedantic = annoying display of learning",
-      "Perspicacious = insight · Sagacious = wisdom from experience · Astute = practical shrewdness",
-      "Ingenious = creatively clever · Ingenuous = naive and innocent",
-      "Obtuse = slow to understand, not merely rude"
+    "day": 13,
+    "theme": "Intellectual Traits",
+    "date": "May 18, 2026",
+    "patterns": [
+      "Erudite (learned through deep study) vs Sapient (wise through judgment) — knowledge vs wisdom",
+      "Pedantic (obsessed with rules/details) vs Didactic (overtly instructive/moralizing) vs Doctrinaire (rigidly applies doctrine)",
+      "Dilettante (dabbles superficially) vs Philistine (hostile to culture entirely) — both negative but different failures",
+      "Obtuse = slow to understand (intellectual bluntness) · Fatuous = complacently silly and self-satisfied"
     ],
-    words: [
-      {
-        w: "ERUDITE",
-        pos: "adj",
-        cluster: "Learned",
-        def: "Having extensive scholarly knowledge.",
-        ex: "The erudite professor referenced obscure medieval texts from memory.",
-        tip: "High-level academic learning."
-      },
-      {
-        w: "SCHOLARLY",
-        pos: "adj",
-        cluster: "Learned",
-        def: "Characteristic of serious academic study.",
-        ex: "The article's scholarly tone appealed to specialists.",
-        tip: "Neutral-positive academic rigor."
-      },
-      {
-        w: "PEDANTIC",
-        pos: "adj",
-        cluster: "Learned",
-        def: "Excessively focused on displaying minor knowledge or rules.",
-        ex: "His pedantic lectures exhausted students with trivial corrections.",
-        tip: "Knowledge used irritatingly."
-      },
-      {
-        w: "DIDACTIC",
-        pos: "adj",
-        cluster: "Learned",
-        def: "Intended primarily to instruct or teach.",
-        ex: "The novel became overly didactic and lost emotional depth.",
-        tip: "Teaching emphasis over artistry."
-      },
-      {
-        w: "CEREBRAL",
-        pos: "adj",
-        cluster: "Learned",
-        def: "Intellectual rather than emotional.",
-        ex: "The film was admired for its cerebral complexity.",
-        tip: "Highly intellectual and analytical."
-      },
-
-      {
-        w: "PERSPICACIOUS",
-        pos: "adj",
-        cluster: "Insight",
-        def: "Quick to perceive hidden truths or relationships.",
-        ex: "The perspicacious analyst noticed inconsistencies everyone else ignored.",
-        tip: "SEES what others miss."
-      },
-      {
-        w: "SAGACIOUS",
-        pos: "adj",
-        cluster: "Insight",
-        def: "Wise through sound judgment and experience.",
-        ex: "The sagacious diplomat avoided a needless conflict.",
-        tip: "Wisdom developed over time."
-      },
-      {
-        w: "ASTUTE",
-        pos: "adj",
-        cluster: "Insight",
-        def: "Shrewd and accurate in practical judgment.",
-        ex: "Her astute political instincts saved the campaign.",
-        tip: "Street-smart intelligence."
-      },
-      {
-        w: "DISCERNING",
-        pos: "adj",
-        cluster: "Insight",
-        def: "Showing refined judgment and perceptiveness.",
-        ex: "Discerning readers recognized the satire immediately.",
-        tip: "Able to distinguish quality or subtlety."
-      },
-      {
-        w: "ACUMEN",
-        pos: "n",
-        cluster: "Insight",
-        def: "Sharpness and depth of judgment.",
-        ex: "His financial acumen impressed investors.",
-        tip: "Practical decision-making intelligence."
-      },
-
-      {
-        w: "INGENIOUS",
-        pos: "adj",
-        cluster: "Clever",
-        def: "Inventive, creative, and resourcefully clever.",
-        ex: "The engineer proposed an ingenious solution to the design flaw.",
-        tip: "Creative problem-solving."
-      },
-      {
-        w: "ADROIT",
-        pos: "adj",
-        cluster: "Clever",
-        def: "Skillful and clever, especially socially or mentally.",
-        ex: "Her adroit handling of the crisis prevented panic.",
-        tip: "Smooth skill under pressure."
-      },
-      {
-        w: "SHREWD",
-        pos: "adj",
-        cluster: "Clever",
-        def: "Sharp in practical judgment and worldly matters.",
-        ex: "The shrewd negotiator anticipated every objection.",
-        tip: "Practical strategic intelligence."
-      },
-      {
-        w: "INGENUOUS",
-        pos: "adj",
-        cluster: "Naive",
-        def: "Innocent, candid, and unsuspecting.",
-        ex: "His ingenuous trust made him vulnerable to manipulation.",
-        tip: "Opposite of disingenuous."
-      },
-      {
-        w: "OBTUSE",
-        pos: "adj",
-        cluster: "Naive",
-        def: "Slow to understand or insensitive to subtlety.",
-        ex: "The critic was too obtuse to recognize the irony.",
-        tip: "Mentally dull, not mathematically angled."
-      }
+    "words": [
+      { "w": "ERUDITE", "pos": "adj", "cluster": "Learned", "def": "Having or showing great knowledge or learning acquired through extensive reading and study", "ex": "The erudite professor could discuss Renaissance art, medieval law, and biochemistry with equal fluency.", "tip": "Erudite = deep, wide learning from study. More about breadth of knowledge than wisdom of judgment." },
+      { "w": "SAPIENT", "pos": "adj", "cluster": "Learned", "def": "Having or showing great wisdom and sound judgment; discerning", "ex": "The sapient elder listened carefully to both sides before offering a solution that satisfied everyone.", "tip": "Sapient = wise judgment, not just knowledge. Root: sapere (to taste/know). Homo sapiens = wise human." },
+      { "w": "CEREBRAL", "pos": "adj", "cluster": "Learned", "def": "Relating to the intellect rather than emotion; requiring significant thought; intellectual", "ex": "Her cerebral approach to poetry frustrated readers expecting emotional accessibility.", "tip": "Cerebral = head over heart. Intellectual and analytical. Often implies the person is detached or abstract." },
+      { "w": "POLYMATH", "pos": "n", "cluster": "Learned", "def": "A person of wide knowledge or learning across many different fields", "ex": "Leonardo da Vinci — painter, engineer, anatomist, musician — remains history's most celebrated polymath.", "tip": "Polymath = expert in MANY fields. Root: poly (many) + manthanein (to learn). Rare and admired." },
+      { "w": "DISCERNING", "pos": "adj", "cluster": "Learned", "def": "Having or showing good judgment and understanding; perceptive; able to distinguish quality", "ex": "Even the most discerning critics praised the debut novel's psychological precision and emotional honesty.", "tip": "Discerning = sees quality and distinctions others miss. Often applied to taste, judgment, assessment." },
+      { "w": "PEDANTIC", "pos": "adj", "cluster": "Pedantic", "def": "Excessively concerned with minor details or formal rules; narrowly focused on technicalities", "ex": "His pedantic insistence on correcting everyone's grammar made him insufferable at dinner parties.", "tip": "Pedantic = misses the forest for the trees. Knows the rules obsessively but lacks wisdom or perspective." },
+      { "w": "DIDACTIC", "pos": "adj", "cluster": "Pedantic", "def": "Intended to teach or moralize; (pejoratively) too obviously instructive or preachy", "ex": "The novel's didactic tone — every scene a lesson, every character a lesson-giver — undermined its artistry.", "tip": "Didactic = teaching-focused. Positive: educational. Negative (GRE common): preachy and heavy-handed." },
+      { "w": "DOCTRINAIRE", "pos": "adj", "cluster": "Pedantic", "def": "Seeking to impose a doctrine rigidly, regardless of practical considerations or circumstances", "ex": "The doctrinaire economist applied the same theoretical framework to every country, ignoring local realities.", "tip": "Doctrinaire = rigidly applies a doctrine without flexibility. More ideological than pedantic." },
+      { "w": "DOGMATIC", "pos": "adj", "cluster": "Pedantic", "def": "Inclined to lay down principles as incontrovertibly true; asserting opinions as established facts", "ex": "His dogmatic certainty about the diagnosis prevented him from considering alternative explanations.", "tip": "Dogmatic = presents opinions as facts, resistant to challenge. More personal than doctrinaire." },
+      { "w": "PUNDIT", "pos": "n", "cluster": "Pedantic", "def": "An expert who offers opinions in public, particularly in media; a critic or commentator", "ex": "The political pundits were unanimously wrong in their election predictions.", "tip": "Pundit = public expert/commentator. Often used with mild irony — pundits can be wrong. From Sanskrit 'pandit.'" },
+      { "w": "PHILISTINE", "pos": "n/adj", "cluster": "Ignorant", "def": "A person hostile or indifferent to culture, art, and beauty; one who lacks cultural appreciation", "ex": "The philistine executive dismissed the museum proposal as 'a waste of money that could build two highways.'", "tip": "Philistine = actively disdains culture. Named after biblical Philistines. Strongest anti-culture word." },
+      { "w": "DILETTANTE", "pos": "n/adj", "cluster": "Ignorant", "def": "A person who cultivates an area of interest superficially; a dabbler lacking serious commitment", "ex": "The critics dismissed him as a dilettante — a weekend painter who lacked the discipline for serious work.", "tip": "Dilettante = interest without depth or commitment. Different from philistine — the dilettante likes culture, just superficially." },
+      { "w": "SOPHOMORIC", "pos": "adj", "cluster": "Ignorant", "def": "Overconfident and superficially knowledgeable; intellectually immature and pretentious", "ex": "The paper's sophomoric analysis impressed no one — it deployed jargon to disguise a lack of real insight.", "tip": "Sophomore = second year student — knows enough to be overconfident but not enough to be right." },
+      { "w": "OBTUSE", "pos": "adj", "cluster": "Ignorant", "def": "Annoyingly slow to understand; lacking intellectual acuity; mentally dull", "ex": "His obtuse refusal to grasp the obvious implications frustrated everyone in the meeting.", "tip": "Obtuse = blunt, not sharp (like a blunt angle). GRE uses the figurative sense: slow to understand." },
+      { "w": "FATUOUS", "pos": "adj", "cluster": "Ignorant", "def": "Silly and pointless; self-satisfied and vacuously unintelligent", "ex": "His fatuous grin during the serious discussion about redundancies struck employees as deeply offensive.", "tip": "Fatuous = complacently silly. The person is pleased with themselves despite saying nothing of value." }
     ]
   },
   {
-    day: 14,
-    theme: "Emotions, Attitudes & Mental States",
-    date: "May 17, 2026",
-    patterns: [
-      "Equanimity = calm balance under pressure — one of the highest-frequency GRE emotional words",
-      "Ennui = intellectual boredom and dissatisfaction, not simple tiredness",
-      "Consternation = anxious shock and confusion simultaneously",
-      "Sanguine = optimistic confidence even during difficulty"
+    "day": 14,
+    "theme": "Emotional States",
+    "date": "May 19, 2026",
+    "patterns": [
+      "Equanimity = mental calmness under pressure · Stoic = endures pain without complaint · Phlegmatic = naturally calm",
+      "Trepidation (fearful anticipation of future event) vs Consternation (sudden dismay/anxiety about something now)",
+      "Ennui = boredom from lack of purpose/meaning · Languor = pleasant or oppressive physical/mental weariness",
+      "Ebullience (enthusiastic high energy) vs Elation (intense happiness from specific cause) vs Euphoria (extreme bliss)"
     ],
-    words: [
-      {
-        w: "EQUANIMITY",
-        pos: "n",
-        cluster: "Calm",
-        def: "Mental calmness and composure, especially under stress.",
-        ex: "She handled the hostile interview with remarkable equanimity.",
-        tip: "One of ETS's absolute favorites."
-      },
-      {
-        w: "COMPOSURE",
-        pos: "n",
-        cluster: "Calm",
-        def: "Calm self-control and steadiness.",
-        ex: "The pilot maintained composure during the emergency landing.",
-        tip: "External calm under pressure."
-      },
-      {
-        w: "PLACID",
-        pos: "adj",
-        cluster: "Calm",
-        def: "Calm, peaceful, and undisturbed.",
-        ex: "His placid demeanor concealed intense ambition.",
-        tip: "Surface serenity."
-      },
-      {
-        w: "PHLEGMATIC",
-        pos: "adj",
-        cluster: "Calm",
-        def: "Calm and unemotional even in stressful situations.",
-        ex: "The phlegmatic judge remained unmoved by emotional appeals.",
-        tip: "Emotionally unreactive."
-      },
-
-      {
-        w: "SANGUINE",
-        pos: "adj",
-        cluster: "Positive",
-        def: "Optimistic and confident, especially during difficulty.",
-        ex: "Despite setbacks, investors remained sanguine about the company's future.",
-        tip: "Confident optimism."
-      },
-      {
-        w: "EBULLIENT",
-        pos: "adj",
-        cluster: "Positive",
-        def: "Overflowing with enthusiasm and energy.",
-        ex: "Her ebullient personality energized the entire office.",
-        tip: "Bubbling excitement."
-      },
-      {
-        w: "JOVIAL",
-        pos: "adj",
-        cluster: "Positive",
-        def: "Cheerful, hearty, and good-humored.",
-        ex: "The jovial host kept the guests laughing all evening.",
-        tip: "Warm social cheerfulness."
-      },
-      {
-        w: "ELATED",
-        pos: "adj",
-        cluster: "Positive",
-        def: "Extremely happy and excited.",
-        ex: "The scientist was elated by the unexpected discovery.",
-        tip: "Peak happiness."
-      },
-
-      {
-        w: "ENNUI",
-        pos: "n",
-        cluster: "Negative",
-        def: "Profound boredom and dissatisfaction from lack of stimulation.",
-        ex: "After years of luxury, he succumbed to ennui.",
-        tip: "Existential boredom."
-      },
-      {
-        w: "MELANCHOLY",
-        pos: "n/adj",
-        cluster: "Negative",
-        def: "A reflective, lingering sadness.",
-        ex: "A melancholy tone pervaded the final chapter.",
-        tip: "Quiet sadness, often thoughtful."
-      },
-      {
-        w: "CONSTERNATION",
-        pos: "n",
-        cluster: "Negative",
-        def: "Anxiety mixed with shock and confusion.",
-        ex: "The sudden resignation caused consternation among employees.",
-        tip: "Alarm + bewilderment together."
-      },
-      {
-        w: "DESPONDENT",
-        pos: "adj",
-        cluster: "Negative",
-        def: "Deeply discouraged and without hope.",
-        ex: "After repeated failures, the candidate grew despondent.",
-        tip: "Low-energy hopelessness."
-      },
-      {
-        w: "MIFFED",
-        pos: "adj",
-        cluster: "Negative",
-        def: "Slightly offended or annoyed.",
-        ex: "She seemed miffed that her contribution went unrecognized.",
-        tip: "Minor irritation, often appearing in SE."
-      },
-      {
-        w: "APATHETIC",
-        pos: "adj",
-        cluster: "Negative",
-        def: "Lacking interest, enthusiasm, or concern.",
-        ex: "Voters became apathetic after years of corruption scandals.",
-        tip: "Emotional indifference."
-      }
+    "words": [
+      { "w": "EQUANIMITY", "pos": "n", "cluster": "Calm", "def": "Mental calmness and composure, especially in difficult situations; evenness of temper", "ex": "She received the devastating diagnosis with remarkable equanimity, already planning her treatment options.", "tip": "Equanimity = calm under pressure. Root: aequus (equal) + animus (mind) = even-minded. A virtue word." },
+      { "w": "SANGUINE", "pos": "adj", "cluster": "Calm", "def": "Optimistic or positive, especially in a difficult situation; cheerfully confident", "ex": "Despite the setbacks, he remained sanguine about the company's prospects, refusing to entertain despair.", "tip": "Sanguine = optimistic. Root: sanguis (blood) — rosy-cheeked with health. GRE high-frequency word." },
+      { "w": "PHLEGMATIC", "pos": "adj", "cluster": "Calm", "def": "Having an unemotional and stolidly calm disposition; not easily upset or excited", "ex": "The phlegmatic surgeon showed no visible stress even when the procedure took an unexpected turn.", "tip": "Phlegmatic = naturally calm by temperament. From the 'phlegm' humor — cold and stable. Calm without effort." },
+      { "w": "STOIC", "pos": "adj/n", "cluster": "Calm", "def": "Enduring pain, difficulty, or hardship without showing feelings or complaining", "ex": "She was stoic throughout the ordeal — no visible tears, no complaint — which others found both admirable and eerie.", "tip": "Stoic = endures without complaint. The Stoics (Greek philosophers) believed in controlling only what you can control." },
+      { "w": "IMPASSIVE", "pos": "adj", "cluster": "Calm", "def": "Not feeling or showing emotion; maintaining an expressionless face; serene under pressure", "ex": "The poker champion's impassive expression revealed nothing — opponents had no way to read her hand.", "tip": "Impassive = no visible emotion. Different from equanimity (inner calm) — impassive is outer expression." },
+      { "w": "CONSTERNATION", "pos": "n", "cluster": "Troubled", "def": "A feeling of sudden anxiety or dismay that disrupts composure; great shock and worry", "ex": "The announcement of the merger caused consternation among employees who feared massive redundancies.", "tip": "Consternation = sudden dismay about something HAPPENING NOW. 'To the consternation of' is a GRE phrase." },
+      { "w": "TREPIDATION", "pos": "n", "cluster": "Troubled", "def": "A feeling of fear or agitation about something that may happen; anxious uncertainty", "ex": "She approached the negotiation with some trepidation, knowing the other party had a reputation for ruthlessness.", "tip": "Trepidation = fear about a FUTURE event. Distinguished from consternation by its anticipatory quality." },
+      { "w": "DISQUIET", "pos": "n/v", "cluster": "Troubled", "def": "A feeling of worry or unease; to make someone feel anxious or unsettled", "ex": "A growing disquiet settled over the group as the hours passed with no word from the missing team.", "tip": "Disquiet = low-level persistent unease. Milder than consternation or trepidation. Often used as a noun." },
+      { "w": "ENNUI", "pos": "n", "cluster": "Troubled", "def": "A feeling of listlessness and dissatisfaction arising from lack of occupation or purpose", "ex": "The wealthy heir, having never needed to work, was consumed by ennui — a purposelessness no purchase could cure.", "tip": "Ennui = existential boredom, not just passing tedium. Root: French word for the feeling of meaninglessness." },
+      { "w": "LANGUOR", "pos": "n", "cluster": "Troubled", "def": "The state of tiredness or inactivity; a pleasant or oppressive physical and mental weariness", "ex": "The oppressive heat induced a languor that made even the simplest task feel insurmountable.", "tip": "Languor = dreamy weariness. Can be pleasant (post-vacation) or oppressive (illness, heat). GRE uses both." },
+      { "w": "DESPONDENT", "pos": "adj", "cluster": "Extremes", "def": "In low spirits from loss of hope or courage; deeply dejected", "ex": "After three rejections in a week, he grew despondent, convinced no publisher would ever take the book.", "tip": "Despondent = hope has been lost. More severe than sad — implies the person sees no path forward." },
+      { "w": "DISCONSOLATE", "pos": "adj", "cluster": "Extremes", "def": "Very unhappy and unable to be comforted; without consolation; deeply sorrowful", "ex": "She was disconsolate after the loss, refusing food and company for an entire week.", "tip": "Disconsolate = cannot be comforted. The key feature is that nothing helps. More severe than despondent." },
+      { "w": "EUPHORIA", "pos": "n", "cluster": "Extremes", "def": "A feeling or state of intense excitement and happiness; extreme elation", "ex": "The euphoria of winning the championship faded within weeks, replaced by the ordinary pressures of daily life.", "tip": "Euphoria = extreme happiness, often temporary and possibly irrational. Root: eu (good) + phora (bearing)." },
+      { "w": "ELATION", "pos": "n", "cluster": "Extremes", "def": "Great happiness and exhilaration, typically from a specific cause or achievement", "ex": "The elation she felt on hearing the results was unlike anything she had experienced in years.", "tip": "Elation = happiness from a specific cause. More grounded than euphoria — earned and specific." },
+      { "w": "EBULLIENCE", "pos": "n", "cluster": "Extremes", "def": "The quality of being cheerful and full of energy; irrepressible enthusiasm", "ex": "The new CEO's ebullience was infectious — even cynical veterans found themselves energized by her vision.", "tip": "Ebullience = bubbling enthusiasm and energy. Root: ebullire (to boil over). The energy that overflows." }
     ]
   },
   {
-    day: 15,
-    theme: "Argument, Evidence & Logic",
-    date: "May 18, 2026",
-    patterns: [
-      "Cogent arguments are logical AND persuasive — not merely clear",
-      "Specious arguments sound convincing but collapse under scrutiny",
-      "Tendentious writing pushes an agenda while pretending neutrality",
-      "Irrefutable = impossible to disprove · Fallacious = logically flawed"
+    "day": 15,
+    "theme": "Proof & Argument",
+    "date": "May 20, 2026",
+    "patterns": [
+      "Cogent (clear AND convincing) vs Tenable (defensible, can withstand challenge) — both strong but different strengths",
+      "Fallacious (contains logical error) vs Tendentious (biased toward a conclusion) vs Untenable (cannot be defended)",
+      "Axiom (accepted as true without proof) vs Postulate (assumed for argument) vs Conjecture (educated guess)",
+      "Empirical (based on observation/evidence) vs Categorical (absolute, admitting no exceptions or qualification)"
     ],
-    words: [
-      {
-        w: "COGENT",
-        pos: "adj",
-        cluster: "Strong Logic",
-        def: "Clear, logical, and convincing.",
-        ex: "The attorney delivered a cogent argument supported by extensive evidence.",
-        tip: "One of the highest-frequency GRE praise words for arguments."
-      },
-      {
-        w: "COMPELLING",
-        pos: "adj",
-        cluster: "Strong Logic",
-        def: "Powerfully convincing or persuasive.",
-        ex: "The documentary offered compelling evidence of corruption.",
-        tip: "Strong emotional or logical force."
-      },
-      {
-        w: "PLAUSIBLE",
-        pos: "adj",
-        cluster: "Strong Logic",
-        def: "Seemingly reasonable or probable.",
-        ex: "Her explanation sounded plausible at first.",
-        tip: "Could be true — not necessarily actually true."
-      },
-      {
-        w: "TENABLE",
-        pos: "adj",
-        cluster: "Strong Logic",
-        def: "Able to be defended logically against criticism.",
-        ex: "The theory remained tenable despite recent challenges.",
-        tip: "Still defensible under pressure."
-      },
-      {
-        w: "IRREFUTABLE",
-        pos: "adj",
-        cluster: "Strong Logic",
-        def: "Impossible to disprove or deny.",
-        ex: "The DNA evidence was irrefutable.",
-        tip: "Absolute evidentiary strength."
-      },
-
-      {
-        w: "SPECIOUS",
-        pos: "adj",
-        cluster: "Weak Logic",
-        def: "Appearing convincing or correct but actually false.",
-        ex: "The article relied on specious reasoning and selective statistics.",
-        tip: "Surface plausibility hiding deeper flaws."
-      },
-      {
-        w: "FALLACIOUS",
-        pos: "adj",
-        cluster: "Weak Logic",
-        def: "Based on mistaken belief or unsound reasoning.",
-        ex: "The economist exposed the fallacious assumptions behind the proposal.",
-        tip: "Logically invalid."
-      },
-      {
-        w: "TENDENTIOUS",
-        pos: "adj",
-        cluster: "Weak Logic",
-        def: "Expressing a particular bias or agenda.",
-        ex: "The tendentious documentary ignored evidence that complicated its narrative.",
-        tip: "Pretends neutrality while pushing a side."
-      },
-      {
-        w: "DUBIOUS",
-        pos: "adj",
-        cluster: "Weak Logic",
-        def: "Questionable or doubtful in credibility.",
-        ex: "The witness provided a dubious explanation for the missing funds.",
-        tip: "Raises suspicion."
-      },
-      {
-        w: "UNTENABLE",
-        pos: "adj",
-        cluster: "Weak Logic",
-        def: "Impossible to defend logically.",
-        ex: "After the new evidence emerged, the position became untenable.",
-        tip: "Cannot survive criticism."
-      },
-
-      {
-        w: "SUBSTANTIATE",
-        pos: "v",
-        cluster: "Evidence",
-        def: "To support with evidence or proof.",
-        ex: "Researchers struggled to substantiate the extraordinary claim.",
-        tip: "Formal proof through evidence."
-      },
-      {
-        w: "CORROBORATE",
-        pos: "v",
-        cluster: "Evidence",
-        def: "To confirm through additional evidence.",
-        ex: "Independent witnesses corroborated the journalist's account.",
-        tip: "Evidence strengthening evidence."
-      },
-      {
-        w: "VERIFY",
-        pos: "v",
-        cluster: "Evidence",
-        def: "To confirm the truth or accuracy of something.",
-        ex: "The editor verified every quotation before publication.",
-        tip: "Fact-checking accuracy."
-      },
-      {
-        w: "DISPUTE",
-        pos: "v/n",
-        cluster: "Evidence",
-        def: "To question the truth or validity of.",
-        ex: "Several historians dispute the traditional interpretation.",
-        tip: "Formal intellectual disagreement."
-      },
-      {
-        w: "REPUDIATE",
-        pos: "v",
-        cluster: "Evidence",
-        def: "To reject something emphatically as false or unacceptable.",
-        ex: "The scientist repudiated the fabricated data immediately.",
-        tip: "Strong public rejection."
-      }
+    "words": [
+      { "w": "COGENT", "pos": "adj", "cluster": "Strong", "def": "Clear, logical, and convincing; compelling through sound reasoning and evidence", "ex": "The lawyer's cogent argument dismantled the prosecution's case point by point.", "tip": "Cogent = clear AND convincing. An argument can be clear but not convincing — cogent requires both." },
+      { "w": "TENABLE", "pos": "adj", "cluster": "Strong", "def": "Able to be maintained or defended against attack or objection; defensible", "ex": "Given the new evidence, her original hypothesis was no longer tenable and had to be revised.", "tip": "Tenable = can withstand challenge. 'No longer tenable' is a GRE favourite phrase. Opposite: untenable." },
+      { "w": "INCONTROVERTIBLE", "pos": "adj", "cluster": "Strong", "def": "Not able to be denied or disputed; indisputable; beyond any reasonable doubt", "ex": "The DNA evidence was incontrovertible — no alternative explanation existed.", "tip": "Incontrovertible = absolutely cannot be argued against. The strongest 'true' word in this cluster." },
+      { "w": "IRREFUTABLE", "pos": "adj", "cluster": "Strong", "def": "Impossible to deny or disprove; unable to be refuted", "ex": "The experiment's irrefutable results ended two decades of debate about the compound's effectiveness.", "tip": "Irrefutable = cannot be refuted. Slightly weaker than incontrovertible — irrefutable focuses on proof, incontrovertible on truth." },
+      { "w": "CONCLUSIVE", "pos": "adj", "cluster": "Strong", "def": "Decisively settling a question; leaving no room for doubt; providing a definitive answer", "ex": "The test results were conclusive: the bridge could not safely bear the projected load.", "tip": "Conclusive = brings the argument to a close. Root: concludere (to shut up/finish). It ends the debate." },
+      { "w": "FALLACIOUS", "pos": "adj", "cluster": "Weak", "def": "Based on a mistaken belief; containing a logical error; deceptively misleading", "ex": "The study's conclusion was fallacious — it confused correlation with causation.", "tip": "Fallacious = contains a logical flaw. Not dishonest — just wrong in its reasoning. Fallacy is the noun." },
+      { "w": "TENDENTIOUS", "pos": "adj", "cluster": "Weak", "def": "Promoting a particular cause or point of view; biased; not presenting a balanced view", "ex": "The documentary, while compelling, was tendentious — interviews with critics of the policy were noticeably absent.", "tip": "Tendentious = has an agenda. The argument or account is slanted toward a predetermined conclusion." },
+      { "w": "UNTENABLE", "pos": "adj", "cluster": "Weak", "def": "Not able to be maintained or defended against attack; indefensible", "ex": "Under cross-examination, the witness's position became untenable — every new question exposed a new gap.", "tip": "Untenable = cannot be defended. Root: un + tenable. The position collapses under scrutiny." },
+      { "w": "DUBIOUS", "pos": "adj", "cluster": "Weak", "def": "Hesitating or doubting; not to be relied upon; questionable in value or quality", "ex": "The investment opportunity sounded lucrative, but several dubious details made the analysts wary.", "tip": "Dubious = two senses: (1) causing doubt, (2) feeling doubtful. Context determines which meaning." },
+      { "w": "PLAUSIBLE", "pos": "adj", "cluster": "Weak", "def": "Seeming reasonable or probable; superficially convincing but not necessarily true", "ex": "The alibi was plausible — possible, even probable — but the detective wasn't convinced.", "tip": "Plausible = seems reasonable but may not be true. GRE distinction: plausible ≠ true. It just seems true." },
+      { "w": "AXIOM", "pos": "n", "cluster": "Concepts", "def": "A statement regarded as established and accepted as true; a self-evident principle", "ex": "The axiom that markets seek equilibrium was challenged by decades of behavioral economics research.", "tip": "Axiom = accepted without proof. It is the starting point. Axiomatic = obviously true, beyond question." },
+      { "w": "CONJECTURE", "pos": "n/v", "cluster": "Concepts", "def": "An opinion or conclusion formed on the basis of incomplete information; an educated guess", "ex": "Without access to the original documents, historians could offer only conjecture about the general's motives.", "tip": "Conjecture = educated guess without full evidence. More formal than 'guess.' Conjectural = based on conjecture." },
+      { "w": "POSTULATE", "pos": "n/v", "cluster": "Concepts", "def": "A thing assumed as a basis for reasoning or argument; to suggest or assume as a fact", "ex": "Einstein's postulate that the speed of light is constant transformed our understanding of space and time.", "tip": "Postulate = assumed for the sake of argument, then tested. Between axiom (accepted) and conjecture (guess)." },
+      { "w": "EMPIRICAL", "pos": "adj", "cluster": "Concepts", "def": "Based on observation and experience rather than theory or pure logic", "ex": "The empirical evidence — ten years of field data — contradicted what the theoretical model had predicted.", "tip": "Empirical = evidence from the real world. 'Empirical evidence' appears constantly in GRE RC passages." },
+      { "w": "CATEGORICAL", "pos": "adj", "cluster": "Concepts", "def": "Unambiguously explicit and direct; admitting of no conditions or exceptions; absolute", "ex": "The minister issued a categorical denial, ruling out any possibility that he had known about the scheme.", "tip": "Categorical = absolute, no exceptions. 'A categorical denial/refusal/statement.' No hedging, no qualifiers." }
     ]
   },
   {
-    day: 16,
-    theme: "Wealth, Poverty & Resource Use",
-    date: "May 19, 2026",
-    patterns: [
-      "Penury = extreme poverty · Frugal = careful economy · Parsimonious = stingy refusal to spend",
-      "Munificent generosity is financial and lavish",
-      "Austere can describe both strict simplicity and severe conditions",
-      "Prodigal = wastefully extravagant, often with money"
+    "day": 16,
+    "theme": "Money & Resources",
+    "date": "May 21, 2026",
+    "patterns": [
+      "Penury (state of poverty) vs Indigent (person who is poor) vs Impecunious (having little money, often temporary)",
+      "Avarice (intense greed for wealth) vs Rapacious (aggressively seizing wealth) vs Venal (corruptible by money)",
+      "Mercenary = motivated purely by money (no loyalty or principle) · Covetous = desiring what belongs to others",
+      "Opulent (luxuriously wealthy) vs Solvent (able to pay debts — minimal bar) vs Remunerative (financially rewarding)"
     ],
-    words: [
-      {
-        w: "PENURY",
-        pos: "n",
-        cluster: "Poverty",
-        def: "Extreme poverty; severe lack of money.",
-        ex: "The writer lived in penury for years before achieving fame.",
-        tip: "A favorite ETS poverty word."
-      },
-      {
-        w: "IMPECUNIOUS",
-        pos: "adj",
-        cluster: "Poverty",
-        def: "Having little or no money.",
-        ex: "The impecunious student survived on instant noodles and scholarships.",
-        tip: "Formal adjective for poor."
-      },
-      {
-        w: "INDIGENT",
-        pos: "adj",
-        cluster: "Poverty",
-        def: "Poor and needy.",
-        ex: "The clinic provided free care to indigent patients.",
-        tip: "Common in legal/social policy passages."
-      },
-      {
-        w: "DESTITUTE",
-        pos: "adj",
-        cluster: "Poverty",
-        def: "Completely lacking resources or necessities.",
-        ex: "After the drought, many families were destitute.",
-        tip: "Most extreme poverty."
-      },
-      {
-        w: "STRAITENED",
-        pos: "adj",
-        cluster: "Poverty",
-        def: "Experiencing financial difficulty.",
-        ex: "The university faced straitened economic circumstances.",
-        tip: "Formal RC-style financial hardship."
-      },
-
-      {
-        w: "FRUGAL",
-        pos: "adj",
-        cluster: "Economy",
-        def: "Economical and careful in spending.",
-        ex: "Her frugal habits allowed her to save aggressively.",
-        tip: "Positive carefulness with money."
-      },
-      {
-        w: "THRIFTY",
-        pos: "adj",
-        cluster: "Economy",
-        def: "Careful and efficient in managing resources.",
-        ex: "The thrifty chef wasted almost nothing.",
-        tip: "Practical efficiency."
-      },
-      {
-        w: "PARSIMONIOUS",
-        pos: "adj",
-        cluster: "Economy",
-        def: "Excessively unwilling to spend money; stingy.",
-        ex: "The parsimonious executive denied even modest raises.",
-        tip: "Negative unlike frugal."
-      },
-      {
-        w: "AUSTERE",
-        pos: "adj",
-        cluster: "Economy",
-        def: "Severely simple and without luxury.",
-        ex: "The monastery maintained an austere lifestyle.",
-        tip: "Can describe style, policy, or conditions."
-      },
-      {
-        w: "ABSTEMIOUS",
-        pos: "adj",
-        cluster: "Economy",
-        def: "Marked by restraint and moderation in indulgence.",
-        ex: "His abstemious habits contrasted with his colleagues' excesses.",
-        tip: "Extreme self-control."
-      },
-
-      {
-        w: "MUNIFICENT",
-        pos: "adj",
-        cluster: "Wealth",
-        def: "Exceptionally generous in giving.",
-        ex: "The munificent donor funded the research institute outright.",
-        tip: "Financial generosity specifically."
-      },
-      {
-        w: "PRODIGAL",
-        pos: "adj",
-        cluster: "Wealth",
-        def: "Wastefully extravagant with resources.",
-        ex: "The prodigal heir spent millions within months.",
-        tip: "Reckless spending."
-      },
-      {
-        w: "LAVISH",
-        pos: "adj/v",
-        cluster: "Wealth",
-        def: "Extremely generous, elaborate, or luxurious.",
-        ex: "The studio lavished enormous resources on the film.",
-        tip: "Can describe praise, spending, or luxury."
-      },
-      {
-        w: "OPULENT",
-        pos: "adj",
-        cluster: "Wealth",
-        def: "Rich, luxurious, and lavishly expensive.",
-        ex: "The palace's opulent interiors stunned visitors.",
-        tip: "Visible luxurious wealth."
-      },
-      {
-        w: "LUCRATIVE",
-        pos: "adj",
-        cluster: "Wealth",
-        def: "Producing substantial profit or wealth.",
-        ex: "Consulting became an unexpectedly lucrative career path.",
-        tip: "Profitable, money-generating."
-      }
+    "words": [
+      { "w": "PENURY", "pos": "n", "cluster": "Poor", "def": "Extreme poverty; the state of having very little money or resources", "ex": "After decades of penury, the artist's work was discovered and she died wealthy — but only just in time.", "tip": "Penury = extreme poverty as a state or condition. 'In penury' or 'lives in penury.' Always a noun." },
+      { "w": "INDIGENT", "pos": "adj/n", "cluster": "Poor", "def": "Poor and needy; lacking money; a person who is impoverished and in need", "ex": "The clinic offered free consultations for indigent patients who could not afford standard fees.", "tip": "Indigent = poor enough to need assistance. Often used in legal and medical contexts. 'Indigent defendant.'" },
+      { "w": "IMPECUNIOUS", "pos": "adj", "cluster": "Poor", "def": "Having little or no money; chronically short of funds", "ex": "The impecunious graduate relied on freelance editing work to supplement his doctoral stipend.", "tip": "Impecunious = cash-poor, often implying educated or once-comfortable. Root: im (not) + pecunia (money)." },
+      { "w": "INSOLVENT", "pos": "adj", "cluster": "Poor", "def": "Unable to pay debts as they fall due; bankrupt; having liabilities exceeding assets", "ex": "After three failed ventures, the company was declared insolvent and its assets liquidated.", "tip": "Insolvent = legal/financial term for unable to pay debts. More technical than merely 'poor.'" },
+      { "w": "DESTITUTE", "pos": "adj", "cluster": "Poor", "def": "Without the basic necessities of life; lacking food, shelter, and resources; utterly poor", "ex": "The floods left thousands destitute, with no home, no possessions, and no means to rebuild.", "tip": "Destitute = the most severe poverty word — completely without necessities. Stronger than indigent or penury." },
+      { "w": "AVARICE", "pos": "n", "cluster": "Greedy", "def": "Extreme greed for wealth or material gain; an insatiable desire for more", "ex": "His avarice was legendary — he underpaid workers, avoided taxes, and still cried poverty at every opportunity.", "tip": "Avarice = insatiable greed. Root: avere (to crave). Avaricious = the adjective. One of the seven deadly sins." },
+      { "w": "RAPACIOUS", "pos": "adj", "cluster": "Greedy", "def": "Aggressively greedy or grasping; pursuing money or possessions with predatory aggression", "ex": "The rapacious hedge fund stripped the company of assets and discarded its workforce.", "tip": "Rapacious = predatory greed. Root: rapere (to seize). Like a raptor — seizes aggressively." },
+      { "w": "VENAL", "pos": "adj", "cluster": "Greedy", "def": "Open to bribery; susceptible to corruption; prepared to act dishonestly for money", "ex": "The venal official approved every permit regardless of safety — provided the payment was sufficient.", "tip": "Venal = corruptible by money. Root: venalis (for sale). A venal official has a price." },
+      { "w": "MERCENARY", "pos": "adj/n", "cluster": "Greedy", "def": "Primarily concerned with making money at the expense of ethics or loyalty; motivated by money alone", "ex": "His mercenary decision to sell the formula to a rival the day before the IPO shocked even his closest allies.", "tip": "Mercenary = loyalty and principle abandoned for money. As a noun: a soldier for hire. Both GRE tested." },
+      { "w": "COVETOUS", "pos": "adj", "cluster": "Greedy", "def": "Having or showing a great desire to possess something belonging to another", "ex": "She cast covetous eyes over her colleague's corner office from her first day at the firm.", "tip": "Covetous = wanting what SOMEONE ELSE has. Root: 'covet' — to desire another's possessions. Biblical origin." },
+      { "w": "OPULENT", "pos": "adj", "cluster": "Wealthy", "def": "Ostentatiously rich and luxurious; characterized by extreme wealth and extravagance", "ex": "The opulent ballroom — gold leaf ceilings, marble floors, crystal chandeliers — overwhelmed even jaded guests.", "tip": "Opulent = luxuriously, visibly wealthy. Related to ostentatious (Day 7) — both involve display of wealth." },
+      { "w": "LUCRATIVE", "pos": "adj", "cluster": "Wealthy", "def": "Producing a great deal of profit; highly financially rewarding", "ex": "The consulting contract was lucrative but dull — she left it for a poorly-paid job that actually interested her.", "tip": "Lucrative = profitable. Root: lucrum (profit/gain). Always about financial return." },
+      { "w": "PECUNIARY", "pos": "adj", "cluster": "Wealthy", "def": "Of, relating to, or consisting of money; financial", "ex": "The divorce settlement addressed not only pecuniary matters but custody, property, and business stakes.", "tip": "Pecuniary = relating to money generally. 'Pecuniary interest/gain/loss.' More formal than 'financial.'" },
+      { "w": "REMUNERATIVE", "pos": "adj", "cluster": "Wealthy", "def": "Financially rewarding; paying well; bringing in profit or payment", "ex": "Teaching was rarely remunerative but deeply satisfying — a trade-off she had consciously accepted.", "tip": "Remunerative = pays well. Root: remunerari (to reward). 'A remunerative position' = well-paying job." },
+      { "w": "SOLVENT", "pos": "adj", "cluster": "Wealthy", "def": "Having assets in excess of liabilities; able to pay one's debts; financially stable", "ex": "After years of debt, the business finally became solvent — paying its creditors and breaking even.", "tip": "Solvent = simply able to pay debts. The minimum financial health bar. Opposite of insolvent." }
     ]
   },
   {
-    day: 17,
-    theme: "Art, Taste & Originality",
-    date: "May 20, 2026",
-    patterns: [
-      "Banal/hackneyed/trite all signal overused ideas — originality is absent",
-      "Aesthetic relates to beauty or artistic appreciation",
-      "Kitsch = gaudy sentimental bad taste pretending sophistication",
-      "Avant-garde works are experimental and innovative"
+    "day": 17,
+    "theme": "Art & Culture",
+    "date": "May 22, 2026",
+    "patterns": [
+      "Banal/Hackneyed/Trite = all mean stale and overused — hackneyed = worn by overuse · trite = too familiar · banal = utterly commonplace",
+      "Prosaic (dull, unimaginative — like prose vs poetry) vs Pedestrian (unimaginatively ordinary — like walking vs flying)",
+      "Iconoclast = attacks established beliefs/institutions · Avant-garde = ahead of current style · Seminal = planted seeds for future work",
+      "Austere (severely plain, no decoration) vs Ornate (heavily decorated) — these are polar opposites GRE loves to contrast"
     ],
-    words: [
-      {
-        w: "AESTHETIC",
-        pos: "adj/n",
-        cluster: "Art",
-        def: "Concerned with beauty or artistic taste.",
-        ex: "The architect balanced practicality with aesthetic elegance.",
-        tip: "Core GRE art-and-culture word."
-      },
-      {
-        w: "EVOCATIVE",
-        pos: "adj",
-        cluster: "Art",
-        def: "Bringing strong images, memories, or emotions to mind.",
-        ex: "The novel's evocative imagery lingered with readers for years.",
-        tip: "Art that emotionally summons something."
-      },
-      {
-        w: "LYRICAL",
-        pos: "adj",
-        cluster: "Art",
-        def: "Expressive, poetic, and musical in quality.",
-        ex: "Critics praised the film's lyrical cinematography.",
-        tip: "Elegant artistic fluidity."
-      },
-      {
-        w: "SUBLIME",
-        pos: "adj",
-        cluster: "Art",
-        def: "Inspiring awe through grandeur or beauty.",
-        ex: "The symphony's sublime finale left the audience speechless.",
-        tip: "Beauty elevated almost beyond comprehension."
-      },
-      {
-        w: "PROSAIC",
-        pos: "adj",
-        cluster: "Art",
-        def: "Dull, ordinary, or lacking imagination.",
-        ex: "The remake replaced the original's magic with prosaic realism.",
-        tip: "Opposite of imaginative artistry."
-      },
-
-      {
-        w: "BANAL",
-        pos: "adj",
-        cluster: "Unoriginal",
-        def: "So unoriginal and overused as to be boring.",
-        ex: "The critic dismissed the novel's banal dialogue.",
-        tip: "Extremely common GRE criticism word."
-      },
-      {
-        w: "HACKNEYED",
-        pos: "adj",
-        cluster: "Unoriginal",
-        def: "Overused to the point of losing originality.",
-        ex: "The speech relied on hackneyed patriotic clichés.",
-        tip: "Tired from overuse."
-      },
-      {
-        w: "TRITE",
-        pos: "adj",
-        cluster: "Unoriginal",
-        def: "Lacking freshness or originality because overused.",
-        ex: "His motivational slogans sounded trite.",
-        tip: "Shorter and more conversational than hackneyed."
-      },
-      {
-        w: "DERIVATIVE",
-        pos: "adj",
-        cluster: "Unoriginal",
-        def: "Imitating another work without originality.",
-        ex: "The film felt derivative of earlier science-fiction classics.",
-        tip: "Copied inspiration without innovation."
-      },
-      {
-        w: "CLICHED",
-        pos: "adj",
-        cluster: "Unoriginal",
-        def: "Containing overused expressions or ideas.",
-        ex: "The romance novel's ending was painfully cliched.",
-        tip: "Very common in RC literary criticism."
-      },
-
-      {
-        w: "AVANT-GARDE",
-        pos: "adj",
-        cluster: "Innovative",
-        def: "Experimental, radical, and ahead of its time.",
-        ex: "The avant-garde composer alienated conservative audiences.",
-        tip: "Innovation that initially shocks people."
-      },
-      {
-        w: "ICONOCLASTIC",
-        pos: "adj",
-        cluster: "Innovative",
-        def: "Attacking or challenging established traditions or beliefs.",
-        ex: "The director's iconoclastic style transformed modern theater.",
-        tip: "Breaks conventions deliberately."
-      },
-      {
-        w: "ECLECTIC",
-        pos: "adj",
-        cluster: "Innovative",
-        def: "Drawing ideas or styles from many diverse sources.",
-        ex: "Her eclectic musical influences shaped a unique sound.",
-        tip: "Mixing many styles together."
-      },
-      {
-        w: "KITSCH",
-        pos: "n/adj",
-        cluster: "Taste",
-        def: "Art or style considered gaudy, sentimental, or in poor taste.",
-        ex: "Critics dismissed the decor as pure kitsch.",
-        tip: "Fake sophistication and cheap sentimentality."
-      },
-      {
-        w: "ORNATE",
-        pos: "adj",
-        cluster: "Taste",
-        def: "Highly decorated and excessively elaborate.",
-        ex: "The ornate writing style distracted from the argument itself.",
-        tip: "Can be praise or criticism depending on context."
-      }
+    "words": [
+      { "w": "BANAL", "pos": "adj", "cluster": "Stale", "def": "So lacking in originality as to be obvious and boring; unoriginal and predictable", "ex": "The romantic comedy followed such a banal formula that audiences could predict every plot turn within minutes.", "tip": "Banal = utterly commonplace. Root: banal (French) = common, trite. The most dismissive cliché word." },
+      { "w": "HACKNEYED", "pos": "adj", "cluster": "Stale", "def": "Made trite and unoriginal through overuse; worn out by repetition", "ex": "The speech was full of hackneyed metaphors — journeys, battles, and dawns — that had lost all power.", "tip": "Hackneyed = worn by excessive use. Root: hackney horse = overworked horse for hire. Meaning has been ridden to death." },
+      { "w": "TRITE", "pos": "adj", "cluster": "Stale", "def": "Overused and consequently of little thought or originality; lacking freshness", "ex": "The reviewer dismissed the novel's dialogue as trite, noting that every exchange felt borrowed from other books.", "tip": "Trite = too familiar, worn smooth. Slightly milder than hackneyed — trite is just too familiar, not necessarily overused." },
+      { "w": "PROSAIC", "pos": "adj", "cluster": "Stale", "def": "Having the style of prose rather than poetry; unromantic; commonplace and dull", "ex": "His prosaic mind transformed every poetic landscape into a list of GPS coordinates and mileage estimates.", "tip": "Prosaic = plain like prose (vs poetry). Root: prosa (prose). A prosaic description = dull, factual, unimaginative." },
+      { "w": "PEDESTRIAN", "pos": "adj", "cluster": "Stale", "def": "Lacking inspiration or excitement; unimaginatively ordinary; dull", "ex": "Despite its impressive budget, the film was pedestrian — technically competent but with nothing memorable.", "tip": "Pedestrian = walking pace when others are flying. Unimaginatively ordinary. Also literally: a person walking." },
+      { "w": "ICONOCLAST", "pos": "n", "cluster": "Original", "def": "A person who attacks cherished beliefs or institutions; a rebel against established convention", "ex": "The iconoclast architect refused to use any historical references, declaring tradition an obstacle to truth.", "tip": "Iconoclast = breaks icons (sacred images). Root: eikon (icon) + klaein (to break). Challenges what others revere." },
+      { "w": "AVANT-GARDE", "pos": "adj/n", "cluster": "Original", "def": "New and experimental ideas and methods in art; innovative and ahead of current style or thinking", "ex": "Her avant-garde compositions baffled concert audiences but were celebrated by fellow composers as revelatory.", "tip": "Avant-garde = ahead of the guard (French military term). In art: so new that audiences haven't caught up yet." },
+      { "w": "SEMINAL", "pos": "adj", "cluster": "Original", "def": "Strongly influencing later developments; original and important; providing a foundation for the future", "ex": "The 1962 paper proved seminal — every major advance in the field over the next thirty years traced back to it.", "tip": "Seminal = planted seeds for future work. Root: semen (seed). 'A seminal work' = foundational and generative." },
+      { "w": "ECLECTIC", "pos": "adj", "cluster": "Original", "def": "Deriving ideas, style, or taste from a broad and diverse range of sources; wide-ranging", "ex": "Her eclectic collection mixed African sculpture, Japanese woodblock prints, and French Impressionism.", "tip": "Eclectic = draws from many different sources. Usually positive. Not a mishmash — a thoughtful, wide-ranging selection." },
+      { "w": "INNOVATIVE", "pos": "adj", "cluster": "Original", "def": "Featuring new methods, ideas, or products; introducing something genuinely new and creative", "ex": "The innovative approach to vaccine delivery — a skin patch instead of injection — could transform global health.", "tip": "Innovative = creates something genuinely new. Less extreme than avant-garde — innovation still connects to the present." },
+      { "w": "AESTHETIC", "pos": "adj/n", "cluster": "Aesthetic", "def": "Concerned with beauty or the appreciation of beauty; relating to art and artistic principles", "ex": "The architect's aesthetic choices — natural light, organic materials, careful proportions — created spaces that felt alive.", "tip": "Aesthetic = relating to beauty and art. As a noun: a particular visual style or set of principles." },
+      { "w": "BAROQUE", "pos": "adj", "cluster": "Aesthetic", "def": "Highly ornate and extravagant in style; complex and elaborate to the point of excess", "ex": "The baroque interior — cherubs, gilded cornices, frescoed ceilings — overwhelmed rather than impressed.", "tip": "Baroque = extravagantly complex and ornamental. Historical period (1600s) but GRE uses it to mean any elaborate excess." },
+      { "w": "AUSTERE", "pos": "adj", "cluster": "Aesthetic", "def": "Severe or strict in manner; having no ornamentation; deliberately plain and unadorned", "ex": "The monastery's austere design — bare stone walls, no decoration — created an atmosphere of concentrated purpose.", "tip": "Austere = severe simplicity, often deliberately chosen. Opposite of baroque/ornate. Can also mean morally strict." },
+      { "w": "ORNATE", "pos": "adj", "cluster": "Aesthetic", "def": "Elaborately adorned and decorated; highly embellished; (of writing) using unusual or flowery words", "ex": "The ornate Victorian prose — dense with subordinate clauses and literary allusions — exhausted modern readers.", "tip": "Ornate = decorated to excess. Used for architecture, writing, and design. Between baroque (excess) and embellished (moderate)." },
+      { "w": "WHIMSICAL", "pos": "adj", "cluster": "Aesthetic", "def": "Playfully quaint or fanciful; not serious; acting or done on impulse or whim; charmingly odd", "ex": "The illustrator's whimsical drawings — teacups with legs, clouds that whispered secrets — delighted children and adults alike.", "tip": "Whimsical = charmingly playful and imaginative. Positive. Distinguished from capricious (impulsive, less charming)." }
     ]
   },
   {
-    day: 18,
-    theme: "RC Abstract Language & Academic Tone",
-    date: "May 21, 2026",
-    patterns: [
-      "Orthodox = conventional accepted view · Heterodox = challenging accepted doctrine",
-      "Qualified claims are partially limited — not fully rejected",
-      "Ambivalent = mixed feelings · Equivocal = unclear/ambiguous language",
-      "Paradigmatic examples REPRESENT an entire model or pattern"
+    "day": 18,
+    "theme": "High-Frequency Sweep",
+    "date": "May 23, 2026",
+    "patterns": [
+      "Ameliorate/Mitigate/Alleviate = all mean to improve or lessen — ameliorate = make better · mitigate = make less severe · alleviate = relieve",
+      "Mollify/Placate/Appease/Propitiate = all mean to soothe anger — propitiate is the strongest, implying sacrifice to win back favor",
+      "Rescind (cancel an official order) vs Repudiate (publicly reject/disown) vs Abrogate (formally abolish)",
+      "Enervate = drain of energy/vitality (often confused with energize — they are OPPOSITES) · Forestall = prevent by acting first"
     ],
-    words: [
-      {
-        w: "ORTHODOX",
-        pos: "adj",
-        cluster: "Academic Positions",
-        def: "Conforming to established or traditional beliefs or methods.",
-        ex: "The economist challenged the orthodox view of free markets.",
-        tip: "Standard accepted position in RC passages."
-      },
-      {
-        w: "HETERODOX",
-        pos: "adj",
-        cluster: "Academic Positions",
-        def: "Departing from accepted or traditional beliefs.",
-        ex: "Her heterodox theories initially faced intense criticism.",
-        tip: "Counter-mainstream academic thinking."
-      },
-      {
-        w: "CONVENTIONAL",
-        pos: "adj",
-        cluster: "Academic Positions",
-        def: "Based on accepted standards or typical practice.",
-        ex: "Conventional interpretations ignored minority perspectives.",
-        tip: "Neutral mainstream acceptance."
-      },
-      {
-        w: "ICONOCLASTIC",
-        pos: "adj",
-        cluster: "Academic Positions",
-        def: "Attacking established beliefs, traditions, or institutions.",
-        ex: "The scholar's iconoclastic argument transformed the field.",
-        tip: "Aggressively anti-tradition."
-      },
-      {
-        w: "REVISIONIST",
-        pos: "adj",
-        cluster: "Academic Positions",
-        def: "Reinterpreting traditional historical or intellectual views.",
-        ex: "Revisionist historians challenged earlier assumptions about the war.",
-        tip: "Frequently appears in history RC passages."
-      },
-
-      {
-        w: "PARADIGMATIC",
-        pos: "adj",
-        cluster: "Abstraction",
-        def: "Serving as a typical example or model of something.",
-        ex: "The case became paradigmatic of institutional corruption.",
-        tip: "Representative example of an entire pattern."
-      },
-      {
-        w: "ANOMALOUS",
-        pos: "adj",
-        cluster: "Abstraction",
-        def: "Deviating from what is normal or expected.",
-        ex: "Researchers struggled to explain the anomalous results.",
-        tip: "Exception that disrupts the pattern."
-      },
-      {
-        w: "QUALIFIED",
-        pos: "adj",
-        cluster: "Abstraction",
-        def: "Limited, modified, or restrained in extent.",
-        ex: "The scientist offered only qualified support for the proposal.",
-        tip: "Not absolute approval or rejection."
-      },
-      {
-        w: "NUANCED",
-        pos: "adj",
-        cluster: "Abstraction",
-        def: "Characterized by subtle distinctions and complexity.",
-        ex: "The biography offered a nuanced portrait of the leader.",
-        tip: "Sophisticated complexity — extremely common in RC."
-      },
-      {
-        w: "EQUIVOCAL",
-        pos: "adj",
-        cluster: "Abstraction",
-        def: "Ambiguous or open to multiple interpretations.",
-        ex: "The senator's equivocal statement satisfied no one.",
-        tip: "Unclear commitment."
-      },
-
-      {
-        w: "AMBIVALENT",
-        pos: "adj",
-        cluster: "Attitude",
-        def: "Having mixed or contradictory feelings.",
-        ex: "Critics remained ambivalent about the novel's ending.",
-        tip: "Simultaneous opposing emotions."
-      },
-      {
-        w: "TENTATIVE",
-        pos: "adj",
-        cluster: "Attitude",
-        def: "Uncertain or not fully developed.",
-        ex: "Researchers proposed a tentative explanation for the anomaly.",
-        tip: "Careful non-final judgment."
-      },
-      {
-        w: "DOGMATIC",
-        pos: "adj",
-        cluster: "Attitude",
-        def: "Asserting opinions in an arrogantly unquestionable manner.",
-        ex: "The philosopher's dogmatic tone alienated readers.",
-        tip: "Absolute certainty without openness."
-      },
-      {
-        w: "PRAGMATIC",
-        pos: "adj",
-        cluster: "Attitude",
-        def: "Focused on practical outcomes rather than ideology.",
-        ex: "The mayor adopted a pragmatic approach to reform.",
-        tip: "Practical realism over theory."
-      },
-      {
-        w: "DISPASSIONATE",
-        pos: "adj",
-        cluster: "Attitude",
-        def: "Free from emotional bias or prejudice.",
-        ex: "The report offered a dispassionate assessment of the crisis.",
-        tip: "Objective neutrality — positive in RC."
-      }
+    "words": [
+      { "w": "AMELIORATE", "pos": "v", "cluster": "Improve", "def": "To make something bad or unsatisfactory better; to improve a situation", "ex": "Several policy changes were introduced to ameliorate the conditions in overcrowded urban shelters.", "tip": "Ameliorate = improve a bad situation. Root: melior (better). Distinguished from 'improve' by implying a bad starting point." },
+      { "w": "EXACERBATE", "pos": "v", "cluster": "Improve", "def": "To make a problem, bad situation, or negative feeling worse; to aggravate", "ex": "The drought was exacerbated by government mismanagement of water reserves over the preceding decade.", "tip": "Exacerbate = make worse. Root: acerbus (harsh). GRE's favourite 'worsen' word. Opposite of ameliorate." },
+      { "w": "MITIGATE", "pos": "v", "cluster": "Improve", "def": "To make less severe, serious, or painful; to reduce the impact of something harmful", "ex": "Planting trees can help mitigate the effects of urban heat by providing shade and releasing moisture.", "tip": "Mitigate = reduce severity (not eliminate). 'Mitigating circumstances' = factors that lessen blame." },
+      { "w": "ALLEVIATE", "pos": "v", "cluster": "Improve", "def": "To make suffering, a problem, or a deficiency less severe; to provide partial relief", "ex": "The medication alleviated the pain enough for her to sleep, though it did not address the underlying cause.", "tip": "Alleviate = relieve but not cure. Root: levis (light) = make lighter. Always implies partial, not complete, relief." },
+      { "w": "ASSUAGE", "pos": "v", "cluster": "Improve", "def": "To make an unpleasant feeling less intense; to soothe; to satisfy an appetite or desire", "ex": "His apology did little to assuage her anger — the damage to trust was simply too great.", "tip": "Assuage = soothe feelings or satisfy needs. Can apply to hunger, grief, fear, or anger. More poetic than alleviate." },
+      { "w": "MOLLIFY", "pos": "v", "cluster": "Soothe", "def": "To appease the anger or anxiety of someone; to soothe; to make less intense", "ex": "The CEO's public statement failed to mollify shareholders already furious at the quarter's losses.", "tip": "Mollify = reduce someone's anger. Root: mollis (soft) = to soften. Often used for calming angry people or groups." },
+      { "w": "PLACATE", "pos": "v", "cluster": "Soothe", "def": "To make someone less angry or hostile; to pacify by conceding something", "ex": "The government offered minor concessions to placate the protesters without addressing their core demands.", "tip": "Placate = calm anger, often with a concession. Placare (Latin) = to appease. Often implies insufficient action." },
+      { "w": "CONCILIATE", "pos": "v", "cluster": "Soothe", "def": "To stop someone feeling angry or discontented; to reconcile; to gain goodwill through friendliness", "ex": "The mediator worked to conciliate both parties, finding common ground where each side could feel heard.", "tip": "Conciliate = bring together through goodwill. Root: conciliare (to unite). More mutual than mollify or placate." },
+      { "w": "PROPITIATE", "pos": "v", "cluster": "Soothe", "def": "To win or regain the favor of someone through sacrifice, gift, or appeasement", "ex": "Ancient rituals were performed to propitiate the gods before important battles or voyages.", "tip": "Propitiate = the strongest appeasement word — implies offering something significant to regain favor. Often religious context." },
+      { "w": "DISABUSE", "pos": "v", "cluster": "Soothe", "def": "To persuade someone that an idea or belief is mistaken; to correct a false impression", "ex": "The professor disabused the class of the widespread misconception that correlation implies causation.", "tip": "Disabuse = correct a false belief. 'Disabuse someone of the notion that...' is a GRE-favourite construction." },
+      { "w": "ENERVATE", "pos": "v", "cluster": "Reverse", "def": "To weaken or drain of vitality, energy, or strength; to debilitate", "ex": "The months of chemotherapy had enervated her completely — even a short walk required enormous effort.", "tip": "CRITICAL: Enervate = WEAKEN, not energize. Students constantly confuse these. En-NERVE-ate = drain the nerves." },
+      { "w": "EXONERATE", "pos": "v", "cluster": "Reverse", "def": "To officially absolve from blame; to relieve of a duty or responsibility; to clear of accusation", "ex": "New testimony exonerated the convicted man, prompting his immediate release and a formal apology.", "tip": "Exonerate = officially clear of blame. Root: ex (from) + onus (burden) = relieve of burden. Legal contexts." },
+      { "w": "RESCIND", "pos": "v", "cluster": "Reverse", "def": "To revoke, cancel, or repeal a law, order, or agreement officially", "ex": "The board rescinded the offer when the background check revealed discrepancies in the candidate's resume.", "tip": "Rescind = cancel an official decision or offer. More formal than cancel. Root: rescindere (to cut off)." },
+      { "w": "REPUDIATE", "pos": "v", "cluster": "Reverse", "def": "To refuse to accept or be associated with; to deny the truth of; to reject with disapproval", "ex": "The organization publicly repudiated the extremist views expressed by one of its former members.", "tip": "Repudiate = publicly disown or reject. Stronger and more deliberate than merely disagreeing." },
+      { "w": "FORESTALL", "pos": "v", "cluster": "Reverse", "def": "To prevent or obstruct something by taking action in advance; to preempt", "ex": "The board moved quickly to forestall a hostile takeover by acquiring a critical block of its own shares.", "tip": "Forestall = prevent by acting FIRST. Root: forestall (market term: buying goods before they reach market to control price)." }
     ]
   },
   {
-    day: 19,
-    theme: "Scientific, Analytical & Research Language",
-    date: "May 22, 2026",
-    patterns: [
-      "Empirical = based on observation/evidence · Theoretical = based on abstract reasoning",
-      "Deterministic systems have predictable causes · Stochastic systems involve randomness",
-      "Reductionist explanations simplify complex systems into parts",
-      "Inferential reasoning draws conclusions indirectly from evidence"
+    "day": 19,
+    "theme": "Vice & Moral Corruption",
+    "date": "May 24, 2026",
+    "patterns": [
+      "Egregious (outstandingly bad in a shocking way) vs Flagrant (openly and obviously wrong) — both glaring but egregious implies scale",
+      "Nefarious (criminal/wicked) vs Iniquitous (grossly unjust) vs Heinous (atrociously evil) — increasing moral horror",
+      "Wanton = deliberate AND unprovoked — the lack of justification is always the key feature",
+      "Turpitude = the abstract noun for moral depravity — 'moral turpitude' is a fixed GRE phrase"
     ],
-    words: [
-      {
-        w: "EMPIRICAL",
-        pos: "adj",
-        cluster: "Research",
-        def: "Based on observation, experiment, or evidence rather than theory alone.",
-        ex: "The hypothesis lacked empirical support.",
-        tip: "Data-driven evidence."
-      },
-      {
-        w: "THEORETICAL",
-        pos: "adj",
-        cluster: "Research",
-        def: "Concerned with abstract principles rather than practical application.",
-        ex: "Theoretical physics often advances before experimentation catches up.",
-        tip: "Conceptual rather than directly observable."
-      },
-      {
-        w: "INFERENTIAL",
-        pos: "adj",
-        cluster: "Research",
-        def: "Based on conclusions drawn from evidence and reasoning.",
-        ex: "The argument relied on inferential rather than direct proof.",
-        tip: "Indirect reasoning from clues."
-      },
-      {
-        w: "ANALYTICAL",
-        pos: "adj",
-        cluster: "Research",
-        def: "Using logical examination and evaluation of details.",
-        ex: "Her analytical approach uncovered inconsistencies in the dataset.",
-        tip: "Breaking systems into parts for understanding."
-      },
-      {
-        w: "SYSTEMATIC",
-        pos: "adj",
-        cluster: "Research",
-        def: "Methodical and organized according to a system.",
-        ex: "The researchers conducted a systematic review of prior studies.",
-        tip: "Structured careful methodology."
-      },
-
-      {
-        w: "DETERMINISTIC",
-        pos: "adj",
-        cluster: "Systems",
-        def: "Governed by fixed predictable causes.",
-        ex: "The theory assumed human behavior was deterministic.",
-        tip: "Every outcome caused predictably."
-      },
-      {
-        w: "STOCHASTIC",
-        pos: "adj",
-        cluster: "Systems",
-        def: "Randomly determined or probabilistic.",
-        ex: "Weather systems are partly stochastic in nature.",
-        tip: "Contains randomness and uncertainty."
-      },
-      {
-        w: "DISCRETE",
-        pos: "adj",
-        cluster: "Systems",
-        def: "Separate and individually distinct.",
-        ex: "The study analyzed discrete categories of behavior.",
-        tip: "Separate units — not continuous."
-      },
-      {
-        w: "DYNAMIC",
-        pos: "adj",
-        cluster: "Systems",
-        def: "Characterized by constant change or activity.",
-        ex: "Language evolves through dynamic cultural processes.",
-        tip: "Opposite of static."
-      },
-      {
-        w: "STATIC",
-        pos: "adj",
-        cluster: "Systems",
-        def: "Lacking movement, growth, or development.",
-        ex: "The outdated model treated society as static.",
-        tip: "No meaningful change."
-      },
-
-      {
-        w: "REDUCTIONIST",
-        pos: "adj",
-        cluster: "Analysis",
-        def: "Explaining complex phenomena through simpler constituent parts.",
-        ex: "Critics argued the theory was overly reductionist.",
-        tip: "Oversimplifies complexity into components."
-      },
-      {
-        w: "HOLISTIC",
-        pos: "adj",
-        cluster: "Analysis",
-        def: "Considering systems as integrated wholes rather than isolated parts.",
-        ex: "The physician adopted a holistic approach to treatment.",
-        tip: "Whole-system thinking."
-      },
-      {
-        w: "SYNTHETIC",
-        pos: "adj",
-        cluster: "Analysis",
-        def: "Combining separate elements into a unified whole.",
-        ex: "The essay offered a synthetic overview of competing theories.",
-        tip: "Integrates many pieces together."
-      },
-      {
-        w: "DERIVE",
-        pos: "v",
-        cluster: "Analysis",
-        def: "To obtain or develop from a source.",
-        ex: "The conclusion was derived from decades of observation.",
-        tip: "Drawn from prior evidence."
-      },
-      {
-        w: "POSTULATE",
-        pos: "v",
-        cluster: "Analysis",
-        def: "To suggest or assume as a basis for reasoning.",
-        ex: "The philosopher postulated the existence of universal truths.",
-        tip: "Propose theoretically without full proof yet."
-      }
+    "words": [
+      { "w": "DISSOLUTE", "pos": "adj", "cluster": "Immoral", "def": "Given to immoral pleasures; completely lacking in moral restraint or discipline", "ex": "The dissolute nobleman squandered his inheritance on gambling and debauchery, dying penniless at forty.", "tip": "Dissolute = morally unraveled. Root: dissolutus (loose, undone) = all restraint has dissolved." },
+      { "w": "DEBAUCHED", "pos": "adj", "cluster": "Immoral", "def": "Excessively indulging in sensual pleasures to a degree regarded as moral depravity", "ex": "The debauched court shocked foreign ambassadors who reported its excesses back to disapproving monarchs.", "tip": "Debauched = corrupted through self-indulgence. Implies the person was once better and has since fallen." },
+      { "w": "LICENTIOUS", "pos": "adj", "cluster": "Immoral", "def": "Promiscuous and unprincipled in sexual matters; disregarding accepted moral rules", "ex": "The licentious governor's conduct became impossible to ignore when it began affecting governance.", "tip": "Licentious = unlicensed by moral law. Root: licentia (freedom) = freedom taken too far." },
+      { "w": "REPROBATE", "pos": "n/adj", "cluster": "Immoral", "def": "An unprincipled person; utterly morally corrupt and unashamed; rejected by God or society", "ex": "The reprobate had been expelled from three institutions before his thirtieth birthday.", "tip": "Reprobate = morally condemned without remorse. As adj: 'a reprobate lifestyle.' Strong and comprehensive moral failure." },
+      { "w": "DEPRAVED", "pos": "adj", "cluster": "Immoral", "def": "Morally corrupt; having lost natural good qualities through excessive self-indulgence", "ex": "The depraved conditions in the institution shocked inspectors who had never seen such systematic cruelty.", "tip": "Depraved = morally corrupted and gone far from goodness. Root: depravare (to corrupt). Depravity is the noun." },
+      { "w": "INIQUITOUS", "pos": "adj", "cluster": "Wicked", "def": "Grossly unfair and morally wrong; sinful; unjust in a way that causes outrage", "ex": "The iniquitous sentencing policy imprisoned the poor while wealthy defendants walked free on the same charges.", "tip": "Iniquitous = grossly unjust. Root: iniquus (not equal). Iniquity is the noun — 'a den of iniquity.'" },
+      { "w": "NEFARIOUS", "pos": "adj", "cluster": "Wicked", "def": "Wicked, criminal, and evil; flagrantly villainous", "ex": "The investigation exposed the nefarious network of bribery that extended to the highest levels of government.", "tip": "Nefarious = actively and flagrantly evil. Root: nefas (crime against divine law). Strong — implies deliberate wrongdoing." },
+      { "w": "TURPITUDE", "pos": "n", "cluster": "Wicked", "def": "Wickedness and moral depravity; shamefully wicked behavior", "ex": "The contract contained a morality clause terminating employment upon conviction of moral turpitude.", "tip": "'Moral turpitude' = fixed GRE legal phrase. Turpitude = the abstract noun for depraved conduct. Root: turpis (base/vile)." },
+      { "w": "HEINOUS", "pos": "adj", "cluster": "Wicked", "def": "Utterly odious or wicked; shockingly evil; atrocious", "ex": "The heinous nature of the crime — its deliberate cruelty — precluded any possibility of leniency.", "tip": "Heinous = the strongest single-word descriptor of evil acts. Root: haineus (Old French) = hateful. Reserved for truly atrocious acts." },
+      { "w": "EGREGIOUS", "pos": "adj", "cluster": "Glaring", "def": "Outstandingly bad; shockingly or flagrantly wrong; conspicuously offensive", "ex": "The professor's egregious misquotation of the primary source undermined the entire paper's credibility.", "tip": "Egregious = stands out from the flock (for the wrong reasons). Root: ex (out) + grex (flock). Originally meant 'remarkably good' — now always negative." },
+      { "w": "IGNOMINIOUS", "pos": "adj", "cluster": "Glaring", "def": "Deserving or causing public disgrace or shame; humiliating and shameful", "ex": "The champion's ignominious defeat — losing in the first round — stunned the crowd into silence.", "tip": "Ignominious = publicly shaming. Root: ignominia (disgrace). Ignominy is the noun. Always involves public humiliation." },
+      { "w": "SORDID", "pos": "adj", "cluster": "Glaring", "def": "Involving immoral or dishonorable actions or motives; dirty and unpleasant; morally degrading", "ex": "The sordid details of the affair — the deception, the manipulation — made it impossible to sympathize.", "tip": "Sordid = morally dirty. Root: sordidus (dirty). Can describe situations, details, or motives — not people directly." },
+      { "w": "WANTON", "pos": "adj", "cluster": "Glaring", "def": "Deliberate and unprovoked; merciless; showing no care for morality or the law", "ex": "The wanton destruction of the medieval library — burning irreplaceable manuscripts — shocked the scholarly world.", "tip": "Wanton = deliberate AND unprovoked — no justification. 'Wanton cruelty/destruction/disregard.' The lack of reason is the defining feature." },
+      { "w": "FLAGRANT", "pos": "adj", "cluster": "Glaring", "def": "Conspicuously or obviously offensive; glaring in its wrongness; so bad it cannot be ignored", "ex": "The flagrant breach of protocol — shaking hands before the cameras cut — caused a diplomatic incident.", "tip": "Flagrant = cannot be hidden or ignored. Root: flagrare (to blaze). The wrong is blazing — everyone can see it." },
+      { "w": "UNCONSCIONABLE", "pos": "adj", "cluster": "Glaring", "def": "Not right or reasonable; exceeding what is reasonable; without conscience; excessive", "ex": "The unconscionable delay of fourteen years between conviction and exoneration demanded systematic reform.", "tip": "Unconscionable = no conscience could permit this. The strongest 'this is wrong' adjective in legal and moral contexts." }
     ]
   },
   {
-    day: 20,
-    theme: "Process, Change & Causation Verbs",
-    date: "May 23, 2026",
-    patterns: [
-      "Exacerbate intensifies problems · Mitigate reduces severity",
-      "Catalyze/precipitate both trigger events — catalyze often accelerates positive or neutral change",
-      "Impede obstructs progress · Facilitate enables progress",
-      "Abate means gradual reduction, especially intensity"
+    "day": 20,
+    "theme": "Virtue & Moral Integrity",
+    "date": "May 25, 2026",
+    "patterns": [
+      "Probity (demonstrated integrity through action) vs Rectitude (moral correctness as a quality) — probity is earned, rectitude is possessed",
+      "Unimpeachable/Irreproachable/Impeccable = all mean beyond criticism — unimpeachable = cannot be attacked · impeccable = flawless · irreproachable = no reproach possible",
+      "Scrupulous = extremely careful about doing what is RIGHT · Conscientious = extremely careful about doing things WELL — overlap but distinct",
+      "Estimable = worthy of great respect (from 'esteem') — do not confuse with 'estimatable' (able to be estimated)"
     ],
-    words: [
-      {
-        w: "EXACERBATE",
-        pos: "v",
-        cluster: "Intensify",
-        def: "To make a problem or negative situation worse.",
-        ex: "The policy exacerbated existing social inequalities.",
-        tip: "Almost always worsens something negative."
-      },
-      {
-        w: "AGGRAVATE",
-        pos: "v",
-        cluster: "Intensify",
-        def: "To intensify or worsen.",
-        ex: "Poor communication aggravated tensions within the team.",
-        tip: "Formal GRE meaning = worsen."
-      },
-      {
-        w: "COMPOUND",
-        pos: "v",
-        cluster: "Intensify",
-        def: "To increase or worsen by adding further difficulty.",
-        ex: "Economic decline compounded political instability.",
-        tip: "One problem piling onto another."
-      },
-      {
-        w: "AMPLIFY",
-        pos: "v",
-        cluster: "Intensify",
-        def: "To increase strength, intensity, or importance.",
-        ex: "Social media amplified public outrage.",
-        tip: "Makes something louder/stronger."
-      },
-      {
-        w: "ESCALATE",
-        pos: "v",
-        cluster: "Intensify",
-        def: "To increase rapidly in seriousness or intensity.",
-        ex: "The disagreement escalated into open conflict.",
-        tip: "Upward progression in intensity."
-      },
-
-      {
-        w: "MITIGATE",
-        pos: "v",
-        cluster: "Reduce",
-        def: "To make less severe or painful.",
-        ex: "New regulations mitigated environmental damage.",
-        tip: "Reduce harm, not eliminate it."
-      },
-      {
-        w: "ALLEVIATE",
-        pos: "v",
-        cluster: "Reduce",
-        def: "To relieve or lessen suffering or difficulty.",
-        ex: "The aid program alleviated food shortages.",
-        tip: "Relief from hardship."
-      },
-      {
-        w: "ABATE",
-        pos: "v",
-        cluster: "Reduce",
-        def: "To decrease gradually in intensity.",
-        ex: "The storm finally began to abate.",
-        tip: "Natural fading reduction."
-      },
-      {
-        w: "TEMPER",
-        pos: "v",
-        cluster: "Reduce",
-        def: "To moderate or soften.",
-        ex: "Experience tempered his youthful idealism.",
-        tip: "Controlled moderation."
-      },
-      {
-        w: "CURB",
-        pos: "v",
-        cluster: "Reduce",
-        def: "To restrain or keep under control.",
-        ex: "The law aimed to curb corruption.",
-        tip: "External restraint."
-      },
-
-      {
-        w: "CATALYZE",
-        pos: "v",
-        cluster: "Cause",
-        def: "To trigger or accelerate significant change.",
-        ex: "The invention catalyzed rapid industrial growth.",
-        tip: "Starts or speeds transformation."
-      },
-      {
-        w: "PRECIPITATE",
-        pos: "v",
-        cluster: "Cause",
-        def: "To cause something to happen suddenly.",
-        ex: "The scandal precipitated the minister's resignation.",
-        tip: "Triggers abrupt consequence."
-      },
-      {
-        w: "ENGENDER",
-        pos: "v",
-        cluster: "Cause",
-        def: "To produce or give rise to.",
-        ex: "The policy engendered widespread distrust.",
-        tip: "Creates abstract conditions or emotions."
-      },
-      {
-        w: "FOSTER",
-        pos: "v",
-        cluster: "Cause",
-        def: "To encourage or promote development.",
-        ex: "The program fostered scientific collaboration.",
-        tip: "Positive nurturing growth."
-      },
-      {
-        w: "SPAWN",
-        pos: "v",
-        cluster: "Cause",
-        def: "To generate or produce in large numbers.",
-        ex: "The controversy spawned countless conspiracy theories.",
-        tip: "Produces many consequences rapidly."
-      }
+    "words": [
+      { "w": "RECTITUDE", "pos": "n", "cluster": "Integrity", "def": "Morally correct behavior or thinking; righteousness; moral uprightness", "ex": "His rectitude was never in doubt — he had declined bribes and resisted pressure throughout his career.", "tip": "Rectitude = moral straightness. Root: rectus (straight). 'A person of rectitude' = morally correct by nature." },
+      { "w": "PROBITY", "pos": "n", "cluster": "Integrity", "def": "The quality of having strong moral principles; complete honesty and integrity demonstrated through action", "ex": "Her probity was proven not by words but by forty years of service without a single scandal.", "tip": "Probity = integrity that has been demonstrated and tested. Root: probus (good). You earn probity through conduct." },
+      { "w": "SCRUPULOUS", "pos": "adj", "cluster": "Integrity", "def": "Diligent, thorough, and careful about acting morally; paying close attention to doing what is right", "ex": "The scrupulous accountant flagged every irregularity, even when doing so was professionally inconvenient.", "tip": "Scrupulous = careful about BOTH correctness and thoroughness. Root: scrupulus (small stone causing discomfort in the shoe) = nagging sense of wrongdoing." },
+      { "w": "INCORRUPTIBLE", "pos": "adj", "cluster": "Integrity", "def": "Not susceptible to corruption; maintaining complete moral integrity regardless of temptation", "ex": "The incorruptible judge turned down a six-figure bribe with a single-word written reply: 'No.'", "tip": "Incorruptible = cannot be bought or compromised. The absolute ceiling of moral integrity words." },
+      { "w": "MERITORIOUS", "pos": "adj", "cluster": "Praiseworthy", "def": "Deserving reward or praise; commendable; having moral or practical worth", "ex": "Her meritorious service to the community over three decades earned her the city's highest civilian honor.", "tip": "Meritorious = has genuine merit deserving recognition. Root: meritum (earned). Often used in military and civic contexts." },
+      { "w": "LAUDABLE", "pos": "adj", "cluster": "Praiseworthy", "def": "Deserving praise and commendation; worthy of recognition", "ex": "Though ultimately unsuccessful, the campaign's laudable intentions earned it goodwill from both sides.", "tip": "Laudable = worthy of being lauded (praised). Connects to laud (Day 4). The effort or intention deserves credit." },
+      { "w": "ESTIMABLE", "pos": "adj", "cluster": "Praiseworthy", "def": "Worthy of great respect; deserving high regard; admirable", "ex": "She was an estimable colleague — reliable, generous with her knowledge, and diplomatically honest.", "tip": "Estimable = worthy of esteem/high regard. Do not confuse with 'estimatable.' Root: aestimare (to value)." },
+      { "w": "CONSCIENTIOUS", "pos": "adj", "cluster": "Praiseworthy", "def": "Wishing to do what is right; very careful and thorough in discharging one's duties", "ex": "The conscientious researcher double-checked every citation before submission, delaying publication by a month.", "tip": "Conscientious = thorough because you care about doing things RIGHT. Distinguished from merely competent." },
+      { "w": "UNIMPEACHABLE", "pos": "adj", "cluster": "Flawless", "def": "Not able to be doubted, questioned, or criticized; beyond reproach; completely reliable", "ex": "Her unimpeachable credentials — three decades of published research without a single retraction — silenced critics.", "tip": "Unimpeachable = cannot be impeached (attacked/questioned). Legal metaphor. The strongest 'beyond criticism' word." },
+      { "w": "IMPECCABLE", "pos": "adj", "cluster": "Flawless", "def": "In accordance with the highest standards; flawless; without fault or error", "ex": "His impeccable manners made him the ideal candidate for the diplomatic posting.", "tip": "Impeccable = without a single flaw. Root: impeccabilis (without sin). 'Impeccable taste/record/logic.'" },
+      { "w": "IRREPROACHABLE", "pos": "adj", "cluster": "Flawless", "def": "Beyond criticism; faultless in behavior or character; impossible to find fault with", "ex": "Her irreproachable conduct throughout the investigation earned her the committee's unanimous trust.", "tip": "Irreproachable = no reproach (blame) is possible. Compare: unimpeachable (cannot be attacked) vs irreproachable (cannot be blamed)." },
+      { "w": "EXEMPLARY", "pos": "adj", "cluster": "Flawless", "def": "Serving as a desirable model; representing the best of its kind; outstanding", "ex": "The exemplary response to the crisis — transparent communication, swift action — became a case study in leadership.", "tip": "Exemplary = serves as an EXAMPLE for others to follow. Also: exemplary punishment = so severe it deters others." },
+      { "w": "STERLING", "pos": "adj", "cluster": "Reliable", "def": "Of excellent quality; thoroughly good and reliable; of the highest standard", "ex": "She had a sterling reputation built over twenty years of reliable, excellent work.", "tip": "Sterling = like sterling silver — genuine, of the highest quality. 'Sterling work/reputation/character.'" },
+      { "w": "STALWART", "pos": "adj/n", "cluster": "Reliable", "def": "Loyal, reliable, and hardworking; strongly committed to a cause or organization", "ex": "The stalwart volunteer had worked every election for thirty years, never missing a single day.", "tip": "Stalwart = dependably strong and loyal. Root: Old English stælwyrþe (serviceable). Both adjective and noun." },
+      { "w": "UPRIGHT", "pos": "adj", "cluster": "Reliable", "def": "Strictly honorable or honest; straightforward and morally correct in conduct", "ex": "The upright magistrate was known for consistency — identical rulings regardless of the defendant's status.", "tip": "Upright = morally vertical, not bent. Simpler than rectitude or probity but equally valued on the GRE." }
     ]
   },
   {
-    day: 21,
-    theme: "Tone, Attitude & Authorial Stance",
-    date: "May 24, 2026",
-    patterns: [
-      "Sardonic/caustic = harsh mocking criticism · Wry = subtle dry humor",
-      "Deferential = respectful downward posture toward authority",
-      "Conciliatory language reduces conflict rather than escalating it",
-      "Incredulous = unwilling to believe; skeptical due to surprise"
+    "day": 21,
+    "theme": "Power, Authority & Governance",
+    "date": "May 26, 2026",
+    "patterns": [
+      "Despotic (tyrannical personal rule) vs Autocratic (structure of one-person rule) vs Draconian (harsh laws, not necessarily personal) — distinguish ruler from system from law",
+      "Hegemony = leadership/dominance of one over others — not just power, but the acceptance or imposition of cultural/political dominance",
+      "Usurp = seize power illegally · Subjugate = bring people under control by force — both involve illegitimate or forceful power",
+      "Fiat vs Edict vs Mandate: fiat = authoritative decree by single authority · edict = formal public proclamation · mandate = authority given by voters or institutions"
     ],
-    words: [
-      {
-        w: "SARDONIC",
-        pos: "adj",
-        cluster: "Critical Tone",
-        def: "Mocking, cynical, and scornfully humorous.",
-        ex: "The critic's sardonic review delighted readers but devastated the playwright.",
-        tip: "Cold intelligent mockery."
-      },
-      {
-        w: "CAUSTIC",
-        pos: "adj",
-        cluster: "Critical Tone",
-        def: "Sharply biting and sarcastic in tone.",
-        ex: "Her caustic remarks silenced the entire panel.",
-        tip: "Verbally corrosive."
-      },
-      {
-        w: "ACERBIC",
-        pos: "adj",
-        cluster: "Critical Tone",
-        def: "Sharp, bitter, and forthright in speech or writing.",
-        ex: "The essay's acerbic tone alienated moderate readers.",
-        tip: "Bitter intellectual criticism."
-      },
-      {
-        w: "SCATHING",
-        pos: "adj",
-        cluster: "Critical Tone",
-        def: "Severely harsh and condemning.",
-        ex: "The report delivered a scathing indictment of the administration.",
-        tip: "Full-force verbal attack."
-      },
-      {
-        w: "WRY",
-        pos: "adj",
-        cluster: "Critical Tone",
-        def: "Dryly humorous in a subtle and often ironic way.",
-        ex: "He offered a wry observation about the committee's endless delays.",
-        tip: "Quiet intelligent irony."
-      },
-
-      {
-        w: "DEFERENTIAL",
-        pos: "adj",
-        cluster: "Respectful Tone",
-        def: "Showing respectful submission to another's authority or judgment.",
-        ex: "The junior scholars remained deferential during the debate.",
-        tip: "Respect directed upward."
-      },
-      {
-        w: "REVERENT",
-        pos: "adj",
-        cluster: "Respectful Tone",
-        def: "Feeling or showing deep respect bordering on awe.",
-        ex: "The documentary adopted a reverent tone toward the scientist.",
-        tip: "Near-sacred admiration."
-      },
-      {
-        w: "SOLEMN",
-        pos: "adj",
-        cluster: "Respectful Tone",
-        def: "Serious and dignified in manner.",
-        ex: "The ceremony proceeded in a solemn atmosphere.",
-        tip: "Grave seriousness."
-      },
-      {
-        w: "EARNEST",
-        pos: "adj",
-        cluster: "Respectful Tone",
-        def: "Serious and sincere in intention or effort.",
-        ex: "Her earnest appeal persuaded even skeptical listeners.",
-        tip: "Genuine sincerity."
-      },
-      {
-        w: "CORDIAL",
-        pos: "adj",
-        cluster: "Respectful Tone",
-        def: "Warm and politely friendly.",
-        ex: "Despite political differences, the discussion remained cordial.",
-        tip: "Polite surface warmth."
-      },
-
-      {
-        w: "CONCILIATORY",
-        pos: "adj",
-        cluster: "Diplomatic Tone",
-        def: "Intended to reduce hostility and restore goodwill.",
-        ex: "The ambassador adopted a conciliatory tone during negotiations.",
-        tip: "Moves toward peace."
-      },
-      {
-        w: "DIPLOMATIC",
-        pos: "adj",
-        cluster: "Diplomatic Tone",
-        def: "Tactful and sensitive in dealing with others.",
-        ex: "Her diplomatic response prevented the dispute from escalating.",
-        tip: "Strategic tact."
-      },
-      {
-        w: "TACTFUL",
-        pos: "adj",
-        cluster: "Diplomatic Tone",
-        def: "Careful not to offend or upset others.",
-        ex: "The editor offered tactful criticism of the manuscript.",
-        tip: "Socially careful honesty."
-      },
-      {
-        w: "PLACATORY",
-        pos: "adj",
-        cluster: "Diplomatic Tone",
-        def: "Intended to calm anger or hostility.",
-        ex: "He made a placatory gesture to the dissatisfied workers.",
-        tip: "Trying to soothe tension."
-      },
-      {
-        w: "AMENABLE",
-        pos: "adj",
-        cluster: "Diplomatic Tone",
-        def: "Open and responsive to suggestion or influence.",
-        ex: "The committee proved amenable to compromise.",
-        tip: "Willing to cooperate."
-      },
-
-      {
-        w: "INCREDULOUS",
-        pos: "adj",
-        cluster: "Skeptical Tone",
-        def: "Unwilling or unable to believe something.",
-        ex: "The audience reacted with incredulous silence.",
-        tip: "Shock + disbelief."
-      },
-      {
-        w: "SKEPTICAL",
-        pos: "adj",
-        cluster: "Skeptical Tone",
-        def: "Doubting accepted claims or conclusions.",
-        ex: "Scientists remained skeptical of the dramatic findings.",
-        tip: "Demands stronger proof."
-      },
-      {
-        w: "CYNICAL",
-        pos: "adj",
-        cluster: "Skeptical Tone",
-        def: "Distrustful of human sincerity or motives.",
-        ex: "His cynical view of politics alienated younger voters.",
-        tip: "Assumes bad motives."
-      },
-      {
-        w: "JADED",
-        pos: "adj",
-        cluster: "Skeptical Tone",
-        def: "Worn out or dulled by overexposure.",
-        ex: "Years in the industry left the reporter jaded.",
-        tip: "Emotional exhaustion from repetition."
-      },
-      {
-        w: "DISDAINFUL",
-        pos: "adj",
-        cluster: "Skeptical Tone",
-        def: "Showing contempt or scorn.",
-        ex: "She gave a disdainful glance at the proposal.",
-        tip: "Openly looking down on something."
-      }
+    "words": [
+      { "w": "SOVEREIGN", "pos": "adj/n", "cluster": "Authority", "def": "Possessing supreme or ultimate power; a monarch or ruler with supreme authority", "ex": "The sovereign power to declare war rested exclusively with the executive branch under the new constitution.", "tip": "Sovereign = supreme, above all else. Root: superanus (Latin via French) = above. Sovereignty = the quality of supreme power." },
+      { "w": "AUTOCRATIC", "pos": "adj", "cluster": "Authority", "def": "Relating to rule by a single person with absolute power; taking no account of others' wishes", "ex": "His autocratic management style — issuing directives without consultation — drove away every talented subordinate.", "tip": "Autocratic = the structure, not necessarily evil. Root: auto (self) + kratos (power) = self-ruling. Autocrat is the noun." },
+      { "w": "DESPOTIC", "pos": "adj", "cluster": "Authority", "def": "Of or typical of a tyrant; cruel and oppressive in the use of power; tyrannical", "ex": "The despotic ruler eliminated all opposition within a year, consolidating absolute control over every institution.", "tip": "Despotic = tyrant-like. Root: despotēs (master). Always negative — implies cruelty in the exercise of power." },
+      { "w": "HEGEMONY", "pos": "n", "cluster": "Authority", "def": "Leadership or dominance, especially of one country or group over others; cultural or political dominance", "ex": "American cultural hegemony — exported through film, music, and technology — reshaped global consumption habits.", "tip": "Hegemony = dominance that others accept or are forced to accept. Root: hēgemonia (leadership). Not just power — cultural influence." },
+      { "w": "PREROGATIVE", "pos": "n", "cluster": "Rights", "def": "A right or privilege exclusive to a particular individual or class; a special entitlement", "ex": "Calling a snap election is the Prime Minister's prerogative — no other institution can trigger it.", "tip": "Prerogative = exclusive right. Root: praerogativa (right to vote first). 'It's my prerogative' = my exclusive right to decide." },
+      { "w": "USURP", "pos": "v", "cluster": "Rights", "def": "To take a position of power or importance illegally or by force; to supplant wrongfully", "ex": "The general usurped the presidency, dissolving parliament and suspending the constitution within forty-eight hours.", "tip": "Usurp = seize illegitimately. Root: usurpare (to seize for use). Always involves taking what isn't rightfully yours." },
+      { "w": "SUBJUGATE", "pos": "v", "cluster": "Rights", "def": "To bring under domination or control, especially by conquest; to make subservient", "ex": "The empire spent two centuries attempting to subjugate tribes that had resisted every previous colonizing power.", "tip": "Subjugate = put under the yoke. Root: sub (under) + jugum (yoke). Complete domination, not mere influence." },
+      { "w": "TYRANNICAL", "pos": "adj", "cluster": "Control", "def": "Exercising power in a cruel, oppressive, or arbitrary way; characteristic of a tyrant", "ex": "The tyrannical regime monitored private communications and punished even mild expressions of dissent.", "tip": "Tyrannical = exercises power cruelly and arbitrarily. Distinguished from merely strict or authoritative." },
+      { "w": "AUTONOMOUS", "pos": "adj", "cluster": "Control", "def": "Acting independently and having the freedom to do so; self-governing", "ex": "The autonomous region controlled its own tax policy, judiciary, and police force despite nominal central oversight.", "tip": "Autonomous = self-governing. Root: auto (self) + nomos (law) = makes its own laws. Autonomy is the noun." },
+      { "w": "MANDATE", "pos": "n/v", "cluster": "Control", "def": "An official order or commission; the authority given to an elected body; to give official authorization", "ex": "The landslide gave the new government a clear mandate to pursue the radical economic reforms it had promised.", "tip": "Mandate = authority to act, usually from voters or an institution. 'Electoral mandate' is a GRE-favourite phrase." },
+      { "w": "FIAT", "pos": "n", "cluster": "Decrees", "def": "An authoritative decree or order; a formal authorization from an authority requiring no justification", "ex": "The regulations were implemented by executive fiat, bypassing the normal legislative consultation process.", "tip": "Fiat = 'let it be done' (Latin). Implies unilateral decision. 'Fiat money' = currency by decree, not backed by gold." },
+      { "w": "EDICT", "pos": "n", "cluster": "Decrees", "def": "An official order issued by a person in authority; a public proclamation carrying the force of law", "ex": "The king issued an edict forbidding the practice, punishable by exile for any noble who defied it.", "tip": "Edict = formal public proclamation. Root: edicere (to proclaim). Historical contexts (imperial edicts) are common in GRE RC." },
+      { "w": "DRACONIAN", "pos": "adj", "cluster": "Decrees", "def": "Excessively harsh, strict, or severe — said of laws, penalties, or measures", "ex": "The draconian sentencing guidelines left judges no discretion — a first offense carried a mandatory ten years.", "tip": "Named after Draco, Athenian lawmaker whose code prescribed death for nearly all crimes. Draconian = laws so harsh they seem punitive rather than just." },
+      { "w": "JURISDICTION", "pos": "n", "cluster": "Law", "def": "The official power to make legal decisions; the territory over which such power extends", "ex": "The crime occurred in international waters, creating genuine confusion about which country had jurisdiction.", "tip": "Jurisdiction = legal authority + the territory it covers. Root: jus (law) + dicere (to say). 'Outside my jurisdiction.'" },
+      { "w": "OLIGARCHY", "pos": "n", "cluster": "Systems", "def": "A form of government in which power rests with a small group of people; rule by a few", "ex": "Critics argued the democracy had become an oligarchy — real decisions made by a dozen billionaires and their lobbyists.", "tip": "Oligarchy = rule by few. Root: oligos (few) + arkhein (to rule). GRE uses this in RC passages about governance and economics." }
     ]
   },
   {
-    day: 22,
-    theme: "Difficulty, Effort & Complexity",
-    date: "May 25, 2026",
-    patterns: [
-      "Arduous/onerous/exacting all imply difficulty — but with different focus",
-      "Intractable problems resist solution despite effort",
-      "Cumbersome/unwieldy = physically or structurally difficult to manage",
-      "Laborious stresses sustained effort over time"
+    "day": 22,
+    "theme": "Conformity & Dissent",
+    "date": "May 27, 2026",
+    "patterns": [
+      "Orthodox (conforms to established doctrine) vs Canonical (included in the accepted standard) — orthodox = follows the rules · canonical = recognized as authoritative",
+      "Acquiesce (accept reluctantly without protest) vs Capitulate (surrender after resistance) vs Concede (admit a point) — escalating degrees of giving in",
+      "Contumacious = stubbornly defying authority · Recusant = refusing to conform to an official requirement — both resist, but recusant has historical religious weight",
+      "Maverick = independent but not necessarily oppositional · Subversive = actively works to undermine — independent vs actively undermining"
     ],
-    words: [
-      {
-        w: "ARDUOUS",
-        pos: "adj",
-        cluster: "Difficulty",
-        def: "Demanding great effort and endurance.",
-        ex: "Completing the expedition required an arduous climb through dangerous terrain.",
-        tip: "Physical or mental strain over long effort."
-      },
-      {
-        w: "ONEROUS",
-        pos: "adj",
-        cluster: "Difficulty",
-        def: "Oppressively burdensome or difficult to fulfill.",
-        ex: "The contract imposed onerous obligations on small businesses.",
-        tip: "Feels like a burden."
-      },
-      {
-        w: "EXACTING",
-        pos: "adj",
-        cluster: "Difficulty",
-        def: "Requiring great care, precision, or effort.",
-        ex: "Surgery is an exacting profession demanding constant focus.",
-        tip: "High standards and precision."
-      },
-      {
-        w: "LABORIOUS",
-        pos: "adj",
-        cluster: "Difficulty",
-        def: "Requiring considerable time and effort.",
-        ex: "The archaeologists undertook the laborious process of cataloging artifacts.",
-        tip: "Slow sustained work."
-      },
-      {
-        w: "GRUELING",
-        pos: "adj",
-        cluster: "Difficulty",
-        def: "Extremely tiring and demanding.",
-        ex: "The grueling schedule exhausted even experienced athletes.",
-        tip: "Physically punishing."
-      },
-
-      {
-        w: "INTRACTABLE",
-        pos: "adj",
-        cluster: "Complexity",
-        def: "Difficult or impossible to control or solve.",
-        ex: "The region faced intractable political divisions.",
-        tip: "Resists all attempts at solution."
-      },
-      {
-        w: "INSOLUBLE",
-        pos: "adj",
-        cluster: "Complexity",
-        def: "Impossible to solve or explain.",
-        ex: "The paradox appeared insoluble.",
-        tip: "No solution exists."
-      },
-      {
-        w: "KNOTTY",
-        pos: "adj",
-        cluster: "Complexity",
-        def: "Complicated and difficult to resolve.",
-        ex: "The philosopher tackled a knotty ethical dilemma.",
-        tip: "Tangled conceptual difficulty."
-      },
-      {
-        w: "ABSTRUSE",
-        pos: "adj",
-        cluster: "Complexity",
-        def: "Difficult to understand because highly complex or obscure.",
-        ex: "The article's abstruse language frustrated general readers.",
-        tip: "Dense intellectual complexity."
-      },
-      {
-        w: "RECONDITE",
-        pos: "adj",
-        cluster: "Complexity",
-        def: "Little known and difficult to comprehend.",
-        ex: "The lecture explored recondite aspects of medieval philosophy.",
-        tip: "Obscure scholarly difficulty."
-      },
-
-      {
-        w: "CUMBERSOME",
-        pos: "adj",
-        cluster: "Management",
-        def: "Large, complicated, or inefficiently difficult to handle.",
-        ex: "The cumbersome bureaucracy slowed every decision.",
-        tip: "Bulky inefficiency."
-      },
-      {
-        w: "UNWIELDY",
-        pos: "adj",
-        cluster: "Management",
-        def: "Difficult to move, manage, or control because of size or complexity.",
-        ex: "The unwieldy coalition collapsed under internal disagreement.",
-        tip: "Hard to control effectively."
-      },
-      {
-        w: "BYZANTINE",
-        pos: "adj",
-        cluster: "Management",
-        def: "Excessively complicated and intricate.",
-        ex: "The corporation's Byzantine regulations confused employees.",
-        tip: "Maze-like complexity."
-      },
-      {
-        w: "CONVOLUTED",
-        pos: "adj",
-        cluster: "Management",
-        def: "Extremely complex and difficult to follow.",
-        ex: "The argument became so convoluted that listeners lost track entirely.",
-        tip: "Twisted complexity."
-      },
-      {
-        w: "TEDIOUS",
-        pos: "adj",
-        cluster: "Management",
-        def: "Too long, slow, or repetitive; boring through monotony.",
-        ex: "The tedious review process lasted months.",
-        tip: "Mental exhaustion through repetition."
-      }
+    "words": [
+      { "w": "ORTHODOX", "pos": "adj", "cluster": "Conform", "def": "Conforming to established doctrine, practice, or rules; traditional and conventional", "ex": "The orthodox approach yielded predictable results — reliable but uninspired — and the committee wanted more.", "tip": "Orthodox = straight teaching. Root: orthos (straight) + doxa (opinion). GRE often contrasts orthodox and heterodox approaches." },
+      { "w": "HETERODOX", "pos": "adj", "cluster": "Conform", "def": "Not conforming to established doctrine or accepted standards; unorthodox", "ex": "Her heterodox economic views were dismissed by mainstream economists until the crisis proved her right.", "tip": "Heterodox = other teaching. Root: heteros (other) + doxa (opinion). The exact opposite of orthodox." },
+      { "w": "CANONICAL", "pos": "adj", "cluster": "Conform", "def": "Included in the accepted list of works; conforming to established rules; standard and authoritative", "ex": "Shakespeare's canonical plays are studied globally; his apocryphal works remain subjects of scholarly dispute.", "tip": "Canonical = accepted as authoritative. Root: kanon (rule, standard). 'The canonical texts' = the officially accepted set." },
+      { "w": "HERETICAL", "pos": "adj", "cluster": "Dissent", "def": "Contrary to accepted or orthodox views; radically unorthodox to the point of being dangerous", "ex": "In 1600, proposing that the Earth orbited the sun was not merely unorthodox — it was heretical and potentially fatal.", "tip": "Heretical = challenges what an authority holds sacred. Root: hairetikos (able to choose) = chooses against the official view." },
+      { "w": "MAVERICK", "pos": "n/adj", "cluster": "Dissent", "def": "An independent-minded person who refuses to follow the crowd; unconventional and self-directed", "ex": "The maverick scientist abandoned the consensus theory and — after years of ridicule — was vindicated by new data.", "tip": "Named after Samuel Maverick, a Texas rancher who didn't brand his cattle. Maverick = independent, not necessarily rebellious." },
+      { "w": "TRANSGRESS", "pos": "v", "cluster": "Dissent", "def": "To go beyond the limits of what is morally or legally acceptable; to violate a rule or law", "ex": "The artist deliberately transgressed every convention of the form, producing work that outraged and fascinated.", "tip": "Transgress = cross a line that should not be crossed. Root: trans (across) + gradi (to step). Transgression is the noun." },
+      { "w": "SUBVERSIVE", "pos": "adj/n", "cluster": "Dissent", "def": "Seeking to undermine the power and authority of an established system or institution", "ex": "The novel was banned for its subversive content — its quiet mockery of every pillar of the official ideology.", "tip": "Subversive = undermines from below. Root: sub (under) + vertere (to turn). Subversive activity = actively working to topple." },
+      { "w": "ACQUIESCE", "pos": "v", "cluster": "Submit", "def": "To accept something reluctantly but without protest; to comply passively; to go along with", "ex": "She acquiesced to the board's decision while making clear in writing that she believed it was wrong.", "tip": "Acquiesce = give in without fighting. Root: acquiescere (to rest in). Key: acquiescence is passive — no protest, but no enthusiasm." },
+      { "w": "CAPITULATE", "pos": "v", "cluster": "Submit", "def": "To cease to resist; to surrender; to give in after a period of resistance", "ex": "After three months of negotiations, the union finally capitulated — accepting terms it had publicly rejected.", "tip": "Capitulate = surrender after fighting. Root: capitulum (chapter) = agreeing to terms chapter by chapter. Implies prior resistance." },
+      { "w": "DEFER", "pos": "v", "cluster": "Submit", "def": "To show respectful submission to another's opinion or decision; to yield out of respect", "ex": "Despite her private doubts, she deferred to the senior partner's judgment on matters of courtroom strategy.", "tip": "Defer = yield out of RESPECT, not defeat. 'Deferred to his expertise.' Distinguished from capitulate (surrender after fight)." },
+      { "w": "ASSENT", "pos": "n/v", "cluster": "Submit", "def": "Agreement or approval, especially by those in authority; to express agreement", "ex": "The committee gave its assent to the proposal after surprisingly little debate.", "tip": "Assent = formal agreement. Distinguished from consent (permission) — assent is agreement with a proposal or idea." },
+      { "w": "CONCEDE", "pos": "v", "cluster": "Submit", "def": "To admit that something is true after initially denying it; to yield; to give up a point", "ex": "After reviewing the new data, he conceded that his original hypothesis had been incorrect.", "tip": "Concede = admit a specific point. Root: concedere (to yield). 'Concede a point/defeat/an argument.' More limited than capitulate." },
+      { "w": "CONTUMACIOUS", "pos": "adj", "cluster": "Resist", "def": "Stubbornly or willfully disobedient to authority; insubordinate; refusing to comply", "ex": "The contumacious defendant interrupted proceedings repeatedly, earning a contempt of court citation.", "tip": "Contumacious = defiant of authority in a way that demands punishment. Root: contumacia (stubbornness). Legal contexts." },
+      { "w": "RECUSANT", "pos": "n/adj", "cluster": "Resist", "def": "A person who refuses to submit to an authority or comply with an official requirement", "ex": "The recusant minority refused to take the oath, accepting fines and legal penalties rather than compromise.", "tip": "Recusant = historically: Catholics who refused to attend Anglican services. GRE uses it for any principled non-compliance." },
+      { "w": "DEVIANT", "pos": "adj/n", "cluster": "Resist", "def": "Departing from usual or accepted standards; a person whose behavior differs markedly from the norm", "ex": "The deviant methodology — abandoning standard controls — produced results that mainstream journals refused to publish.", "tip": "Deviant = departs from the norm, often implying unacceptability. Root: deviare (to go off the road). Can be neutral or negative." }
     ]
   },
   {
-    day: 23,
-    theme: "Power, Control & Social Dynamics",
-    date: "May 26, 2026",
-    patterns: [
-      "Authoritarian = demands obedience · Totalitarian = total societal control",
-      "Hegemonic power dominates indirectly through influence",
-      "Coercive systems rely on force or pressure",
-      "Autonomous entities operate independently from outside control"
+    "day": 23,
+    "theme": "Importance & Triviality",
+    "date": "May 28, 2026",
+    "patterns": [
+      "Pivotal (turning point) vs Paramount (supreme importance) vs Cardinal (fundamental/primary) — all mean important but: pivotal = turns things · paramount = highest · cardinal = foundational",
+      "Peripheral (on the edge) vs Tangential (barely touching) vs Inconsequential (no result) — three ways of saying 'not central'",
+      "Perfunctory = done as a minimal routine without real effort · Desultory = done without plan, jumping between things — both suggest inadequate engagement",
+      "Nugatory and Paltry both mean trivially small but: nugatory = futile/of no legal force · paltry = pitifully small in amount"
     ],
-    words: [
-      {
-        w: "AUTHORITARIAN",
-        pos: "adj",
-        cluster: "Power",
-        def: "Favoring strict obedience to authority with limited personal freedom.",
-        ex: "The authoritarian regime suppressed dissent aggressively.",
-        tip: "Centralized controlling authority."
-      },
-      {
-        w: "TOTALITARIAN",
-        pos: "adj",
-        cluster: "Power",
-        def: "Exercising complete control over all aspects of public and private life.",
-        ex: "The novel depicts a chilling totalitarian society.",
-        tip: "Most extreme form of political control."
-      },
-      {
-        w: "HEGEMONIC",
-        pos: "adj",
-        cluster: "Power",
-        def: "Dominating others through political, cultural, or economic influence.",
-        ex: "The empire maintained hegemonic influence across the region.",
-        tip: "Indirect dominance."
-      },
-      {
-        w: "AUTOCRATIC",
-        pos: "adj",
-        cluster: "Power",
-        def: "Ruling with absolute unchecked authority.",
-        ex: "The autocratic ruler tolerated no criticism.",
-        tip: "Single-person centralized power."
-      },
-      {
-        w: "DESPOTIC",
-        pos: "adj",
-        cluster: "Power",
-        def: "Tyrannical and oppressive in the exercise of power.",
-        ex: "Citizens rebelled against the despotic government.",
-        tip: "Cruel abusive rule."
-      },
-
-      {
-        w: "COERCIVE",
-        pos: "adj",
-        cluster: "Control",
-        def: "Using force, threats, or pressure to compel behavior.",
-        ex: "The policy relied on coercive enforcement measures.",
-        tip: "Compliance through pressure."
-      },
-      {
-        w: "PUNITIVE",
-        pos: "adj",
-        cluster: "Control",
-        def: "Inflicting punishment or intended as punishment.",
-        ex: "Critics condemned the punitive tax structure.",
-        tip: "Punishment-focused."
-      },
-      {
-        w: "REPRESSIVE",
-        pos: "adj",
-        cluster: "Control",
-        def: "Actively subduing freedom or expression.",
-        ex: "The repressive laws silenced political opposition.",
-        tip: "Suppresses dissent."
-      },
-      {
-        w: "ARBITRARY",
-        pos: "adj",
-        cluster: "Control",
-        def: "Based on random choice rather than reason or fairness.",
-        ex: "Workers protested arbitrary disciplinary actions.",
-        tip: "Unpredictable unfair authority."
-      },
-      {
-        w: "UNILATERAL",
-        pos: "adj",
-        cluster: "Control",
-        def: "Performed independently without consultation or agreement.",
-        ex: "The country announced unilateral sanctions.",
-        tip: "One-sided action."
-      },
-
-      {
-        w: "AUTONOMOUS",
-        pos: "adj",
-        cluster: "Independence",
-        def: "Independent and self-governing.",
-        ex: "The institution remained financially autonomous.",
-        tip: "Operates independently."
-      },
-      {
-        w: "SOVEREIGN",
-        pos: "adj",
-        cluster: "Independence",
-        def: "Possessing supreme independent authority.",
-        ex: "Each nation remained sovereign under the treaty.",
-        tip: "Ultimate political independence."
-      },
-      {
-        w: "SUBSERVIENT",
-        pos: "adj",
-        cluster: "Independence",
-        def: "Excessively obedient or dependent on another.",
-        ex: "The committee became subservient to corporate interests.",
-        tip: "Lacks independence."
-      },
-      {
-        w: "DOCILE",
-        pos: "adj",
-        cluster: "Independence",
-        def: "Easily controlled or taught.",
-        ex: "The ruler preferred docile advisors who never challenged him.",
-        tip: "Passive obedience."
-      },
-      {
-        w: "MALLEABLE",
-        pos: "adj",
-        cluster: "Independence",
-        def: "Easily influenced or shaped.",
-        ex: "Young voters proved politically malleable.",
-        tip: "Can be molded by influence."
-      }
+    "words": [
+      { "w": "PIVOTAL", "pos": "adj", "cluster": "Important", "def": "Of crucial importance in relation to the development or success of something; forming a turning point", "ex": "The 1942 battle proved pivotal — a loss there would have altered the entire trajectory of the war.", "tip": "Pivotal = like a pivot: everything turns on it. Not just important — it's the hinge point. Root: pivot (turning point)." },
+      { "w": "MOMENTOUS", "pos": "adj", "cluster": "Important", "def": "Of great importance or significance, especially having a major effect on future events", "ex": "The ruling was momentous — its implications would reshape constitutional law for generations.", "tip": "Momentous = carries great weight (moment). Reserved for historic events. 'A momentous decision/occasion/step.'" },
+      { "w": "CONSEQUENTIAL", "pos": "adj", "cluster": "Important", "def": "Resulting in important consequences; significant in its effects; of great importance", "ex": "The consequential reform transformed how millions of workers were classified and compensated.", "tip": "Consequential = produces significant consequences. Also means 'self-important' (pompous) — context determines which meaning." },
+      { "w": "PARAMOUNT", "pos": "adj", "cluster": "Important", "def": "More important than anything else; supreme; having the highest rank or authority", "ex": "The safety of the passengers was paramount — every other consideration was secondary.", "tip": "Paramount = above all others. Root: paramunt (Old French) = above on the mountain. 'Of paramount importance' = GRE phrase." },
+      { "w": "CARDINAL", "pos": "adj", "cluster": "Important", "def": "Of fundamental importance; foundational; essential; primary", "ex": "The cardinal rule of the profession was simple: never compromise client confidentiality for any reason.", "tip": "Cardinal = foundational, like the cardinal directions (N/S/E/W) that organize all navigation. 'Cardinal sin/rule/principle.'" },
+      { "w": "PERIPHERAL", "pos": "adj", "cluster": "Trivial", "def": "Relating to the outer edges; of minor importance; not central to the main issue", "ex": "The question of office furniture was peripheral to the real negotiations about salary and benefits.", "tip": "Peripheral = on the periphery (outer edge). Root: peri (around) + phora (carrying) = carried around the outside." },
+      { "w": "TANGENTIAL", "pos": "adj", "cluster": "Trivial", "def": "Diverging from the subject; only superficially relevant; barely related", "ex": "His tangential remarks about ancient Rome were interesting but unhelpful in resolving the budget dispute.", "tip": "Tangential = touches but doesn't engage. Root: tangere (to touch). Like a tangent line — touches the circle at one point then goes off." },
+      { "w": "INCONSEQUENTIAL", "pos": "adj", "cluster": "Trivial", "def": "Not important or significant; too small or unimportant to be worth consideration", "ex": "The typographical errors were inconsequential — they affected no meaning and misled no reader.", "tip": "Inconsequential = produces no consequences. The logical opposite of consequential. Often used to dismiss objections." },
+      { "w": "NEGLIGIBLE", "pos": "adj", "cluster": "Trivial", "def": "So small or unimportant as to be not worth considering; insignificant", "ex": "The margin of error was negligible — less than 0.01 percent — and did not affect the study's conclusions.", "tip": "Negligible = can be neglected. Root: neglegere (to neglect). Used for quantities, margins, risks that are too small to matter." },
+      { "w": "TRIFLING", "pos": "adj", "cluster": "Trivial", "def": "Unimportant and not serious; treating serious matters as if they were trivial", "ex": "He dismissed her objections as trifling — an attitude she found insulting given the genuine stakes.", "tip": "Trifling = trivial. Also means to treat something casually. 'Trifling matters' = unimportant. 'Trifling with someone' = not taking seriously." },
+      { "w": "NUGATORY", "pos": "adj", "cluster": "Trivial", "def": "Of no value or importance; futile; having no legal force", "ex": "The amendment, though passed, was nugatory — it conferred rights the courts had already established.", "tip": "Nugatory = futile or legally void. Root: nugari (to trifle). Specific GRE use: a nugatory law = one with no practical effect." },
+      { "w": "PALTRY", "pos": "adj", "cluster": "Trivial", "def": "Small or meager; pitifully insufficient; contemptibly small in amount", "ex": "The paltry settlement — five thousand dollars for a career-ending injury — insulted every observer.", "tip": "Paltry = pitifully small. Always implies the smallness is insulting or inadequate. 'A paltry sum/amount/increase.'" },
+      { "w": "NOMINAL", "pos": "adj", "cluster": "Trivial", "def": "Existing in name only; trifling in value relative to the actual worth; very small", "ex": "The chairman exercised nominal authority — in practice, decisions flowed from the three largest shareholders.", "tip": "Nominal = name only. Root: nominalis (of a name). 'A nominal fee/role/price' = technically exists but practically insignificant." },
+      { "w": "PERFUNCTORY", "pos": "adj", "cluster": "Minimal", "def": "Carried out with minimum effort or care; done as a routine duty without real engagement", "ex": "The safety inspection was perfunctory — a ten-minute walkthrough that missed every significant hazard.", "tip": "Perfunctory = going through the motions. Root: perfunctus (to get through). The act is done but with no real investment." },
+      { "w": "DESULTORY", "pos": "adj", "cluster": "Minimal", "def": "Lacking a plan or purpose; going from one thing to another without any fixed direction", "ex": "Their desultory conversation drifted across three continents and four decades without settling anywhere.", "tip": "Desultory = jumping between things without purpose. Root: desultor (circus rider who leaped between horses). No coherent thread." }
     ]
   },
   {
-    day: 24,
-    theme: "Mixed ETS Trap Set I",
-    date: "May 27, 2026",
-    patterns: [
-      "ETS loves near-synonym traps where one word differs subtly in intent or tone",
-      "Disinterested = unbiased · Uninterested = bored",
-      "Practical = sensible in reality · Practicable = capable of being done",
-      "Historic = historically important · Historical = merely related to history"
+    "day": 24,
+    "theme": "Speed, Time & Sequence",
+    "date": "May 29, 2026",
+    "patterns": [
+      "Alacrity = enthusiastic WILLINGNESS to act quickly · Expeditious = actually acting quickly and efficiently — willingness vs execution",
+      "Dilatory (deliberately slow to delay) vs Protracted (drawn out over time) vs Interminable (seemingly endless) — increasing frustration",
+      "Nascent (just beginning to develop) vs Incipient (in early stages, often of something bad) vs Imminent (about to happen now)",
+      "Anachronism = placing something in the wrong time period — always involves a mismatch between a thing and its era"
     ],
-    words: [
-      {
-        w: "DISINTERESTED",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Impartial and free from personal bias or self-interest.",
-        ex: "The mediator remained disinterested throughout negotiations.",
-        tip: "DISinterested ≠ bored. Means unbiased."
-      },
-      {
-        w: "UNINTERESTED",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Not interested; indifferent or bored.",
-        ex: "Students seemed uninterested in the lengthy lecture.",
-        tip: "Means lacking curiosity or engagement."
-      },
-      {
-        w: "PRACTICAL",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Useful or sensible in real-world situations.",
-        ex: "Her practical approach resolved the dispute quickly.",
-        tip: "Grounded in realistic usefulness."
-      },
-      {
-        w: "PRACTICABLE",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Capable of being carried out or accomplished.",
-        ex: "The proposal sounded ambitious but not practicable.",
-        tip: "Possible to implement."
-      },
-      {
-        w: "HISTORIC",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Important or influential in history.",
-        ex: "The treaty marked a historic diplomatic breakthrough.",
-        tip: "Historically significant."
-      },
-      {
-        w: "HISTORICAL",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Related to history or past events.",
-        ex: "The book offered historical analysis of the empire.",
-        tip: "Anything connected to history generally."
-      },
-      {
-        w: "IMPLY",
-        pos: "v",
-        cluster: "Trap Pairs",
-        def: "To suggest indirectly without stating explicitly.",
-        ex: "The editorial implied corruption without naming officials.",
-        tip: "Speaker/writer implies."
-      },
-      {
-        w: "INFER",
-        pos: "v",
-        cluster: "Trap Pairs",
-        def: "To conclude from evidence or implication.",
-        ex: "Readers inferred the author's skepticism from her tone.",
-        tip: "Listener/reader infers."
-      },
-      {
-        w: "CONTINUAL",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Repeated frequently with interruptions.",
-        ex: "Continual delays frustrated commuters.",
-        tip: "Starts and stops repeatedly."
-      },
-      {
-        w: "CONTINUOUS",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Uninterrupted and ongoing.",
-        ex: "The machine operated in continuous motion.",
-        tip: "No interruption whatsoever."
-      },
-      {
-        w: "CREDULOUS",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Too willing to believe things easily.",
-        ex: "Credulous investors fell for the obvious scam.",
-        tip: "Gullible person."
-      },
-      {
-        w: "CREDIBLE",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Believable or worthy of trust.",
-        ex: "The witness provided a credible explanation.",
-        tip: "Believable claim/person."
-      },
-      {
-        w: "EMINENT",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Highly respected or distinguished.",
-        ex: "The eminent scholar transformed the discipline.",
-        tip: "Famous and respected."
-      },
-      {
-        w: "IMMINENT",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "About to happen very soon.",
-        ex: "Officials warned of imminent flooding.",
-        tip: "Impending arrival."
-      },
-      {
-        w: "ILLICIT",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Illegal or forbidden.",
-        ex: "Authorities uncovered an illicit trade network.",
-        tip: "Against law or rules."
-      },
-      {
-        w: "ELICIT",
-        pos: "v",
-        cluster: "Trap Pairs",
-        def: "To draw out or evoke a response.",
-        ex: "The prosecutor elicited a confession.",
-        tip: "Extract information/reaction."
-      }
+    "words": [
+      { "w": "EXPEDITIOUS", "pos": "adj", "cluster": "Fast", "def": "Acting or done with speed and efficiency; prompt and effective", "ex": "The expeditious handling of the visa application — approved within 24 hours — reflected the new streamlined process.", "tip": "Expeditious = fast AND efficient. Root: expedire (to free the feet) = removes obstacles to quick movement." },
+      { "w": "ALACRITY", "pos": "n", "cluster": "Fast", "def": "Brisk and cheerful readiness; eager willingness and enthusiasm in acting", "ex": "She accepted the overseas assignment with alacrity — this was exactly the challenge she had been seeking.", "tip": "Alacrity = eager willingness to move quickly. Root: alacer (brisk). The enthusiasm is the defining feature, not just the speed." },
+      { "w": "PRECIPITATE", "pos": "adj/v", "cluster": "Fast", "def": "Done without enough thought; hasty; OR to cause an event to happen suddenly or prematurely", "ex": "His precipitate resignation — announced without warning — plunged the organization into immediate crisis.", "tip": "Precipitate as adj = rashly hasty. As verb = cause to happen suddenly. Root: praecipitare (to throw headlong). Two GRE uses." },
+      { "w": "IMPETUOUS", "pos": "adj", "cluster": "Fast", "def": "Acting or done quickly without thought or care; impulsive; driven by force or passion", "ex": "Her impetuous decision to quit — made in anger and reversed by morning — damaged her professional reputation.", "tip": "Impetuous = moved by force/passion without thinking. Root: impetus (force, attack). Capricious = random · Impetuous = driven by impulse." },
+      { "w": "DILATORY", "pos": "adj", "cluster": "Slow", "def": "Slow to act; intended to cause delay; tending to procrastinate or postpone", "ex": "The dilatory tactics of the defense — filing endless motions — stretched what should have been a two-week trial.", "tip": "Dilatory = delays deliberately. Root: dilatus (put off). 'Dilatory tactics' = deliberate procedural delay. Always intentional." },
+      { "w": "PROTRACTED", "pos": "adj", "cluster": "Slow", "def": "Lasting for a long time; prolonged; drawn out beyond what is normal or expected", "ex": "After protracted negotiations spanning three years, the parties finally reached a settlement.", "tip": "Protracted = stretched out over time. Root: protractus (drawn forward). 'Protracted conflict/negotiations/illness.'" },
+      { "w": "INTERMINABLE", "pos": "adj", "cluster": "Slow", "def": "Endless or seemingly endless; tiresomely long; having or seeming to have no end", "ex": "The interminable committee meetings — three hours each, twice weekly — left everyone too exhausted to implement anything.", "tip": "Interminable = cannot be terminated (ended). Root: in + terminus (end). Implies the listener's suffering at the length." },
+      { "w": "ANACHRONISM", "pos": "n", "cluster": "Time", "def": "A thing belonging to a period other than that in which it exists; a misplaced relic of another era", "ex": "The novelist's use of smartphones in a 1920s setting was an anachronism that jolted readers out of the story.", "tip": "Anachronism = wrong time period. Root: ana (against) + chronos (time). Can be accidental (error) or deliberate (commentary)." },
+      { "w": "CONTEMPORANEOUS", "pos": "adj", "cluster": "Time", "def": "Existing or occurring at the same time; simultaneous; of the same period", "ex": "The two discoveries — made by scientists on opposite continents — were entirely contemporaneous and unconnected.", "tip": "Contemporaneous = at the same time. Root: con (together) + tempus (time). Distinguish from contemporary (modern/current)." },
+      { "w": "ANTECEDENT", "pos": "n/adj", "cluster": "Sequence", "def": "A thing or event that comes before or precedes something; a preceding circumstance or cause", "ex": "Understanding the antecedents of the conflict requires examining three decades of economic and political history.", "tip": "Antecedent = comes before. Root: ante (before) + cedere (to go). In grammar: the noun that a pronoun refers to." },
+      { "w": "NASCENT", "pos": "adj", "cluster": "Sequence", "def": "Just coming into existence and beginning to develop; in the earliest stages; emerging", "ex": "The nascent democracy faced immediate challenges — infant institutions, rival factions, and empty coffers.", "tip": "Nascent = being born. Root: nasci (to be born). 'A nascent industry/movement/talent.' Neutral — just newly forming." },
+      { "w": "INCIPIENT", "pos": "adj", "cluster": "Sequence", "def": "In an early stage and beginning to happen or develop; initial; often used of something unwelcome", "ex": "The doctor recognized the incipient signs of the disease before the patient felt any symptoms.", "tip": "Incipient = starting to begin. Root: incipere (to begin). Often used for problems or diseases at an early, treatable stage." },
+      { "w": "IMMINENT", "pos": "adj", "cluster": "Sequence", "def": "About to happen very soon; impending; close in time and hard to avoid", "ex": "With the storm imminent, evacuations were ordered for all coastal communities below the flood line.", "tip": "Imminent = about to happen NOW. Root: imminere (to overhang). Distinguished from nascent (beginning) and incipient (starting)." },
+      { "w": "SPORADIC", "pos": "adj", "cluster": "Pattern", "def": "Occurring at irregular intervals; not frequent or steady; scattered and occasional", "ex": "Reports of sporadic violence continued to emerge from the region, preventing any declaration of stability.", "tip": "Sporadic = irregular, unpredictable intervals. Root: sporas (scattered seed). 'Sporadic fighting/outbreaks/appearances.'" },
+      { "w": "INTERMITTENT", "pos": "adj", "cluster": "Pattern", "def": "Occurring at irregular intervals; stopping and starting periodically; not continuous", "ex": "The intermittent power cuts made it impossible to plan around reliable electricity.", "tip": "Intermittent = stops and starts. Root: inter (between) + mittere (to send). Intermittent = gaps between occurrences. Sporadic = random timing." }
     ]
   },
   {
-    day: 25,
-    theme: "Mixed ETS Trap Set II",
-    date: "May 28, 2026",
-    patterns: [
-      "Economic = related to economy · Economical = efficient and inexpensive",
-      "Dispassionate = objective neutrality · Apathetic = lack of caring",
-      "Mitigate reduces severity · Mollify calms emotions",
-      "Qualify can LIMIT a claim rather than merely describe credentials"
+    "day": 25,
+    "theme": "Conflict, Peace & Resolution",
+    "date": "May 30, 2026",
+    "patterns": [
+      "Acrimonious (bitter and angry in manner) vs Contentious (likely to cause argument) vs Antagonistic (actively hostile) — manner vs tendency vs stance",
+      "Irenic and Pacific both mean peace-promoting — irenic = specifically inclined toward peace · pacific = calm and peaceable",
+      "Détente = specifically the easing of tension between NATIONS — not just any resolution",
+      "Polemical = of or involving strongly controversial argument — the person argues aggressively for a position"
     ],
-    words: [
-      {
-        w: "ECONOMIC",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Relating to economics, finance, or the economy.",
-        ex: "The country faced severe economic instability.",
-        tip: "About the economy itself."
-      },
-      {
-        w: "ECONOMICAL",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Efficient and avoiding waste.",
-        ex: "Hybrid vehicles are more economical to operate.",
-        tip: "Cost-efficient and frugal."
-      },
-      {
-        w: "DISPASSIONATE",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Free from emotional bias; objective.",
-        ex: "The article offered a dispassionate analysis of the conflict.",
-        tip: "Neutrality, not coldness."
-      },
-      {
-        w: "APATHETIC",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Lacking interest, concern, or emotion.",
-        ex: "Voters appeared apathetic during the campaign.",
-        tip: "Doesn't care at all."
-      },
-      {
-        w: "MITIGATE",
-        pos: "v",
-        cluster: "Trap Pairs",
-        def: "To lessen severity or harm.",
-        ex: "The reforms mitigated economic inequality.",
-        tip: "Reduce damage."
-      },
-      {
-        w: "MOLLIFY",
-        pos: "v",
-        cluster: "Trap Pairs",
-        def: "To calm or soothe anger or anxiety.",
-        ex: "Officials attempted to mollify angry residents.",
-        tip: "Calms emotions specifically."
-      },
-      {
-        w: "EQUIVOCAL",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Ambiguous or unclear in meaning.",
-        ex: "Her equivocal answer frustrated reporters.",
-        tip: "Unclear statement."
-      },
-      {
-        w: "EQUIVOCATE",
-        pos: "v",
-        cluster: "Trap Pairs",
-        def: "To deliberately use ambiguous language.",
-        ex: "The candidate equivocated during the debate.",
-        tip: "Action of being vague."
-      },
-      {
-        w: "QUALIFY",
-        pos: "v",
-        cluster: "Trap Pairs",
-        def: "To limit, modify, or soften a statement.",
-        ex: "The researcher qualified her conclusion with several caveats.",
-        tip: "GRE often uses this meaning — LIMIT, not credentials."
-      },
-      {
-        w: "QUIBBLE",
-        pos: "v",
-        cluster: "Trap Pairs",
-        def: "To argue over trivial details.",
-        ex: "Reviewers quibbled about minor methodological flaws.",
-        tip: "Petty nitpicking."
-      },
-      {
-        w: "TORTUOUS",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Twisting, winding, or excessively complicated.",
-        ex: "The tortuous explanation confused everyone.",
-        tip: "Complex winding path/logic."
-      },
-      {
-        w: "TORTUROUS",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Involving intense pain or suffering.",
-        ex: "The prisoners endured torturous conditions.",
-        tip: "Related to torture/pain."
-      },
-      {
-        w: "LUXURIANT",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Rich, abundant, and lush in growth.",
-        ex: "The valley was covered in luxuriant vegetation.",
-        tip: "Abundant flourishing growth."
-      },
-      {
-        w: "LUXURIOUS",
-        pos: "adj",
-        cluster: "Trap Pairs",
-        def: "Extremely comfortable and expensive.",
-        ex: "They stayed in a luxurious resort.",
-        tip: "Associated with wealth and comfort."
-      },
-      {
-        w: "COMPLEMENT",
-        pos: "v/n",
-        cluster: "Trap Pairs",
-        def: "Something that completes or enhances another thing.",
-        ex: "The wine complemented the meal perfectly.",
-        tip: "COMplete = complement."
-      },
-      {
-        w: "COMPLIMENT",
-        pos: "v/n",
-        cluster: "Trap Pairs",
-        def: "An expression of praise or admiration.",
-        ex: "She complimented the author on his clarity.",
-        tip: "Say nice things."
-      }
+    "words": [
+      { "w": "CONSENSUS", "pos": "n", "cluster": "Peace", "def": "General agreement; the majority of opinion; collective judgment reached by a group", "ex": "After hours of debate, the committee reached a consensus that satisfied no one completely but everyone sufficiently.", "tip": "Consensus = agreed by all (or most). Root: con (together) + sentire (to feel). Distinguished from mere majority — consensus implies broad agreement." },
+      { "w": "CONCORD", "pos": "n", "cluster": "Peace", "def": "Agreement or harmony between people or groups; a state of peace and friendship", "ex": "The treaty established a concord between nations that had been at war for three generations.", "tip": "Concord = harmonious agreement. Root: con (together) + cor (heart) = hearts together. More formal and elevated than 'agreement.'" },
+      { "w": "AMICABLE", "pos": "adj", "cluster": "Peace", "def": "Having a spirit of friendliness; done in a friendly way without disagreement", "ex": "Despite the divorce, the two parties reached an amicable settlement that protected their children from conflict.", "tip": "Amicable = friendly in spirit. Root: amicus (friend). 'An amicable settlement/parting/resolution.' Always implies goodwill." },
+      { "w": "IRENIC", "pos": "adj", "cluster": "Peace", "def": "Aiming at peace; inclined toward peace and reconciliation; peaceable", "ex": "The irenic tone of his response — conciliatory and measured — defused a situation that could have escalated.", "tip": "Irenic = peace-seeking. Root: eirene (Greek) = peace. The same root as Irene and the Eirene (goddess of peace). Rare but GRE-tested." },
+      { "w": "PACIFIC", "pos": "adj", "cluster": "Peace", "def": "Peaceful in character; tending to lessen conflict; calm and tranquil", "ex": "His pacific manner — never raising his voice, always finding common ground — made him an exceptional mediator.", "tip": "Pacific = peaceable. Root: pax (peace) + facere (to make). 'Pacific' the ocean = named for its calm. The adjective means peace-promoting." },
+      { "w": "DÉTENTE", "pos": "n", "cluster": "Peace", "def": "The easing of hostility or strained relations between countries; a period of reduced tension", "ex": "The Cold War détente of the 1970s allowed trade and cultural exchange that had been impossible for decades.", "tip": "Détente = specifically geopolitical easing of tension. French word: 'relaxation.' GRE RC passages about international relations use this frequently." },
+      { "w": "CONTENTIOUS", "pos": "adj", "cluster": "Conflict", "def": "Causing or likely to cause argument; controversial; prone to disagreement", "ex": "The redistricting proposal was deeply contentious — every map drawn benefited one party at another's expense.", "tip": "Contentious = breeds contention. Root: contendere (to struggle). 'A contentious issue/debate/decision.' The topic itself causes conflict." },
+      { "w": "ACRIMONIOUS", "pos": "adj", "cluster": "Conflict", "def": "Angry and bitter, especially in speech or manner; sharp and harsh in feelings expressed", "ex": "The acrimonious divorce trial — marked by personal attacks from both sides — lasted eighteen months.", "tip": "Acrimonious = sharp bitterness in manner. Root: acer (sharp) + monia. 'An acrimonious dispute/parting/exchange.' The bitterness is personal." },
+      { "w": "ANTAGONISTIC", "pos": "adj", "cluster": "Conflict", "def": "Showing or feeling active opposition or hostility; contrary and opposing", "ex": "The two departments had grown antagonistic over years of budget competition, undermining every collaborative project.", "tip": "Antagonistic = actively opposing. Root: anti (against) + agonizesthai (to struggle). More active than merely disagreeing." },
+      { "w": "INIMICAL", "pos": "adj", "cluster": "Conflict", "def": "Tending to obstruct or harm; hostile; unfavorable to something", "ex": "The harsh growing conditions were inimical to the crops, which withered despite careful tending.", "tip": "Inimical = harmful and hostile. Root: inimicus (enemy). Can describe things (conditions inimical to growth) or people. GRE uses both." },
+      { "w": "DISCORD", "pos": "n", "cluster": "Conflict", "def": "Disagreement between people; lack of harmony; strife; a harsh combination of sounds", "ex": "Discord within the coalition — over taxation, immigration, and trade — eventually brought the government down.", "tip": "Discord = dis + cord (heart) = hearts apart. Opposite of concord. Can describe relationships, music, or abstract disagreement." },
+      { "w": "DIVISIVE", "pos": "adj", "cluster": "Conflict", "def": "Tending to cause disagreement or hostility between people; creating division", "ex": "Few policies are as divisive as those touching immigration — they fracture coalitions and unite opponents.", "tip": "Divisive = splits groups. Root: dividere (to divide). 'A divisive figure/issue/policy.' The thing itself creates the split." },
+      { "w": "POLEMICAL", "pos": "adj", "cluster": "Argument", "def": "Relating to or involving strongly controversial argument; written or spoken in an attacking style", "ex": "The polemical essay — brilliant but one-sided — won converts among sympathizers and alienated everyone else.", "tip": "Polemical = argumentative and combative in defense of a position. Root: polemos (war). A polemic is the noun — a sustained attack on a position." },
+      { "w": "DISPUTATIOUS", "pos": "adj", "cluster": "Argument", "def": "Fond of arguing; excessively prone to debate and controversy; quarrelsome about opinions", "ex": "The disputatious philosopher challenged every proposition, including those he privately agreed with.", "tip": "Disputatious = loves to dispute. Root: disputare (to argue). More about habitual argument than about any particular conflict." },
+      { "w": "LITIGIOUS", "pos": "adj", "cluster": "Argument", "def": "Excessively inclined to go to law; prone to engaging in lawsuits; quarrelsome in a legal sense", "ex": "The litigious corporation sued competitors, suppliers, former employees, and even its own shareholders.", "tip": "Litigious = quick to sue. Root: litigare (to dispute in court). 'A litigious society/individual.' Always involves legal action or the threat of it." }
     ]
   },
   {
-    day: 26,
-    theme: "Final High-Frequency Sweep I",
-    date: "May 29, 2026",
-    patterns: [
-      "These are among the most recurring GRE RC/TC/SE words across ETS material",
-      "Tenuous arguments are weakly supported",
-      "Tacit/implicit ideas are unstated but understood",
-      "Bolster strengthens · Undermine weakens"
+    "day": 26,
+    "theme": "Language, Rhetoric & Expression",
+    "date": "May 31, 2026",
+    "patterns": [
+      "Trenchant (vigorous and incisive — cuts through) vs Incisive (intelligently analytical and clear) — both sharp, but trenchant is more forceful and combative",
+      "Florid (excessively ornate in writing) vs Eloquent (fluent and persuasive) — florid = too much decoration · eloquent = effective communication",
+      "Circumlocution = using many words where fewer would do · Euphemism = replacing a harsh word with a mild one — both avoid directness, for different reasons",
+      "Bowdlerize and Expurgate both mean to censor — bowdlerize = remove offensive content · expurgate = remove objectionable passages (more neutral, less ridiculous)"
     ],
-    words: [
-      {
-        w: "TENUOUS",
-        pos: "adj",
-        cluster: "Argument",
-        def: "Weak, thin, or lacking solid support.",
-        ex: "The theory rested on tenuous assumptions.",
-        tip: "Fragile logical support."
-      },
-      {
-        w: "COGENT",
-        pos: "adj",
-        cluster: "Argument",
-        def: "Clear, logical, and convincing.",
-        ex: "She presented a cogent argument against the proposal.",
-        tip: "Strong persuasive logic."
-      },
-      {
-        w: "PLAUSIBLE",
-        pos: "adj",
-        cluster: "Argument",
-        def: "Seemingly reasonable or believable.",
-        ex: "The scientist proposed a plausible explanation.",
-        tip: "Seems believable, not necessarily true."
-      },
-      {
-        w: "DUBIOUS",
-        pos: "adj",
-        cluster: "Argument",
-        def: "Questionable or doubtful.",
-        ex: "Critics expressed doubts about the study's dubious claims.",
-        tip: "Weak credibility."
-      },
-      {
-        w: "CREDIBLE",
-        pos: "adj",
-        cluster: "Argument",
-        def: "Believable and trustworthy.",
-        ex: "The witness gave a credible account.",
-        tip: "Opposite of dubious."
-      },
-
-      {
-        w: "BOLSTER",
-        pos: "v",
-        cluster: "Support",
-        def: "To strengthen or support.",
-        ex: "New evidence bolstered the hypothesis.",
-        tip: "Strengthens arguments constantly in RC."
-      },
-      {
-        w: "CORROBORATE",
-        pos: "v",
-        cluster: "Support",
-        def: "To confirm or support with evidence.",
-        ex: "The documents corroborated her testimony.",
-        tip: "Independent evidence confirms."
-      },
-      {
-        w: "SUBSTANTIATE",
-        pos: "v",
-        cluster: "Support",
-        def: "To provide proof or support for.",
-        ex: "Researchers struggled to substantiate the claim.",
-        tip: "Supply evidence."
-      },
-      {
-        w: "BUTTRESS",
-        pos: "v",
-        cluster: "Support",
-        def: "To reinforce or strengthen.",
-        ex: "Historical data buttressed the argument.",
-        tip: "Formal RC synonym for bolster."
-      },
-      {
-        w: "VALIDATE",
-        pos: "v",
-        cluster: "Support",
-        def: "To confirm legitimacy or accuracy.",
-        ex: "Subsequent studies validated the findings.",
-        tip: "Official confirmation."
-      },
-
-      {
-        w: "UNDERMINE",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To weaken gradually or secretly.",
-        ex: "The scandal undermined public trust.",
-        tip: "Weakens support from below."
-      },
-      {
-        w: "IMPUGN",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To challenge as false or questionable.",
-        ex: "Opponents impugned the author's credibility.",
-        tip: "Attack validity or integrity."
-      },
-      {
-        w: "REFUTE",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To prove false through evidence or argument.",
-        ex: "The data refuted the earlier hypothesis.",
-        tip: "Full logical defeat."
-      },
-      {
-        w: "REBUT",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To counter an argument with contrary evidence.",
-        ex: "The attorney rebutted every accusation.",
-        tip: "Responds directly against claims."
-      },
-      {
-        w: "DISPUTE",
-        pos: "v",
-        cluster: "Opposition",
-        def: "To question or argue against.",
-        ex: "Several scholars disputed the conclusion.",
-        tip: "General disagreement/challenge."
-      },
-
-      {
-        w: "TACIT",
-        pos: "adj",
-        cluster: "Implicitness",
-        def: "Understood without being directly stated.",
-        ex: "The agreement had tacit approval from both parties.",
-        tip: "Silently understood."
-      },
-      {
-        w: "IMPLICIT",
-        pos: "adj",
-        cluster: "Implicitness",
-        def: "Suggested though not directly expressed.",
-        ex: "The criticism remained implicit throughout the essay.",
-        tip: "Indirectly communicated."
-      },
-      {
-        w: "EXPLICIT",
-        pos: "adj",
-        cluster: "Implicitness",
-        def: "Clearly and directly stated.",
-        ex: "The contract contained explicit instructions.",
-        tip: "Directly expressed."
-      },
-      {
-        w: "AMBIGUOUS",
-        pos: "adj",
-        cluster: "Implicitness",
-        def: "Open to more than one interpretation.",
-        ex: "The poem's ending remained ambiguous.",
-        tip: "Unclear multiple meanings."
-      },
-      {
-        w: "UNEQUIVOCAL",
-        pos: "adj",
-        cluster: "Implicitness",
-        def: "Leaving no doubt; completely clear.",
-        ex: "The evidence offered unequivocal proof.",
-        tip: "Absolute clarity."
-      }
+    "words": [
+      { "w": "ELOQUENT", "pos": "adj", "cluster": "Effective", "def": "Fluent or persuasive in speaking or writing; expressing ideas vividly and movingly", "ex": "Her eloquent closing argument transformed the jury's understanding of the case in under twenty minutes.", "tip": "Eloquent = effective, moving communication. Root: eloqui (to speak out). Not just fancy — genuinely persuasive and clear." },
+      { "w": "TRENCHANT", "pos": "adj", "cluster": "Effective", "def": "Vigorous or incisive in expression or style; sharply perceptive and direct", "ex": "His trenchant analysis exposed the flaw in the government's reasoning that weeks of official denial had obscured.", "tip": "Trenchant = cuts through. Root: trencher (cutting tool). 'Trenchant criticism/analysis/wit.' Vigorous and penetrating, not just clear." },
+      { "w": "INCISIVE", "pos": "adj", "cluster": "Effective", "def": "Intelligently analytical and clear-thinking; sharp and direct in a way that gets to the point", "ex": "Her incisive questions dismantled the witness's composure within three minutes of cross-examination.", "tip": "Incisive = cuts right in. Root: incidere (to cut into). Distinguished from trenchant: incisive = analytically sharp · trenchant = forcefully combative." },
+      { "w": "FELICITOUS", "pos": "adj", "cluster": "Effective", "def": "Well chosen or suited to the circumstances; pleasingly apt and appropriate in expression", "ex": "The speaker's felicitous choice of metaphor — comparing the merger to a marriage — resonated throughout the speech.", "tip": "Felicitous = happily apt. Root: felix (happy). 'A felicitous phrase/metaphor/comparison.' The word fits perfectly, like a key in a lock." },
+      { "w": "DECLAIM", "pos": "v", "cluster": "Effective", "def": "To utter words in a rhetorical, loud, or forceful manner; to make a speech with dramatic emphasis", "ex": "The senator declaimed against the proposed cuts, his voice rising as he described their human cost.", "tip": "Declaim = formal rhetorical speaking, often with passion. Root: declamare (to practice speaking). Can imply excessive theatricality." },
+      { "w": "FLORID", "pos": "adj", "cluster": "Excessive", "def": "Elaborately or excessively ornate; using too many rhetorical devices; overly flowery in expression", "ex": "The Victorian novelist's florid prose — dense with subordinate clauses and purple adjectives — exhausted modern readers.", "tip": "Florid = flowery to excess. Root: floridus (flowery). Used for prose, speech, architecture. Always implies excess decoration over substance." },
+      { "w": "CIRCUMLOCUTION", "pos": "n", "cluster": "Excessive", "def": "The use of many words where fewer would suffice; evasive, indirect, or wordy expression", "ex": "The politician's trademark circumlocution — answering every question with a story about his childhood — infuriated journalists.", "tip": "Circumlocution = talking around the point. Root: circum (around) + loqui (to speak) = talking around. Different from euphemism — circumlocution uses volume, not substitution." },
+      { "w": "RHETORICAL", "pos": "adj", "cluster": "Argument", "def": "Relating to the art of effective or persuasive speaking; used for persuasive effect rather than sincere inquiry", "ex": "His rhetorical question — 'Are we really going to let this continue?' — was met with applause, not answers.", "tip": "Rhetorical question = asked for effect, not information. Rhetoric = the art of persuasion. Rhetorical can be neutral (persuasive) or pejorative (empty flourish)." },
+      { "w": "DIATRIBE", "pos": "n", "cluster": "Argument", "def": "A forceful and bitter verbal attack against someone or something; a fierce criticism or denunciation", "ex": "What began as a review descended into a diatribe — eight pages of personal attack with little critical substance.", "tip": "Diatribe = sustained bitter verbal assault. Root: diatribein (to wear away). More sustained and bitter than mere criticism." },
+      { "w": "PEJORATIVE", "pos": "adj/n", "cluster": "Words", "def": "Expressing contempt or disapproval; a word or phrase that has a negative or degrading connotation", "ex": "'Bureaucrat' began neutrally but acquired pejorative connotations through decades of association with inefficiency.", "tip": "Pejorative = makes something seem worse. Root: pejorare (to make worse). 'Pejorative connotations/term/sense.' The opposite of ameliorative." },
+      { "w": "EUPHEMISM", "pos": "n", "cluster": "Words", "def": "A mild or indirect word or expression substituted for one that might seem offensive or blunt", "ex": "'Downsizing' became the corporate euphemism for mass layoffs that no executive wanted to say plainly.", "tip": "Euphemism = make it sound better. Root: eu (good) + pheme (speech) = good-sounding speech. Opposite: dysphemism (making something sound worse deliberately)." },
+      { "w": "COLLOQUIAL", "pos": "adj", "cluster": "Words", "def": "Used in ordinary or familiar conversation; informal; characteristic of casual speech", "ex": "The colloquial expression 'break a leg' baffled the visiting diplomat who took it literally.", "tip": "Colloquial = conversational, informal register. Root: colloquium (conversation). 'Colloquial language/expression/usage.' Not slang — informal but standard." },
+      { "w": "VERNACULAR", "pos": "n/adj", "cluster": "Words", "def": "The language or dialect spoken by ordinary people; native speech; everyday language", "ex": "The poet wrote in the vernacular rather than Latin, making the work accessible to non-scholars for the first time.", "tip": "Vernacular = the language of the people. Root: vernaculus (native). 'In the vernacular' = in plain everyday speech. GRE RC passages about language history use this." },
+      { "w": "EXPURGATE", "pos": "v", "cluster": "Words", "def": "To remove matter considered objectionable or offensive from a text; to censor by deletion", "ex": "The publisher expurgated three chapters before releasing the memoir in markets with stricter censorship laws.", "tip": "Expurgate = remove offensive passages. Root: ex (out) + purgare (to cleanse). More neutral than bowdlerize — expurgation can be appropriate." },
+      { "w": "BOWDLERIZE", "pos": "v", "cluster": "Words", "def": "To remove from a text material considered improper or offensive, especially in a prudish or ridiculous way", "ex": "The school edition bowdlerized the play so thoroughly that its tragic force was entirely lost.", "tip": "Named after Thomas Bowdler who published a 'family' Shakespeare removing all 'objectionable' passages. Bowdlerize = always implies excessive, ridiculous sanitizing." }
     ]
   },
   {
-    day: 27,
-    theme: "Final High-Frequency Sweep II",
-    date: "May 30, 2026",
-    patterns: [
-      "Derivative work lacks originality · Innovative work creates something genuinely new",
-      "Ephemeral = short-lived · Enduring = lasting over time",
-      "Anomalies disrupt patterns; paradigms define them",
-      "GRE loves moderation words over absolute words"
+    "day": 27,
+    "theme": "Appearance, Illusion & Reality",
+    "date": "Jun 1, 2026",
+    "patterns": [
+      "Ostensible (appears to be; professed) vs Putative (generally reputed to be) — ostensible = apparent surface · putative = what people believe/assume",
+      "Apocryphal (of doubtful authenticity but widely repeated) vs Spurious (not genuine) — apocryphal = possibly legendary · spurious = definitely false",
+      "Verisimilitude = the QUALITY of appearing real — essential in fiction. Does not mean 'true,' only 'seeming true.'",
+      "Chimera = an impossible dream or illusion — named after the Greek mythological creature (lion/goat/serpent). Chimerical = wildly unrealistic."
     ],
-    words: [
-      {
-        w: "DERIVATIVE",
-        pos: "adj",
-        cluster: "Originality",
-        def: "Imitating another work and lacking originality.",
-        ex: "Critics dismissed the sequel as derivative and uninspired.",
-        tip: "Copied without innovation."
-      },
-      {
-        w: "INNOVATIVE",
-        pos: "adj",
-        cluster: "Originality",
-        def: "Introducing new methods or ideas.",
-        ex: "The architect became famous for innovative urban designs.",
-        tip: "Creates genuine novelty."
-      },
-      {
-        w: "CONVENTIONAL",
-        pos: "adj",
-        cluster: "Originality",
-        def: "Following established standards or traditions.",
-        ex: "The novel used a conventional narrative structure.",
-        tip: "Mainstream accepted form."
-      },
-      {
-        w: "RADICAL",
-        pos: "adj",
-        cluster: "Originality",
-        def: "Departing dramatically from traditional ideas or methods.",
-        ex: "The scientist proposed a radical reinterpretation of the data.",
-        tip: "Fundamental departure from norm."
-      },
-      {
-        w: "ICONOCLASTIC",
-        pos: "adj",
-        cluster: "Originality",
-        def: "Attacking or rejecting traditional beliefs and conventions.",
-        ex: "The director's iconoclastic films divided critics.",
-        tip: "Aggressively anti-tradition."
-      },
-
-      {
-        w: "EPHEMERAL",
-        pos: "adj",
-        cluster: "Time",
-        def: "Lasting for a very short time.",
-        ex: "Internet fame can be surprisingly ephemeral.",
-        tip: "Temporary and fleeting."
-      },
-      {
-        w: "TRANSIENT",
-        pos: "adj",
-        cluster: "Time",
-        def: "Temporary and impermanent.",
-        ex: "The economic recovery proved transient.",
-        tip: "Passes quickly."
-      },
-      {
-        w: "ENDURING",
-        pos: "adj",
-        cluster: "Time",
-        def: "Lasting over a long period of time.",
-        ex: "The novel retains enduring popularity.",
-        tip: "Long-lasting significance."
-      },
-      {
-        w: "PERENNIAL",
-        pos: "adj",
-        cluster: "Time",
-        def: "Continuing repeatedly through time; persistent.",
-        ex: "Income inequality remains a perennial political issue.",
-        tip: "Recurring again and again."
-      },
-      {
-        w: "EVANESCENT",
-        pos: "adj",
-        cluster: "Time",
-        def: "Quickly fading or vanishing.",
-        ex: "The painting captured the evanescent colors of sunset.",
-        tip: "Beautiful brief disappearance."
-      },
-
-      {
-        w: "ANOMALY",
-        pos: "n",
-        cluster: "Patterns",
-        def: "Something that deviates from what is expected.",
-        ex: "Researchers initially dismissed the result as an anomaly.",
-        tip: "Exception to established pattern."
-      },
-      {
-        w: "PARADIGM",
-        pos: "n",
-        cluster: "Patterns",
-        def: "A typical model, framework, or pattern.",
-        ex: "The discovery shifted the dominant scientific paradigm.",
-        tip: "Foundational model of thinking."
-      },
-      {
-        w: "PRECEDENT",
-        pos: "n",
-        cluster: "Patterns",
-        def: "An earlier example used as a guide for later decisions.",
-        ex: "The ruling established an important legal precedent.",
-        tip: "Past example shaping future actions."
-      },
-      {
-        w: "PROTOTYPE",
-        pos: "n",
-        cluster: "Patterns",
-        def: "An original model on which later versions are based.",
-        ex: "Engineers tested the prototype before mass production.",
-        tip: "First model/template."
-      },
-      {
-        w: "ARCHETYPE",
-        pos: "n",
-        cluster: "Patterns",
-        def: "The ideal or original example of a type.",
-        ex: "The hero became the archetype for later characters.",
-        tip: "Ultimate representative model."
-      },
-
-      {
-        w: "MODERATE",
-        pos: "adj/v",
-        cluster: "Balance",
-        def: "Avoiding extremes; reasonably limited or balanced.",
-        ex: "The report adopted a moderate position on reform.",
-        tip: "GRE often rewards balanced positions."
-      },
-      {
-        w: "EXTREME",
-        pos: "adj",
-        cluster: "Balance",
-        def: "Far beyond normal limits or moderation.",
-        ex: "Extreme rhetoric alienated undecided voters.",
-        tip: "GRE often punishes absolutes."
-      },
-      {
-        w: "QUALIFIED",
-        pos: "adj",
-        cluster: "Balance",
-        def: "Limited or moderated in extent.",
-        ex: "The scholar expressed qualified agreement with the theory.",
-        tip: "Partially limited support."
-      },
-      {
-        w: "MEASURED",
-        pos: "adj",
-        cluster: "Balance",
-        def: "Careful, restrained, and balanced.",
-        ex: "Her measured criticism carried more authority than outrage.",
-        tip: "Controlled moderation."
-      },
-      {
-        w: "TEMPERATE",
-        pos: "adj",
-        cluster: "Balance",
-        def: "Showing moderation and self-restraint.",
-        ex: "The debate remained surprisingly temperate.",
-        tip: "Moderate emotional control."
-      }
+    "words": [
+      { "w": "ILLUSORY", "pos": "adj", "cluster": "False", "def": "Based on illusion; not what it seems to be; deceptive; producing a false impression", "ex": "The sense of progress was illusory — the statistics looked better only because the methodology had been changed.", "tip": "Illusory = creates an illusion. Root: illudere (to mock). The thing seems real but isn't. Distinguished from specious (sounds convincing but is wrong)." },
+      { "w": "CHIMERA", "pos": "n", "cluster": "False", "def": "Something hoped for but in fact impossible to achieve; an illusory dream or fantasy", "ex": "Critics called the plan a chimera — promising but built on assumptions that bore no relation to economic reality.", "tip": "Named after the Greek monster (lion's head, goat's body, serpent's tail). A chimera = an impossible combination. Chimerical = wildly unrealistic." },
+      { "w": "OSTENSIBLE", "pos": "adj", "cluster": "Surface", "def": "Appearing as such on the surface but not necessarily so in reality; professed; apparent", "ex": "The ostensible purpose of the visit was cultural exchange; its real aim was intelligence gathering.", "tip": "Ostensible = what it claims to be (which may differ from reality). Root: ostendere (to show). 'Ostensibly' is the adverb — very common in GRE RC." },
+      { "w": "PUTATIVE", "pos": "adj", "cluster": "Surface", "def": "Generally considered or reputed to be; supposed; assumed to be the case without proof", "ex": "The putative author of the work has never been definitively identified — three scholars have been proposed.", "tip": "Putative = what people think it is. Root: putare (to think). 'The putative cause/author/heir.' Implies reasonable assumption, not established fact." },
+      { "w": "ERSATZ", "pos": "adj", "cluster": "Surface", "def": "Made or used as a substitute; not real; an inferior artificial imitation of the original", "ex": "The ersatz coffee — made from chicory during wartime rationing — tasted nothing like the real thing.", "tip": "Ersatz = substitute that doesn't measure up. German word (literally 'replacement'). Always implies inferiority. 'Ersatz democracy/culture/affection.'" },
+      { "w": "VERISIMILITUDE", "pos": "n", "cluster": "Seeming", "def": "The appearance of being true or real; plausibility; the quality that makes fiction convincing", "ex": "The historical novel achieved remarkable verisimilitude — readers repeatedly forgot they were reading fiction.", "tip": "Verisimilitude = SEEMS real, not necessarily IS real. Root: verus (true) + similis (like). Essential concept in literary criticism and GRE RC about fiction." },
+      { "w": "APOCRYPHAL", "pos": "adj", "cluster": "Seeming", "def": "Of doubtful authenticity, although widely believed or circulated; legendary rather than factual", "ex": "The story of Newton and the apple is probably apocryphal — charming and plausible, but unsupported by contemporary sources.", "tip": "Apocryphal = possibly legendary. Root: apokryptein (to hide away). Apocrypha = hidden/unofficial texts. Apocryphal ≠ false — just unverifiable and possibly invented." },
+      { "w": "BONA FIDE", "pos": "adj", "cluster": "Genuine", "def": "Genuine; real; made in good faith without fraud or deception", "ex": "The investigators confirmed it was a bona fide offer — the buyer had the funds and the legal standing to proceed.", "tip": "Bona fide = good faith (Latin). Opposite of fraudulent or spurious. 'A bona fide expert/offer/emergency.' Always signals authenticity." },
+      { "w": "FEIGN", "pos": "v", "cluster": "Genuine", "def": "To pretend to be affected by something; to put on a false appearance; to simulate falsely", "ex": "She feigned indifference to the outcome even as her hands shook beneath the conference table.", "tip": "Feign = fake a feeling or condition. Root: fingere (to form/invent). 'Feign surprise/illness/ignorance.' Distinguished from dissemble (hide real feelings)." },
+      { "w": "NOTIONAL", "pos": "adj", "cluster": "Theoretical", "def": "Existing as a concept or idea only; theoretical; not corresponding to actual reality", "ex": "The committee's notional budget bore no relationship to the actual costs of implementation.", "tip": "Notional = exists as a notion only. Root: notio (concept). 'A notional sum/value/distinction' = exists on paper but not in practice." },
+      { "w": "FAÇADE", "pos": "n", "cluster": "Theoretical", "def": "The face of a building; an outward appearance that conceals the true nature of something", "ex": "The company's charitable giving was a façade — a PR operation designed to distract from its labor practices.", "tip": "Façade = front that hides what's behind. From French for 'face.' GRE uses primarily the figurative sense: a surface concealing reality." },
+      { "w": "SPECULATIVE", "pos": "adj", "cluster": "Theoretical", "def": "Based on conjecture rather than established knowledge; involving financial risk; theoretical", "ex": "The historian acknowledged that her account of the king's motives was necessarily speculative, given the sources.", "tip": "Speculative = based on conjecture, not knowledge. Root: speculari (to observe). 'Speculative investment/theory/account.' Distinguished from empirical (based on evidence)." },
+      { "w": "HYPOTHETICAL", "pos": "adj", "cluster": "Theoretical", "def": "Of or based on a hypothesis; supposed for the sake of argument; not necessarily real", "ex": "The professor posed a hypothetical scenario to test whether the principle held under extreme conditions.", "tip": "Hypothetical = assumed for argument's sake. Root: hypothesis (Greek) = groundwork. 'A hypothetical situation/example/question.' Always about the theoretical, not the actual." },
+      { "w": "PSEUDO", "pos": "adj", "cluster": "Theoretical", "def": "Not genuine; falsely claiming to be something it is not; spurious; sham", "ex": "The pseudo-scientific language in the advertisement — 'clinically proven formulation' — had no backing whatsoever.", "tip": "Pseudo = false prefix. Root: pseudos (Greek) = false. 'Pseudo-intellectual/scientific/democratic.' Always signals that the label is false." },
+      { "w": "SUPERFICIAL", "pos": "adj", "cluster": "Surface", "def": "Existing or occurring at the surface; not thorough or deep; concerned only with the obvious", "ex": "The superficial similarities between the two theories concealed profound differences in their underlying assumptions.", "tip": "Superficial = of the surface. Root: superficies (surface). 'Superficial understanding/analysis/similarity.' The depth is lacking." }
     ]
   },
   {
-    day: 28,
-    theme: "RC Ultra-High Frequency Abstract Verbs",
-    date: "May 31, 2026",
-    patterns: [
-      "ETS RC passages rely heavily on abstract process verbs",
-      "Construe = interpret · Postulate = propose theoretically",
-      "Disseminate spreads ideas widely",
-      "Reconciling positions means resolving apparent contradiction"
+    "day": 28,
+    "theme": "Essential GRE Verbs",
+    "date": "Jun 2, 2026",
+    "patterns": [
+      "Obviate (remove the need for) vs Preclude (prevent from happening) — obviate = makes unnecessary · preclude = makes impossible",
+      "Engender (give rise to — neutral) vs Foment (stir up — always negative) vs Galvanize (shock into action — positive/neutral)",
+      "Conflate = incorrectly treat two distinct things as the same — always implies an error of reasoning",
+      "Promulgate = make a law or idea widely known — implies official authority. Disseminate = spread widely — no authority implied"
     ],
-    words: [
-      {
-        w: "CONSTRUE",
-        pos: "v",
-        cluster: "Interpretation",
-        def: "To interpret or understand in a particular way.",
-        ex: "Critics construed the statement as an attack on academic freedom.",
-        tip: "Interpretive reading."
-      },
-      {
-        w: "POSTULATE",
-        pos: "v",
-        cluster: "Interpretation",
-        def: "To propose or assume as a basis for reasoning.",
-        ex: "The theory postulates a hidden economic mechanism.",
-        tip: "Theoretical assumption."
-      },
-      {
-        w: "EXTRAPOLATE",
-        pos: "v",
-        cluster: "Interpretation",
-        def: "To infer unknown information from known evidence.",
-        ex: "Researchers extrapolated future trends from current data.",
-        tip: "Project outward from evidence."
-      },
-      {
-        w: "INFER",
-        pos: "v",
-        cluster: "Interpretation",
-        def: "To draw conclusions from evidence.",
-        ex: "Readers inferred skepticism from the author's tone.",
-        tip: "Conclude indirectly."
-      },
-      {
-        w: "DEDUCE",
-        pos: "v",
-        cluster: "Interpretation",
-        def: "To reach a conclusion through logical reasoning.",
-        ex: "Scientists deduced the compound's structure.",
-        tip: "Logical step-by-step conclusion."
-      },
-
-      {
-        w: "DISSEMINATE",
-        pos: "v",
-        cluster: "Transmission",
-        def: "To spread widely.",
-        ex: "The internet disseminated information rapidly.",
-        tip: "Spread ideas/information."
-      },
-      {
-        w: "PROPAGATE",
-        pos: "v",
-        cluster: "Transmission",
-        def: "To spread or promote widely.",
-        ex: "The regime propagated nationalist ideology.",
-        tip: "Often ideological spread."
-      },
-      {
-        w: "DIFFUSE",
-        pos: "v",
-        cluster: "Transmission",
-        def: "To spread throughout a wide area.",
-        ex: "New technologies diffused gradually across society.",
-        tip: "Gradual spreading outward."
-      },
-      {
-        w: "INSTILL",
-        pos: "v",
-        cluster: "Transmission",
-        def: "To gradually establish an idea or feeling.",
-        ex: "Teachers instilled intellectual curiosity in students.",
-        tip: "Plant ideas slowly."
-      },
-      {
-        w: "IMBUE",
-        pos: "v",
-        cluster: "Transmission",
-        def: "To fill thoroughly with a quality or feeling.",
-        ex: "The speech was imbued with optimism.",
-        tip: "Deeply saturated with quality."
-      },
-
-      {
-        w: "RECONCILE",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To resolve inconsistency between ideas or positions.",
-        ex: "Scholars struggled to reconcile the conflicting accounts.",
-        tip: "Make contradictions fit together."
-      },
-      {
-        w: "SYNTHESIZE",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To combine separate elements into a coherent whole.",
-        ex: "The author synthesized decades of research.",
-        tip: "Integrate many parts."
-      },
-      {
-        w: "INTEGRATE",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To combine into a unified system.",
-        ex: "The reform integrated local and national policies.",
-        tip: "Bring together cohesively."
-      },
-      {
-        w: "MEDIATE",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To intervene to reconcile opposing sides.",
-        ex: "Diplomats mediated the territorial dispute.",
-        tip: "Neutral conflict resolution."
-      },
-      {
-        w: "ARBITRATE",
-        pos: "v",
-        cluster: "Resolution",
-        def: "To settle disputes through authoritative judgment.",
-        ex: "An international panel arbitrated the disagreement.",
-        tip: "Formal outside resolution."
-      },
-
-      {
-        w: "SUPPLANT",
-        pos: "v",
-        cluster: "Replacement",
-        def: "To replace or take the place of.",
-        ex: "Digital photography supplanted film.",
-        tip: "Old system displaced."
-      },
-      {
-        w: "DISPLACE",
-        pos: "v",
-        cluster: "Replacement",
-        def: "To force out or take the position of.",
-        ex: "Automation displaced many factory workers.",
-        tip: "Push out from position."
-      },
-      {
-        w: "SUBSUME",
-        pos: "v",
-        cluster: "Replacement",
-        def: "To include within a larger category or system.",
-        ex: "The theory subsumed several earlier explanations.",
-        tip: "Absorb into larger framework."
-      },
-      {
-        w: "ECLIPSE",
-        pos: "v",
-        cluster: "Replacement",
-        def: "To surpass or overshadow.",
-        ex: "Her later work eclipsed her early novels.",
-        tip: "Outshine completely."
-      },
-      {
-        w: "SUPERSEDE",
-        pos: "v",
-        cluster: "Replacement",
-        def: "To replace something outdated or inferior.",
-        ex: "The new regulations superseded earlier laws.",
-        tip: "Official replacement."
-      }
+    "words": [
+      { "w": "CIRCUMVENT", "pos": "v", "cluster": "Avoid", "def": "To find a clever way around an obstacle, rule, or problem; to avoid by ingenuity", "ex": "The company circumvented the import restrictions by reclassifying the components as something else entirely.", "tip": "Circumvent = go around. Root: circum (around) + venire (to come). Implies cleverness, not necessarily wrongdoing — though often used negatively." },
+      { "w": "OBVIATE", "pos": "v", "cluster": "Avoid", "def": "To remove a need, difficulty, or problem; to prevent from arising; to make unnecessary", "ex": "The new software obviated the need for manual data entry, eliminating twelve clerical positions.", "tip": "Obviate = remove the NEED for something. Root: obviare (to block the way). 'This obviates the need for...' is a GRE-favourite construction." },
+      { "w": "PRECLUDE", "pos": "v", "cluster": "Avoid", "def": "To prevent from happening or arising; to make impossible; to rule out in advance", "ex": "Her earlier statement — made on the record — precluded any denial of her involvement in the decision.", "tip": "Preclude = make impossible before it can happen. Root: prae (before) + claudere (to close). Preclude ≠ prevent — preclude implies the door is shut entirely." },
+      { "w": "FORESTALL", "pos": "v", "cluster": "Avoid", "def": "To prevent or obstruct something by taking action in advance; to preempt", "ex": "The bank's preemptive rate cut was designed to forestall the recession before it could take hold.", "tip": "Forestall = prevent by acting FIRST. Historical root: buying goods before they reach market to control price. Now: any preemptive action." },
+      { "w": "POSIT", "pos": "v", "cluster": "Argue", "def": "To put forward as a fact or as a basis for argument; to assume as a starting point", "ex": "The economist posited that rational actors always maximize self-interest — a premise her critics found reductive.", "tip": "Posit = propose as a foundational assumption. Root: ponere (to place). More tentative than 'assert' — positing invites examination." },
+      { "w": "IMPUTE", "pos": "v", "cluster": "Argue", "def": "To attribute something, especially blame or responsibility, to a cause or person", "ex": "It was unfair to impute malicious intent to a decision that was more likely the result of simple incompetence.", "tip": "Impute = attribute (usually blame). Root: imputare (to charge to an account). 'Impute blame/motive/significance TO someone.' Distinguished from ascribe." },
+      { "w": "ASCRIBE", "pos": "v", "cluster": "Argue", "def": "To attribute something to a particular cause, person, or period; to regard as belonging to", "ex": "Historians ascribe the economic boom to three factors that converged fortuitously in the same decade.", "tip": "Ascribe = attribute causally. Root: ad (to) + scribere (to write). 'Ascribe to.' Neutral — no implication of blame. Compare impute (blame)." },
+      { "w": "CONFLATE", "pos": "v", "cluster": "Argue", "def": "To combine two or more ideas, concepts, or things into one; to treat as the same when they are distinct", "ex": "The report conflated correlation with causation — a fundamental error that invalidated its main conclusions.", "tip": "Conflate = wrongly treat as identical. Root: conflare (to blow together). ALWAYS implies an error. 'Don't conflate X with Y' = they are genuinely different." },
+      { "w": "MISCONSTRUE", "pos": "v", "cluster": "Argue", "def": "To misinterpret; to take the wrong meaning from something; to fail to understand correctly", "ex": "Her silence was misconstrued as agreement when in fact it signaled deep reservations she hadn't yet articulated.", "tip": "Misconstrue = misread or misinterpret. Root: construere (to build). 'Misconstrue the evidence/silence/intent.' Implies the error is in interpretation." },
+      { "w": "PROMULGATE", "pos": "v", "cluster": "Spread", "def": "To make a law or decree widely known by official announcement; to promote an idea broadly", "ex": "The regulation was promulgated by the ministry and took effect thirty days after publication in the official gazette.", "tip": "Promulgate = officially declare AND spread widely. Root: promulgare (to make public). Implies official authority. 'Promulgate a law/doctrine/rule.'" },
+      { "w": "ENGENDER", "pos": "v", "cluster": "Cause", "def": "To cause or give rise to a feeling, situation, or condition; to produce as a result", "ex": "The new policy engendered resentment among employees who felt their expertise had been ignored in its design.", "tip": "Engender = give birth to (figuratively). Root: generare (to produce). Neutral — can engender positive or negative things. No wrongdoing implied." },
+      { "w": "FOMENT", "pos": "v", "cluster": "Cause", "def": "To instigate or stir up undesirable feelings, rebellion, or disorder; to incite", "ex": "Foreign agents were accused of fomenting discontent through targeted social media campaigns.", "tip": "Foment = stir up trouble. Root: fovere (to warm, incubate). ALWAYS negative — you foment unrest, rebellion, discord. Never used for good things." },
+      { "w": "GALVANIZE", "pos": "v", "cluster": "Cause", "def": "To shock or excite someone into taking action; to stimulate or energize suddenly", "ex": "The general's speech galvanized the dispirited troops, transforming resignation into determination within minutes.", "tip": "Galvanize = shock into action (like an electric current). Named after Luigi Galvani who discovered electrical stimulation. Usually positive — produces decisive action." },
+      { "w": "CURTAIL", "pos": "v", "cluster": "Reduce", "def": "To reduce in extent or quantity; to impose a restriction on; to limit", "ex": "Budget constraints forced the department to curtail its research program, deferring several projects indefinitely.", "tip": "Curtail = cut short. Root: court-tail (to dock a horse's tail). 'Curtail spending/freedoms/activities.' Implies reduction, not elimination." },
+      { "w": "ELICIT", "pos": "v", "cluster": "Produce", "def": "To draw out or evoke a response, answer, or reaction from someone; to produce as a response", "ex": "The interviewer's carefully chosen question elicited the admission that all previous denials had been false.", "tip": "Elicit = draw out what's already there. Root: elicere (to draw out by charm). Distinguished from evoke (call up feelings) — elicit = extract specific information or response." }
     ]
   },
   {
