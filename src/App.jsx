@@ -19,6 +19,7 @@ import RootsModule from './phases/RootsModule';
 import QuantPractice from './phases/quant/QuantPractice';
 import QuantMock from './phases/quant/QuantMock';
 import FormulaSheet from './phases/quant/FormulaSheet';
+import ConceptLearn from './phases/quant/ConceptLearn';
 
 // ─── PERSISTENCE HELPERS ──────────────────────────────────────────────────────
 const loadJSON = (key, fallback) => {
@@ -34,8 +35,9 @@ export default function App() {
   const [weakWords, setWeakWords]   = useState(() => loadJSON('gre_weakWords', []));
   const [dayScores, setDayScores]   = useState(() => loadJSON('gre_dayScores', {}));
   const [cachedQs, setCachedQs]     = useState({});
-  const [quantPage, setQuantPage]   = useState(null); // null=topic list, topic id, 'mock', 'formulas', 'progress'
+  const [quantPage, setQuantPage]   = useState(null);
   const [quantScores, setQuantScores] = useState(() => loadJSON('gre_quantScores', {}));
+  const [quantTab, setQuantTab]     = useState('learn'); // learn | practice
   const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showWarmup, setShowWarmup] = useState(() => {
@@ -304,7 +306,24 @@ export default function App() {
               ) : quantPage === 'progress' ? (
                 <QuantProgressView scores={quantScores}/>
               ) : quantPage && QUANT_TOPICS.find(t=>t.id===quantPage) ? (
-                <QuantPractice topic={quantPage} onScoreUpdate={updateQuantScore}/>
+                <div>
+                  <div style={{display:'flex', gap:8, marginBottom:20, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
+                    {[{id:'learn',label:'📚  Learn'},{id:'practice',label:'⚔️  Practice'}].map(t=>(
+                      <button key={t.id} onClick={()=>setQuantTab(t.id)} style={{
+                        padding:'10px 20px', border:'none', cursor:'pointer',
+                        fontFamily:'Georgia,serif', fontWeight:700, fontSize:13,
+                        background:'transparent', transition:'all 0.15s',
+                        borderBottom: quantTab===t.id?`2px solid ${C.gold}`:'2px solid transparent',
+                        color: quantTab===t.id?C.gold:C.textMid, marginBottom:-1,
+                      }}>{t.label}</button>
+                    ))}
+                  </div>
+                  {quantTab==='learn' ? (
+                    <ConceptLearn topicId={quantPage}/>
+                  ) : (
+                    <QuantPractice topic={quantPage} onScoreUpdate={updateQuantScore}/>
+                  )}
+                </div>
               ) : (
                 <QuantLanding onSelectTopic={setQuantPage} scores={quantScores}/>
               )}
