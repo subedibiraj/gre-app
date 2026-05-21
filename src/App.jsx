@@ -23,6 +23,7 @@ import QuantPractice from './phases/quant/QuantPractice';
 import QuantMock from './phases/quant/QuantMock';
 import FormulaSheet from './phases/quant/FormulaSheet';
 import ConceptLearn from './phases/quant/ConceptLearn';
+import DailySession from './components/DailySession';
 
 // ─── PERSISTENCE HELPERS ──────────────────────────────────────────────────────
 const loadJSON = (key, fallback) => {
@@ -44,6 +45,7 @@ export default function App() {
   const [achToast, setAchToast]     = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showDailySession, setShowDailySession] = useState(false);
   const [showWarmup, setShowWarmup] = useState(() => {
     const key = `gre_warmup_${new Date().toDateString()}`;
     if (sessionStorage.getItem(key)) return false;
@@ -130,7 +132,7 @@ export default function App() {
     if(achs.length) setAchToast(achs[0]);
   }, [streak, quantScores]);
 
-  return (
+  const mainContent = (
     <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif", background:C.bg, minHeight:'100vh', color:C.text, display:'flex', flexDirection:'column'}}>
 
       {showWarmup && <WarmupModal onClose={closeWarmup}/>}
@@ -169,6 +171,7 @@ export default function App() {
               <span style={{color:C.textDim, fontSize:10}}>day{streak.current!==1?'s':''}</span>
             </div>
           )}
+          <button onClick={()=>setShowDailySession(true)} style={{padding:'5px 12px', borderRadius:6, border:`1px solid ${C.gold}33`, background:`${C.gold}15`, color:C.gold, cursor:'pointer', fontSize:11, fontWeight:700, transition:'all 0.15s'}}>📅 Study</button>
           <XPBar/>
           {section==='verbal' && (
             <div style={{textAlign:'right'}}>
@@ -435,5 +438,20 @@ function QuantProgressView({ scores }) {
         })}
       </div>
     </div>
+  );
+
+  // ─── DailySession modal ───
+  const sessionModal = showDailySession && (
+    <DailySession
+      onNavigate={(sec, t) => { setSection(sec); if(sec==='verbal') setTab(t); else setQuantTab(t==='learn'?'learn':'practice'); }}
+      onClose={() => setShowDailySession(false)}
+    />
+  );
+
+  return (
+    <>
+      {mainContent}
+      {sessionModal}
+    </>
   );
 }

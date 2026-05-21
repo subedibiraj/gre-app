@@ -775,7 +775,7 @@ export const DAYS = [
         cluster: "Clear",
         def: "Expressed clearly and easy to understand.",
         ex: "The professor gave a lucid explanation of quantum theory.",
-        tip: "Classic SE clarity word."
+        tip: "Lucid = clear expression. Pellucid = even clearer (rarer). Both opposite of opaque/obscure."
       },
       {
         w: "PELLUCID",
@@ -791,7 +791,7 @@ export const DAYS = [
         cluster: "Unclear",
         def: "Difficult to understand or not well known.",
         ex: "The philosopher's obscure language frustrated readers.",
-        tip: "Can mean unknown OR unclear."
+        tip: "Obscure has dual meaning: hard to understand AND little-known. Context determines which."
       },
       {
         w: "ARCANE",
@@ -799,7 +799,7 @@ export const DAYS = [
         cluster: "Unclear",
         def: "Known by only a few specialists.",
         ex: "The text explored arcane legal doctrines.",
-        tip: "Specialized obscurity."
+        tip: "Arcane = secret specialist knowledge. Esoteric = for a select few. Arcane is more mysterious."
       },
       {
         w: "ESOTERIC",
@@ -807,7 +807,7 @@ export const DAYS = [
         cluster: "Unclear",
         def: "Intended for or understood by a small group.",
         ex: "The seminar focused on esoteric philosophy.",
-        tip: "Elite insider knowledge."
+        tip: "Esoteric = understood by few (intentionally). Abstruse = hard to understand (unintentionally)."
       },
 
       {
@@ -816,7 +816,7 @@ export const DAYS = [
         cluster: "Practical",
         def: "Focused on practical results.",
         ex: "The mayor adopted a pragmatic compromise.",
-        tip: "Results over ideology."
+        tip: "Pragmatic = practical, results-focused. Dogmatic = rigidly ideological. Classic GRE antonym pair."
       },
       {
         w: "UTILITARIAN",
@@ -824,7 +824,7 @@ export const DAYS = [
         cluster: "Practical",
         def: "Designed primarily for usefulness rather than beauty.",
         ex: "The building's utilitarian design emphasized efficiency.",
-        tip: "Pure functionality."
+        tip: "Utilitarian = purely functional. Aesthetic = focused on beauty. GRE loves this contrast."
       },
       {
         w: "IDEALISTIC",
@@ -832,7 +832,7 @@ export const DAYS = [
         cluster: "Abstract",
         def: "Guided by ideals more than practical concerns.",
         ex: "Her idealistic proposals lacked realistic funding.",
-        tip: "Vision over practicality."
+        tip: "Idealistic = noble but impractical. Pragmatic = its antonym. Utopian = extreme idealism."
       },
       {
         w: "VISIONARY",
@@ -848,7 +848,7 @@ export const DAYS = [
         cluster: "Abstract",
         def: "Idealistic to an impractical degree.",
         ex: "Critics dismissed the reforms as utopian fantasy.",
-        tip: "Impossible perfection."
+        tip: "Utopian = impossibly perfect. Quixotic = similar but implies foolish romantic idealism."
       },
 
       {
@@ -857,7 +857,7 @@ export const DAYS = [
         cluster: "Frequency",
         def: "Occurring irregularly and infrequently.",
         ex: "The region experienced sporadic violence.",
-        tip: "Random occasional appearance."
+        tip: "Sporadic = random, no pattern. Intermittent = stops and starts (has a rhythm). Key distinction."
       },
       {
         w: "INTERMITTENT",
@@ -865,7 +865,7 @@ export const DAYS = [
         cluster: "Frequency",
         def: "Stopping and starting repeatedly.",
         ex: "Intermittent rain delayed the event.",
-        tip: "Repeated interruptions."
+        tip: "Intermittent = on-off-on pattern. Sporadic = random bursts. Continuous = their shared antonym."
       },
       {
         w: "PERPETUAL",
@@ -873,7 +873,7 @@ export const DAYS = [
         cluster: "Frequency",
         def: "Continuing indefinitely.",
         ex: "The city faced perpetual traffic congestion.",
-        tip: "Never-ending continuation."
+        tip: "Perpetual = never stops (neutral). Incessant = never stops (annoying). Tone is the difference."
       },
       {
         w: "CHRONIC",
@@ -881,7 +881,7 @@ export const DAYS = [
         cluster: "Frequency",
         def: "Persisting for a long time or constantly recurring.",
         ex: "The country struggled with chronic instability.",
-        tip: "Long-term recurring problem."
+        tip: "Chronic = long-lasting (negative: chronic pain). Acute = sudden and severe. Medical metaphor."
       },
       {
         w: "UBIQUITOUS",
@@ -889,7 +889,7 @@ export const DAYS = [
         cluster: "Frequency",
         def: "Present or found everywhere.",
         ex: "Smartphones have become ubiquitous.",
-        tip: "Everywhere simultaneously."
+        tip: "Ubiquitous = everywhere at once. Pervasive = spreading and hard to escape (more negative)."
       }
     ]
   },
@@ -910,7 +910,7 @@ export const DAYS = [
         cluster: "Conflict",
         def: "To cause someone to feel isolated or estranged.",
         ex: "His arrogance alienated longtime supporters.",
-        tip: "Pushes others away socially."
+        tip: "Alienate = social isolation. Estrange = emotional distance. Alienate is broader."
       },
       {
         w: "ENGENDER",
@@ -918,7 +918,7 @@ export const DAYS = [
         cluster: "Conflict",
         def: "To produce or generate.",
         ex: "The reforms engendered optimism.",
-        tip: "Creates abstract emotions/states."
+        tip: "Engender = neutral creation. Foment = stir up TROUBLE specifically. Both = cause."
       },
       {
         w: "FOMENT",
@@ -926,7 +926,7 @@ export const DAYS = [
         cluster: "Conflict",
         def: "To stir up or incite trouble.",
         ex: "The speech fomented political unrest.",
-        tip: "Actively provokes instability."
+        tip: "Foment = deliberately incite unrest. Always negative. Galvanize = shock into action (neutral)."
       },
       {
         w: "GALVANIZE",
@@ -934,7 +934,7 @@ export const DAYS = [
         cluster: "Conflict",
         def: "To shock or excite into action.",
         ex: "The scandal galvanized public opposition.",
-        tip: "Sudden activation into movement."
+        tip: "Galvanize = jolt into action (can be positive). Foment = incite disorder (always negative)."
       },
       {
         w: "PLACATE",
@@ -942,7 +942,7 @@ export const DAYS = [
         cluster: "Conflict",
         def: "To calm or pacify anger.",
         ex: "Leaders tried to placate protesters with concessions.",
-        tip: "Reduce hostility."
+        tip: "Placate = calm anger. Appease = give in to demands. Mollify = soothe feelings. All reduce tension."
       },
 
       {
@@ -951,7 +951,7 @@ export const DAYS = [
         cluster: "Decline",
         def: "To gradually weaken or diminish.",
         ex: "Public trust eroded over time.",
-        tip: "Slow weakening process."
+        tip: "Erode = gradual external wearing away. Atrophy = decay from disuse. Both = slow decline."
       },
       {
         w: "DWINDLE",
@@ -959,7 +959,7 @@ export const DAYS = [
         cluster: "Decline",
         def: "To diminish gradually in size or strength.",
         ex: "Resources dwindled during the crisis.",
-        tip: "Shrink steadily."
+        tip: "Dwindle = shrink in quantity/number. Wane = decline in power/intensity. Both gradual."
       },
       {
         w: "ATROPHY",
@@ -967,7 +967,7 @@ export const DAYS = [
         cluster: "Decline",
         def: "To weaken through lack of use.",
         ex: "Unused skills gradually atrophied.",
-        tip: "Decay from neglect."
+        tip: "Atrophy = waste away from DISUSE. Requires neglect. Erode = worn away by external force."
       },
       {
         w: "DETERIORATE",
@@ -975,7 +975,7 @@ export const DAYS = [
         cluster: "Decline",
         def: "To become progressively worse.",
         ex: "Relations deteriorated rapidly after the dispute.",
-        tip: "General worsening."
+        tip: "Deteriorate = get progressively worse (neutral). Degenerate = decline into LOWER moral state."
       },
       {
         w: "DEGENERATE",
@@ -983,7 +983,7 @@ export const DAYS = [
         cluster: "Decline",
         def: "To decline morally or structurally.",
         ex: "The debate degenerated into insults.",
-        tip: "Collapse into lower form."
+        tip: "Degenerate implies moral/structural collapse. Deteriorate is more neutral progressive worsening."
       },
 
       {
@@ -992,7 +992,7 @@ export const DAYS = [
         cluster: "Validity",
         def: "False despite appearing genuine.",
         ex: "Researchers rejected the spurious correlation.",
-        tip: "Fake masquerading as real."
+        tip: "Spurious = fake data/evidence. Specious = flawed argument that SOUNDS convincing. Key distinction!"
       },
       {
         w: "SPECIOUS",
@@ -1000,7 +1000,7 @@ export const DAYS = [
         cluster: "Validity",
         def: "Superficially convincing but actually flawed.",
         ex: "His specious reasoning initially persuaded voters.",
-        tip: "Argument sounds right but isn't."
+        tip: "Specious = persuasive but wrong (arguments). Spurious = not genuine (data/claims). GRE loves this pair."
       },
       {
         w: "TENDENTIOUS",
@@ -1008,7 +1008,7 @@ export const DAYS = [
         cluster: "Validity",
         def: "Expressing biased or partisan views.",
         ex: "The documentary was criticized as tendentious propaganda.",
-        tip: "Pushes ideological agenda."
+        tip: "Tendentious = biased toward a viewpoint. Stronger than partisan — implies deliberate distortion."
       },
       {
         w: "OBJECTIVE",
@@ -1016,7 +1016,7 @@ export const DAYS = [
         cluster: "Validity",
         def: "Uninfluenced by personal feelings or opinions.",
         ex: "The report aimed for objective analysis.",
-        tip: "Neutral evidence-based judgment."
+        tip: "Objective = fact-based, no bias. Disinterested = impartial (NOT uninterested!). GRE trap word."
       },
       {
         w: "PARTISAN",
@@ -1024,7 +1024,7 @@ export const DAYS = [
         cluster: "Validity",
         def: "Strongly biased toward one side or cause.",
         ex: "Partisan rhetoric deepened divisions.",
-        tip: "Politically or ideologically biased."
+        tip: "Partisan = loyal to one side. Tendentious = biased AND distorting. Partisan is milder."
       },
 
       {
@@ -1033,7 +1033,7 @@ export const DAYS = [
         cluster: "Depth",
         def: "Concerned only with surface appearance.",
         ex: "The analysis was superficial and incomplete.",
-        tip: "Lacks depth."
+        tip: "Superficial = surface-only. Cursory = quick glance. Perfunctory = going through motions."
       },
       {
         w: "PROFOUND",
@@ -1041,7 +1041,7 @@ export const DAYS = [
         cluster: "Depth",
         def: "Very deep or intellectually significant.",
         ex: "The philosopher offered profound insights into morality.",
-        tip: "Deep intellectual/emotional weight."
+        tip: "Profound = deeply meaningful. Superficial = its antonym. GRE TC pairs them as contrast pivots."
       },
       {
         w: "PERFUNCTORY",
@@ -1049,7 +1049,7 @@ export const DAYS = [
         cluster: "Depth",
         def: "Done with minimal effort or enthusiasm.",
         ex: "The committee conducted only a perfunctory investigation.",
-        tip: "Mechanical low-effort action."
+        tip: "Perfunctory = done as duty, no care. Cursory = quick. Meticulous = opposite (extreme care)."
       },
       {
         w: "METICULOUS",
@@ -1057,7 +1057,7 @@ export const DAYS = [
         cluster: "Depth",
         def: "Showing extreme attention to detail.",
         ex: "The editor gave the manuscript meticulous review.",
-        tip: "Careful precision."
+        tip: "Meticulous = obsessive detail. Scrupulous adds moral dimension. Perfunctory = their antonym."
       },
       {
         w: "SCRUPULOUS",
@@ -1065,7 +1065,7 @@ export const DAYS = [
         cluster: "Depth",
         def: "Extremely careful and morally conscientious.",
         ex: "The journalist was scrupulous about verifying facts.",
-        tip: "Careful + ethical integrity."
+        tip: "Scrupulous = careful + morally principled. Unscrupulous = no moral limits. Both GRE-tested."
       }
     ]
   }

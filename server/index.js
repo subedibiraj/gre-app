@@ -13,7 +13,73 @@ app.use(express.json({ limit: '50kb' }));
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// ─── QUESTION GENERATION ENDPOINT ─────────────────────────────────────────────
+// ─── SHARED PROMPT FRAGMENTS ───────────────────────────────────────────────────
+
+const GRE_VERBAL_REGISTER = `
+AUTHENTIC GRE REGISTER REQUIREMENTS:
+- Stems must read like excerpts from academic writing: literary criticism, scientific reviews, historical analysis, philosophical treatises, economic commentary, or art criticism
+- Use subordinate clauses, appositives, and parallel constructions — never simple subject-verb sentences
+- Avoid first-person, contractions, colloquialisms, and pop-culture references
+- Character/subject types authentic to GRE: historians, scientists, philosophers, critics, economists, novelists, biographers, politicians
+- Sentence openers authentic to GRE: "Although long celebrated for...", "Despite her reputation for...", "Critics who dismissed X as... failed to recognize...", "The author's insistence on... belied...", "What distinguished X from contemporaries was not... but rather..."
+`;
+
+const TC_RULES = `
+TEXT COMPLETION RULES (mirror real ETS standards):
+1. SINGLE-BLANK (5 options A-E): The stem must contain either:
+   (a) A PIVOT WORD signaling contrast: despite, although, yet, however, while, nevertheless, paradoxically, surprisingly, ironically, in spite of
+   (b) A SUPPORT/CONTINUATION signal: as expected, indeed, not surprisingly, characteristically, accordingly, consequently
+   (c) A DEFINITIONAL CLUE: the blank is explained or illustrated by the surrounding text
+   — The correct answer must be derivable from the stem ALONE, not from general knowledge
+   — Wrong answers must be from the SAME SEMANTIC FIELD (e.g., if answer is TACITURN, distractors should be RETICENT, LACONIC, LOQUACIOUS, GARRULOUS — not random unrelated words)
+   
+2. DOUBLE-BLANK (3 options per blank, A-C for blank 1, D-F for blank 2):
+   — Each blank must have INDEPENDENT evidence in the stem
+   — The two blanks should NOT be simple opposites of each other — that is too easy
+   — Correct answer for each blank must work WITH the other correct answer to create coherent meaning
+   — Wrong options should create incoherent meaning with the rest of the sentence, not just sound wrong
+   
+3. DIFFICULTY CALIBRATION:
+   — Easy: single pivot word, unambiguous direction, correct answer is the most common word of the semantic group
+   — Medium: requires understanding a nuance between similar words, or parsing a longer complex sentence
+   — Hard: abstract academic context, correct answer hinges on a precise distinction between near-synonyms, or stem contains multiple clauses that must all be satisfied
+`;
+
+const SE_RULES = `
+SENTENCE EQUIVALENCE RULES (mirror real ETS standards):
+1. The 6 options must include: 2 correct answers + 2 plausible-but-wrong answers from the same field + 2 clearly-wrong answers
+2. The 2 correct answers must be genuine synonyms OR produce sentences with the same logical meaning — not just grammatically valid
+3. CRITICAL TEST: read the sentence with ONLY Word 1. Read it with ONLY Word 2. The resulting meanings must be essentially the same.
+4. The 4 wrong answers must be eliminable: 
+   — 2 of them should fit the blank grammatically but change the meaning of the sentence
+   — 2 of them should clearly not fit the context at all
+5. Difficulty calibration:
+   — Easy: 2 correct words are obvious near-synonyms, distractors are clearly different
+   — Medium: all 6 words are somewhat related, correct pair requires knowing nuanced difference
+   — Hard: correct pair shares only contextual meaning (not dictionary synonyms), and strong distractors could fool a student who only half-understands the clue
+`;
+
+const RC_RULES = `
+READING COMPREHENSION RULES (mirror real ETS standards):
+PASSAGE REQUIREMENTS:
+- Academic register throughout — no casual language
+- Passages must take a discernible POSITION or present a TENSION: the author asserts X, complicates Y, or contrasts view A with view B
+- Topics: natural sciences (evolutionary biology, astronomy, physics, chemistry), humanities (literary criticism, art history, philosophy, linguistics), social sciences (economics, political theory, sociology, psychology)
+- Do NOT write about fictional countries, made-up studies, or generic topics like "Company X released a product"
+- Each passage should contain at least one statement the student could confuse with another (for inference questions)
+
+QUESTION TYPE DISTRIBUTION (for 3 questions per passage):
+Q1: MAIN IDEA or PRIMARY PURPOSE — "The passage primarily serves to..." / "Which best describes the author's main argument?"
+Q2: INFERENCE — "The passage suggests/implies that..." / "Based on the passage, it can be inferred that..."
+Q3: VOCABULARY IN CONTEXT — "As used in the passage, X most nearly means..." OR SPECIFIC DETAIL — "According to the passage..."
+
+WRONG ANSWER CONSTRUCTION:
+- Main idea wrongs: too narrow (focuses on one detail), too broad (overstates the scope), or opposite to the author's stance
+- Inference wrongs: too strong (uses "always"/"never" when passage says "often"/"sometimes"), goes beyond what passage states, contradicts passage
+- Vocabulary wrongs: the most common everyday meaning of the word (which differs from its contextual meaning), a related word that doesn't fit context
+`;
+
+// ─── VERBAL PRACTICE ENDPOINT ──────────────────────────────────────────────────
 app.post('/api/generate', async (req, res) => {
   try {
     const { dayNum, theme, currentWords, allWords, weakWords, scores } = req.body;
@@ -24,107 +90,96 @@ app.post('/api/generate', async (req, res) => {
 
     const bankLines = allWords.map(w => `${w.w} (${w.pos}): ${w.def}`).join('\n');
     const weakNote = weakWords?.length
-      ? `\n\nIMPORTANT — These words the student consistently gets WRONG. Weight them heavily:\n${weakWords.slice(0,12).join(', ')}`
+      ? `\n\nWEAK WORDS — MANDATORY PRIORITY: The student has repeatedly missed these words. You MUST include at least 3 of them across your questions, testing the EXACT nuance they confused:\n${weakWords.slice(0, 12).join(', ')}\nFor each weak word you include, the wrong answers must include the word they likely confused it with.`
       : '';
     const scoreNote = scores
-      ? `\nPrevious session scores: ${JSON.stringify(scores)}`
+      ? `\nPrevious session performance: ${JSON.stringify(scores)}. Adjust difficulty: if scores are high (>80%), increase difficulty. If low (<60%), include easier anchor questions with harder ones.`
       : '';
 
-    const systemPrompt = `You are an elite GRE Verbal question writer with 15+ years of experience creating official ETS-quality questions. You produce questions indistinguishable from real GRE items.
+    const systemPrompt = `You are a senior ETS question developer with 20 years of experience writing official GRE Verbal Reasoning questions. You have written thousands of questions that appeared on real GRE exams.
 
-ABSOLUTE RULES — VIOLATION OF ANY RULE INVALIDATES YOUR OUTPUT:
-1. Return ONLY valid JSON. No markdown fences, no backticks, no commentary outside the JSON object.
-2. Use ONLY words from the provided word bank. Never invent words not in the bank.
-3. Never use the answer word in the question stem or context clue.
-4. Every question must have exactly ONE unambiguous correct answer derivable from the stem alone.
-5. TC stems must contain a clear pivot word (despite, although, yet, however, while, surprisingly, nevertheless) OR a clear definitional clue that points to exactly one answer.
-6. SE pairs must produce sentences that are alike in meaning — not just both grammatically correct.
-7. Distractors must be plausible but clearly wrong upon careful analysis.
-8. CONFUSABLE PAIRS: When building distractors, deliberately include words that students commonly confuse (e.g., DEPRECATE vs DEPRECIATE, DISINTERESTED vs UNINTERESTED, ENORMITY vs ENORMOUSNESS). This tests precision.
+Your questions are used by test-prep companies as the gold standard for GRE authenticity.
 
-QUALITY STANDARDS:
-- Write stems that feel like actual GRE passages — sophisticated syntax, academic register
-- Vary sentence structures: some with subordinate clauses, some with appositives, some with parallel construction
-- Include cross-day words as distractors to test cumulative knowledge
-- Mix difficulty: 2 easy, 3 medium, 2 hard for drill; 1 easy, 1 medium, 1 hard for TC
-- For weak words: create questions that test the EXACT nuance the student likely confused`;
+ABSOLUTE NON-NEGOTIABLE RULES:
+1. Return ONLY valid JSON. No markdown fences, no backticks, no text outside the JSON object. Any non-JSON output breaks the application.
+2. Use ONLY words explicitly provided in the word bank. Never invent, approximate, or substitute.
+3. Never place the correct answer word anywhere in the question stem or context sentence.
+4. Every question has exactly ONE unambiguous correct answer — no "it could be argued" situations.
+5. Every explanation MUST analyze why each wrong answer fails — this is the primary learning mechanism.
+
+${GRE_VERBAL_REGISTER}
+${TC_RULES}
+${SE_RULES}
+${RC_RULES}`;
 
     const currentWordsList = currentWords.map(w => `${w.w} (${w.pos}): ${w.def}`).join('\n');
 
-    const userPrompt = `Generate adaptive GRE Verbal practice for Day ${dayNum}: "${theme}"
-
-═══ SECTION 1: VOCABULARY IN CONTEXT (current day words) ═══
-For each word below, write a sophisticated sentence USING the word, then provide 4 options for what the word means IN THAT CONTEXT. Only 1 correct answer.
-Use ONLY these Day ${dayNum} words:
-${currentWordsList}
+    const userPrompt = `Generate adaptive GRE Verbal practice questions for Day ${dayNum}: "${theme}"
 ${weakNote}
 ${scoreNote}
 
-═══ SECTION 2: TEXT COMPLETION (current day words ONLY) ═══
-Word pool for TC: Use ONLY these Day ${dayNum} words as correct answers and distractors.
+━━━ WORD POOLS ━━━
+Today's words (REQUIRED for VIC, TC, SE):
 ${currentWordsList}
 
-═══ SECTION 3: SENTENCE EQUIVALENCE (current day words ONLY) ═══
-Word pool for SE: Use ONLY Day ${dayNum} words. The 2 correct answers must be from today's word list.
-${currentWordsList}
+Full word bank (for RC distractors and cross-day references only):
+${bankLines}
 
-═══ SECTION 4: READING COMPREHENSION (any vocabulary) ═══
-Write 1 short academic passage (80-120 words) on any topic (science, humanities, social science, arts).
-Then create 3 questions testing: main idea, inference, and vocabulary in context.
-Use GRE-level vocabulary (NOT limited to today's words).
+━━━ SECTION 1: VOCABULARY IN CONTEXT (5 questions) ━━━
+Write a sophisticated sentence that USES the target word in an authentic academic context.
+Then provide 4 answer choices for what the word means IN THAT SPECIFIC CONTEXT.
+Requirements:
+- The sentence must be complex enough that a student needs to understand the academic context, not just recognize the word
+- The sentence should provide at least one contextual clue to the word's meaning (for fair testing)
+- One correct answer: precise definition of the word as used
+- Three wrong answers: (a) the word from a related but different semantic cluster, (b) the most common everyday misunderstanding of the word, (c) a plausible-sounding but incorrect meaning
+- Use ONLY Day ${dayNum} words — each of the 5 questions must test a DIFFERENT word
 
-═══ GENERATION REQUIREMENTS ═══
-• 5 vocabulary-in-context questions — Day ${dayNum} words ONLY, each tests a DIFFERENT word
-• 4 text completion questions — Day ${dayNum} words ONLY (2 easy single-blank, 1 medium single-blank, 1 hard double-blank)
-• 3 sentence equivalence questions — Day ${dayNum} words ONLY (select exactly 2 synonymous answers from 6 options)
-• 1 reading comprehension passage with 3 questions — ANY GRE vocabulary
+Format for each:
+{"id":N, "word":"WORD", "sentence":"Academic sentence using the word...", "answer":"B", "opts":[{"l":"A","t":"meaning1"},{"l":"B","t":"meaning2"},{"l":"C","t":"meaning3"},{"l":"D","t":"meaning4"}], "explain":"Correct: B because [precise definition + how context confirms it]. | A wrong: [why this definition doesn't fit the usage]. | C wrong: [common trap explanation]. | D wrong: [why this fails]."}
 
-═══ EXPLANATION FORMAT (CRITICAL) ═══
-Every "explain" field MUST include:
-1. Why the correct answer is right
-2. Why EACH wrong answer is wrong (e.g., "A is wrong because 'verbose' implies excessive length, but the passage describes brevity")
-This is the #1 learning tool for 165+ scorers. Do NOT skip wrong-answer analysis.
+━━━ SECTION 2: TEXT COMPLETION (4 questions) ━━━
+Use ONLY Day ${dayNum} words as the correct answer and as distractors.
+Difficulty distribution: Q1=easy single-blank, Q2=medium single-blank, Q3=medium single-blank, Q4=hard double-blank
 
-FORMAT RULES:
-- VIC: {"id":N, "word":"WORD", "sentence":"sentence using WORD", "answer":"B", "opts":[{"l":"A","t":"meaning1"},{"l":"B","t":"meaning2"},{"l":"C","t":"meaning3"},{"l":"D","t":"meaning4"}], "explain":"Correct: B because... | A wrong: ... | C wrong: ... | D wrong: ..."}
-- TC single-blank: use [B1] marker in stem, provide 5 options A-E
-- TC double-blank: use [B1] and [B2] markers in stem, provide A-C for blank 1, D-F for blank 2
-- SE: provide 6 options A-F, exactly 2 correct that produce equivalent meaning
-- RC: passage text + 3 questions with 4 options A-D each
-- ALL explain fields must include wrong-answer analysis
+Q1 (Easy, single-blank): Clear pivot word, common word from today's cluster as answer, wrong answers from same cluster but clearly wrong given the pivot
+Q2 (Medium, single-blank): Requires parsing a complex clause, answer hinges on a nuance between two similar words
+Q3 (Medium, single-blank): Definitional clue approach — the stem explains or illustrates the blank without a pivot word
+Q4 (Hard, double-blank): Academic scenario, each blank has independent evidence, wrong options for each blank come from the same cluster
 
-Return this EXACT JSON structure (no other text):
+${TC_RULES}
+
+Format — single blank:
+{"id":N, "stem":"sentence with [B1]", "blanks":[{"label":"Blank 1","answer":"B","opts":[{"l":"A","t":"w1"},{"l":"B","t":"w2"},{"l":"C","t":"w3"},{"l":"D","t":"w4"},{"l":"E","t":"w5"}]}], "explain":"PIVOT WORD: [word]. This signals [contrast/continuation]. B is correct because [link between clue and word's definition]. | A wrong: [this word means X which doesn't fit because...] | C wrong: ... | D wrong: ... | E wrong: ..."}
+
+Format — double blank:
+{"id":N, "stem":"sentence with [B1] and [B2]", "blanks":[{"label":"Blank 1","answer":"B","opts":[{"l":"A","t":"w1"},{"l":"B","t":"w2"},{"l":"C","t":"w3"}]},{"label":"Blank 2","answer":"E","opts":[{"l":"D","t":"w4"},{"l":"E","t":"w5"},{"l":"F","t":"w6"}]}], "explain":"BLANK 1 EVIDENCE: [quote from stem]. B is correct because... A wrong: ... C wrong: ... | BLANK 2 EVIDENCE: [quote from stem]. E is correct because... D wrong: ... F wrong: ..."}
+
+━━━ SECTION 3: SENTENCE EQUIVALENCE (3 questions) ━━━
+Use ONLY Day ${dayNum} words. All 6 options must come from today's word list.
+Difficulty: Q1=easy, Q2=medium, Q3=hard
+
+${SE_RULES}
+
+Format:
+{"id":N, "stem":"sentence with _______", "answers":["C","D"], "opts":[{"l":"A","t":"w1"},{"l":"B","t":"w2"},{"l":"C","t":"w3"},{"l":"D","t":"w4"},{"l":"E","t":"w5"},{"l":"F","t":"w6"}], "explain":"Correct pair: C and D. MEANING TEST: 'C' produces [sentence meaning X]. 'D' produces [same meaning X]. They are equivalent because [shared semantic property]. | A wrong: grammatically fits but changes meaning to [Y] because [A means...]. | B wrong: ... | E wrong: ... | F wrong: ..."}
+
+━━━ SECTION 4: READING COMPREHENSION (1 passage, 3 questions) ━━━
+${RC_RULES}
+
+Write ONE academic passage (90-110 words) on a topic from: evolutionary biology, literary modernism, behavioral economics, Renaissance art, Enlightenment philosophy, or cognitive psychology.
+The passage must take a CLEAR POSITION or present a DISCERNIBLE TENSION between two views.
+Follow with exactly 3 questions: main idea/purpose, inference, vocabulary-in-context.
+
+Format:
+{"id":1, "passage":"Full passage text...", "topic":"Topic label", "questions":[{"id":1,"q":"Question text","answer":"A","opts":[{"l":"A","t":"opt"},{"l":"B","t":"opt"},{"l":"C","t":"opt"},{"l":"D","t":"opt"}],"explain":"A is correct: [why this matches passage]. B wrong: [too narrow/too broad/contradicts passage — quote evidence]. C wrong: [explains misconception]. D wrong: [explains misconception]."}]}
+
+━━━ RETURN EXACTLY THIS JSON STRUCTURE ━━━
 {
-  "vic": [
-    {"id": 1, "word": "WORD", "sentence": "...", "answer": "B", "opts": [{"l":"A","t":"m1"},{"l":"B","t":"m2"},{"l":"C","t":"m3"},{"l":"D","t":"m4"}], "explain": "Correct: B... | A wrong: ... | C wrong: ... | D wrong: ..."}
-  ],
-  "tc": [
-    {
-      "id": 1,
-      "stem": "sentence with [B1] marker",
-      "blanks": [{"label":"Blank 1","answer":"B","opts":[{"l":"A","t":"w1"},{"l":"B","t":"w2"},{"l":"C","t":"w3"},{"l":"D","t":"w4"},{"l":"E","t":"w5"}]}],
-      "explain": "Correct: B because... | A wrong: ... | C wrong: ... | D wrong: ... | E wrong: ..."
-    }
-  ],
-  "se": [
-    {
-      "id": 1,
-      "stem": "sentence with _______ blank",
-      "answers": ["C","D"],
-      "opts": [{"l":"A","t":"w1"},{"l":"B","t":"w2"},{"l":"C","t":"w3"},{"l":"D","t":"w4"},{"l":"E","t":"w5"},{"l":"F","t":"w6"}],
-      "explain": "C and D both mean X. | A wrong: ... | B wrong: ... | E wrong: ... | F wrong: ..."
-    }
-  ],
-  "rc": [
-    {
-      "id": 1,
-      "passage": "Full academic passage...",
-      "topic": "Topic label",
-      "questions": [
-        {"id": 1, "q": "Question", "answer": "A", "opts": [{"l":"A","t":"opt1"},{"l":"B","t":"opt2"},{"l":"C","t":"opt3"},{"l":"D","t":"opt4"}], "explain": "A is correct because... | B wrong: ... | C wrong: ... | D wrong: ..."}
-      ]
-    }
-  ]
+  "vic": [5 items],
+  "tc": [4 items],
+  "se": [3 items],
+  "rc": [1 item with 3 questions]
 }`;
 
     const response = await ai.models.generateContent({
@@ -132,7 +187,7 @@ Return this EXACT JSON structure (no other text):
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemPrompt,
-        temperature: 0.8,
+        temperature: 0.75,
         maxOutputTokens: 16384,
         responseMimeType: 'application/json',
       },
@@ -146,11 +201,9 @@ Return this EXACT JSON structure (no other text):
       parsed = JSON.parse(clean);
     } catch (parseErr) {
       console.error('JSON parse failed. Length:', clean.length, 'Last 100 chars:', clean.substring(clean.length - 100));
-      console.error('Full response:', clean.substring(0, 500));
       return res.status(500).json({ error: 'AI returned incomplete response. Try again.' });
     }
 
-    // Validate structure
     if (!parsed.vic || !parsed.tc || !parsed.se) {
       return res.status(500).json({ error: 'AI response missing required sections.' });
     }
@@ -167,7 +220,7 @@ Return this EXACT JSON structure (no other text):
   }
 });
 
-// ─── QUANT PRACTICE ENDPOINT ──────────────────────────────────────────────────
+// ─── QUANT PRACTICE ENDPOINT ───────────────────────────────────────────────────
 app.post('/api/quant-generate', async (req, res) => {
   try {
     const { topicId, topicLabel, subtopics, weakAreas } = req.body;
@@ -175,52 +228,82 @@ app.post('/api/quant-generate', async (req, res) => {
       return res.status(500).json({ error: 'GEMINI_API_KEY not configured in .env' });
     }
 
-    const weakNote = weakAreas?.length ? `\nThe student struggles with: ${weakAreas.join(', ')}. Generate harder questions on these.` : '';
+    const weakNote = weakAreas?.length
+      ? `\nWEAK AREAS — MANDATORY FOCUS: The student consistently fails on: ${weakAreas.join(', ')}. At least 3 of your 10 questions must directly target these weak areas, and the explanations for those questions must identify the exact conceptual error the student likely made.`
+      : '';
 
-    const systemPrompt = `You are an expert GRE Quantitative Reasoning question writer.
-Create questions that are mathematically precise and unambiguous.
-Every answer must be numerically verifiable.
-Use GRE-standard difficulty: mix of easy, medium, and hard.
-Include common GRE traps (sign errors, edge cases, assuming positive values).
-All explanations must show complete step-by-step solutions.`;
+    const systemPrompt = `You are a senior ETS psychometrician who has designed GRE Quantitative Reasoning sections for 15 years.
 
-    const userPrompt = `Generate GRE Quant practice for topic: ${topicLabel}
-Subtopics: ${subtopics.join(', ')}
+Your questions must meet these GRE Quant standards:
+1. Every problem is mathematically unambiguous — one correct answer, derivable by calculation alone
+2. Quantitative Comparison questions follow EXACT GRE format — the 4 answer choices are ALWAYS:
+   A = "Quantity A is greater"
+   B = "Quantity B is greater"  
+   C = "The two quantities are equal"
+   D = "The relationship cannot be determined from the information given"
+   Never deviate from these exact answer descriptions.
+3. Include authentic GRE traps: assuming variables are positive when not stated, forgetting special cases (0, negatives, fractions), order-of-operations errors, units mismatches
+4. Numeric Entry answers must be single numbers (integer, fraction as decimal, or negative)
+5. Step-by-step explanations must identify the specific trap a test-taker would fall into
+
+GRE QUANT DIFFICULTY CALIBRATION:
+- Easy (130-150 range): direct computation, clearly stated formula, no hidden cases
+- Medium (151-160 range): requires 2-3 steps, one non-obvious setup, may involve word problem translation
+- Hard (161-170 range): requires insight or non-obvious algebraic manipulation, involves a trap or special case most students miss
+
+TOPIC-SPECIFIC TRAP LIBRARY:
+- Arithmetic: percent vs percentage points, ratio ≠ fraction of total, LCM/GCF confusion
+- Algebra: exponent rules (negative bases), absolute value removing sign, quadratic having two solutions
+- Geometry: similar ≠ congruent, perimeter vs area confusion, 3D volume vs surface area, diagonal formulas
+- Data Analysis: mean vs median vs mode in skewed distributions, probability of "at least one" vs complement method, counting with repetition vs without`;
+
+    const userPrompt = `Generate 10 GRE Quantitative Reasoning practice questions for topic: "${topicLabel}"
+Subtopics to cover: ${subtopics.join(', ')}
 ${weakNote}
 
-═══ GENERATE THESE SECTIONS ═══
+━━━ SECTION 1: QUANTITATIVE COMPARISON — 5 questions ━━━
 
-1. QUANTITATIVE COMPARISON (5 questions)
-   - Show Quantity A and Quantity B
-   - Answer is always one of: "A","B","C","D" where A=Qty A greater, B=Qty B greater, C=Equal, D=Cannot determine
-   - Mix difficulties: 2 easy, 2 medium, 1 hard
-   - At least 1 question should have "D" (Cannot determine) as answer
+GRE QC FORMAT RULES:
+- Quantity A is always labeled "Quantity A", Quantity B is always labeled "Quantity B"
+- The "info" field contains any constraints given ABOVE both quantities (e.g., "x > 0", "n is a positive integer", "The circle has radius r")
+- If no constraint is given, "info" is an empty string ""
+- The answer key is ALWAYS from: "A" (Qty A greater), "B" (Qty B greater), "C" (Equal), "D" (Cannot determine)
+- Difficulty: Q1=easy, Q2=easy, Q3=medium, Q4=medium, Q5=hard
+- MANDATORY: At least 1 question must have answer "D" (Cannot determine) — this is a classic GRE trap
+- MANDATORY: At least 1 QC must involve algebra (not just arithmetic)
+- For "D" answers: the key insight must be that the answer CHANGES depending on what value(s) the variable takes — show two different values in the explanation that produce different orderings
 
-2. MULTIPLE CHOICE — SINGLE ANSWER (3 questions)
-   - Standard problem with 5 options A-E, exactly 1 correct
-   - Include word problems and pure computation
+Format:
+{"id":N, "qtyA":"expression or value", "qtyB":"expression or value", "info":"constraint or empty string", "answer":"A", "explain":"APPROACH: [strategy]. CALCULATION: [step-by-step]. RESULT: Qty A = [value], Qty B = [value], therefore A is greater. TRAP: Students often [common mistake] which gives the wrong answer [X]. KEY INSIGHT: [what makes this question hard/interesting]."}
 
-3. NUMERIC ENTRY (2 questions)
-   - Student types the numeric answer (integer or decimal)
-   - Provide answer as a number (e.g., 42, 3.5, -7)
+━━━ SECTION 2: MULTIPLE CHOICE (SINGLE ANSWER) — 3 questions ━━━
 
-═══ EXPLANATION FORMAT (CRITICAL) ═══
-Every "explain" field MUST show:
-1. Complete step-by-step solution
-2. Why the correct answer is right
-3. Common mistakes to avoid
+Requirements:
+- Q6: Medium difficulty word problem requiring translation into algebra
+- Q7: Medium difficulty involving geometry or data interpretation  
+- Q8: Hard difficulty — requires non-obvious approach or recognizing a trap
+- 5 options A-E, exactly 1 correct
+- Wrong answers must be the RESULTS of specific errors: wrong answer A = what you get if you forget to [X], wrong answer B = what you get if you [Y mistake], etc.
 
-Return this EXACT JSON (no other text):
+Format:
+{"id":N, "q":"Full question with all given information. If a diagram is implied, describe it in text.", "opts":[{"l":"A","t":"value or expression"},{"l":"B","t":"value or expression"},{"l":"C","t":"value or expression"},{"l":"D","t":"value or expression"},{"l":"E","t":"value or expression"}], "answer":"B", "explain":"SETUP: [how to frame the problem]. SOLUTION: Step 1: [calculation]. Step 2: [calculation]. Step 3: [final result = B]. | A wrong: This is the result if you [specific error — e.g., use diameter instead of radius]. | C wrong: This is the result if you [specific error]. | D wrong: [specific error]. | E wrong: [specific error]."}
+
+━━━ SECTION 3: NUMERIC ENTRY — 2 questions ━━━
+
+Requirements:
+- Q9: Medium difficulty — a clean integer answer
+- Q10: Hard difficulty — may result in a decimal, fraction, or negative number
+- The question must be completely self-contained (no diagrams needed)
+- Answer field must be a string representing the exact numeric answer
+
+Format:
+{"id":N, "q":"Full self-contained question text. Include ALL necessary information.", "answer":"42", "explain":"SETUP: [restate what is being solved]. STEP 1: [calculation]. STEP 2: [calculation]. FINAL ANSWER: [value]. TRAP: A common error is to [mistake], which gives [wrong value] instead."}
+
+━━━ RETURN EXACTLY THIS JSON STRUCTURE ━━━
 {
-  "qc": [
-    {"id":1, "qtyA":"expression or description", "qtyB":"expression or description", "info":"any given information or constraints (optional, can be empty string)", "answer":"A", "explain":"Step 1:... Step 2:... Therefore Qty A > Qty B. Common trap: ..."}
-  ],
-  "mc": [
-    {"id":1, "q":"question text", "opts":[{"l":"A","t":"option"},{"l":"B","t":"option"},{"l":"C","t":"option"},{"l":"D","t":"option"},{"l":"E","t":"option"}], "answer":"B", "explain":"Step 1:... The answer is B because..."}
-  ],
-  "ne": [
-    {"id":1, "q":"question text", "answer":"42", "explain":"Step 1:... The answer is 42."}
-  ]
+  "qc": [5 items],
+  "mc": [3 items],
+  "ne": [2 items]
 }`;
 
     const response = await ai.models.generateContent({
@@ -228,7 +311,7 @@ Return this EXACT JSON (no other text):
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemPrompt,
-        temperature: 0.7,
+        temperature: 0.65,
         maxOutputTokens: 16384,
         responseMimeType: 'application/json',
       },
@@ -253,43 +336,74 @@ Return this EXACT JSON (no other text):
   }
 });
 
-// ─── QUANT MOCK EXAM ENDPOINT ─────────────────────────────────────────────────
+// ─── QUANT MOCK EXAM ENDPOINT ──────────────────────────────────────────────────
 app.post('/api/quant-mock', async (req, res) => {
   try {
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ error: 'GEMINI_API_KEY not configured in .env' });
     }
 
-    const systemPrompt = `You are an expert GRE Quantitative Reasoning question writer for ETS.
-Create a complete Quant section matching real GRE difficulty and distribution.
-Questions must be mathematically precise with unambiguous answers.
-Cover all 4 topics: Arithmetic, Algebra, Geometry, Data Analysis.
-Include GRE traps and edge cases.`;
+    const systemPrompt = `You are a senior ETS psychometrician designing a complete GRE Quantitative Reasoning section.
 
-    const userPrompt = `Generate a COMPLETE GRE Quantitative Reasoning section — 20 questions total.
+This is a FULL MOCK EXAM section. It must faithfully reproduce the real GRE Quant experience:
+- Difficulty follows a bell curve: roughly 6 easy, 8 medium, 6 hard questions
+- Topics are balanced: Arithmetic (25%), Algebra (25%), Geometry (25%), Data Analysis (25%)
+- QC answer choices are ALWAYS and ONLY: A/B/C/D meaning Qty A greater/Qty B greater/Equal/Cannot determine
+- Every answer must be 100% mathematically verifiable
+- Include the full range of real GRE traps: variable sign assumptions, percent vs percentage point, special values (0, 1, negatives, fractions)
+- Data Analysis questions should reference a described table, chart, or probability scenario (described in text)
+- The 20 questions should feel like a coherent exam section, not a random collection`;
 
-═══ SECTION BREAKDOWN ═══
-1. QUANTITATIVE COMPARISON: 8 questions (2 Arithmetic, 2 Algebra, 2 Geometry, 2 Data)
-2. MULTIPLE CHOICE SINGLE: 7 questions (mix of all topics, 5 options A-E each)
-3. MULTIPLE CHOICE MULTI: 2 questions (3-5 options, "select ALL that apply", specify all correct)
-4. NUMERIC ENTRY: 3 questions (type the answer)
+    const userPrompt = `Generate a complete GRE Quantitative Reasoning section — 20 questions total.
 
-Time limit: 35 minutes (shown to user)
+The section must exactly reproduce a real GRE Quant section:
+- Time: 35 minutes for 20 questions (approximately 1:45 per question)
+- Topic distribution: 5 Arithmetic, 5 Algebra, 5 Geometry, 5 Data Analysis
+- Difficulty distribution: 6 easy (ids 1-6), 9 medium (ids 7-15), 5 hard (ids 16-20)
 
-Return EXACT JSON:
+━━━ SECTION 1: QUANTITATIVE COMPARISON — 8 questions (ids 1-8) ━━━
+- QC answers are ALWAYS one of: "A" (Qty A greater), "B" (Qty B greater), "C" (Equal), "D" (Cannot determine)
+- Distribution: 2 Arithmetic, 2 Algebra, 2 Geometry, 2 Data Analysis
+- Difficulty: ids 1-3 easy, ids 4-6 medium, ids 7-8 hard
+- REQUIRED: At least 2 questions with answer "D" — these must test whether students know to try multiple values
+- REQUIRED: At least 1 QC with an algebraic expression where the ordering depends on whether the variable is positive/negative/zero
+
+Format: {"id":N, "qtyA":"...", "qtyB":"...", "info":"constraint above quantities (or empty string)", "answer":"A", "topic":"Arithmetic", "explain":"Full step-by-step with trap identification."}
+
+━━━ SECTION 2: MULTIPLE CHOICE SINGLE ANSWER — 7 questions (ids 9-15) ━━━
+- 5 options A-E, exactly 1 correct
+- Distribution: mix of all four topics
+- Difficulty: ids 9-11 medium, ids 12-15 hard
+- REQUIRED: At least 1 word problem that must be translated into algebra
+- REQUIRED: At least 1 data interpretation question (reference a described table or chart)
+- REQUIRED: At least 1 geometry question involving area, volume, or coordinate geometry
+- Wrong answers must be results of specific, identifiable errors
+
+Format: {"id":N, "q":"Complete question", "opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."},{"l":"D","t":"..."},{"l":"E","t":"..."}], "answer":"C", "topic":"Algebra", "explain":"Full step-by-step solution with wrong-answer error analysis."}
+
+━━━ SECTION 3: MULTIPLE CHOICE MULTIPLE ANSWER — 2 questions (ids 16-17) ━━━
+- "Select ALL that apply" format
+- Between 3 and 5 options (labeled A, B, C or A, B, C, D, E)
+- Between 1 and all options may be correct (minimum 1, state all correct answers in "answers" array)
+- These questions are hard — difficulty 161-170 range
+- Wrong options should be tempting but wrong for specific mathematical reasons
+
+Format: {"id":N, "q":"Question text. Select ALL that apply.", "opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."}], "answers":["A","C"], "topic":"Data", "explain":"A correct: [reason]. B wrong: [reason]. C correct: [reason]."}
+
+━━━ SECTION 4: NUMERIC ENTRY — 3 questions (ids 18-20) ━━━
+- Student types the answer — no options given
+- Include: 1 integer answer, 1 decimal/fraction answer, 1 negative number answer
+- These are hard (difficulty 158-170 range)
+- The question must be 100% self-contained and unambiguous
+
+Format: {"id":N, "q":"Complete self-contained question.", "answer":"15", "topic":"Geometry", "explain":"Complete step-by-step solution identifying the key insight and common errors."}
+
+━━━ RETURN EXACTLY THIS JSON STRUCTURE ━━━
 {
-  "qc": [
-    {"id":1, "qtyA":"...", "qtyB":"...", "info":"given info", "answer":"A", "topic":"Arithmetic", "explain":"..."}
-  ],
-  "mc": [
-    {"id":9, "q":"...", "opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."},{"l":"D","t":"..."},{"l":"E","t":"..."}], "answer":"C", "topic":"Algebra", "explain":"..."}
-  ],
-  "mcm": [
-    {"id":16, "q":"... Select ALL that apply.", "opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."}], "answers":["A","C"], "topic":"Data", "explain":"..."}
-  ],
-  "ne": [
-    {"id":18, "q":"...", "answer":"15", "topic":"Geometry", "explain":"..."}
-  ]
+  "qc": [8 items],
+  "mc": [7 items],
+  "mcm": [2 items],
+  "ne": [3 items]
 }`;
 
     const response = await ai.models.generateContent({
@@ -297,7 +411,7 @@ Return EXACT JSON:
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemPrompt,
-        temperature: 0.7,
+        temperature: 0.65,
         maxOutputTokens: 16384,
         responseMimeType: 'application/json',
       },
@@ -322,7 +436,7 @@ Return EXACT JSON:
   }
 });
 
-// ─── CHAT ENDPOINT (AI TUTOR) ─────────────────────────────────────────────────
+// ─── CHAT ENDPOINT (AI TUTOR) ──────────────────────────────────────────────────
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages, systemPrompt } = req.body;
@@ -333,11 +447,23 @@ app.post('/api/chat', async (req, res) => {
       role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }],
     }));
+
+    const defaultSystemPrompt = `You are an expert GRE tutor with deep knowledge of both Verbal and Quantitative sections.
+
+Your tutoring style:
+- Diagnose the SPECIFIC error pattern behind wrong answers, not just what the right answer is
+- Use memorable rules: "Pivot words signal contrast," "SE needs 2 words that produce sentences alike in meaning"
+- Teach word roots when explaining vocabulary (e.g., "EXCORIATE: ex=out + corium=skin = to strip skin off")
+- For Quant, always show the most efficient solution path AND the common trap the question is designed to exploit
+- Be direct and specific — never hedge with "it depends" without explaining what it depends on
+- When a student is confused between two words, give a one-line separator they can memorize (e.g., "TACITURN = personality trait. RETICENT = guarded about a specific topic")
+- Keep explanations concise — 3-5 sentences maximum per concept`;
+
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents,
       config: {
-        systemInstruction: systemPrompt || 'You are a helpful GRE tutor.',
+        systemInstruction: systemPrompt || defaultSystemPrompt,
         temperature: 0.7,
         maxOutputTokens: 1024,
       },
@@ -349,76 +475,103 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// ─── MOCK EXAM ENDPOINT ───────────────────────────────────────────────────────
+// ─── MOCK EXAM ENDPOINT ────────────────────────────────────────────────────────
 app.post('/api/mock-exam', async (req, res) => {
   try {
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ error: 'GEMINI_API_KEY not configured in .env' });
     }
 
-    const systemPrompt = `You are an expert GRE Verbal question writer for ETS.
-You create questions indistinguishable from real GRE questions.
-Use sophisticated, academic-register vocabulary and varied sentence structures.
-Every question must have exactly ONE unambiguous correct answer.
-TC stems must contain clear pivot words or definitional clues.
-SE pairs must produce sentences alike in meaning.
-RC passages should be 80-120 words, drawn from academic topics (science, humanities, social science).
-RC questions should test: main idea, inference, author's purpose, vocabulary in context, or logical structure.`;
+    const systemPrompt = `You are a senior ETS question developer creating a real GRE Verbal Reasoning section.
 
-    const userPrompt = `Generate a COMPLETE GRE Verbal Reasoning section — 20 questions total.
+This section will be used as a timed practice exam. It must be indistinguishable from an actual GRE Verbal section.
 
-Use ANY GRE-level vocabulary. Do NOT limit to any specific word list. This is a real mock exam.
+SECTION STANDARDS:
+- 20 questions, 30 minutes
+- Difficulty follows natural GRE distribution: approximately 6 easy (130-149), 9 medium (150-159), 5 hard (160-170)
+- All vocabulary is GRE-level — not limited to any word list
+- Academic register throughout — no casual language, no pop culture, no first-person
 
-═══ SECTION BREAKDOWN ═══
+${GRE_VERBAL_REGISTER}
+${TC_RULES}
+${SE_RULES}
+${RC_RULES}
 
-1. TEXT COMPLETION: 6 questions
-   - Q1-Q2: Single-blank (easy) — 5 options A-E
-   - Q3-Q4: Single-blank (medium) — 5 options A-E
-   - Q5: Double-blank (hard) — [B1] and [B2], options A-C for blank 1, D-F for blank 2
-   - Q6: Triple-blank (hard) — [B1], [B2], [B3], options A-C for each blank
+ADDITIONAL MOCK EXAM STANDARDS:
+- Questions should feel like they come from different academic domains — vary topics across questions
+- TC stems should represent different sentence structures: complex-compound, periodic, cumulative
+- RC passages should come from genuinely different disciplines (one from sciences, one from humanities)
+- The section as a whole should assess a range of verbal skills, not just vocabulary
+- Hard questions (ids approaching 20) should require careful re-reading and precise word knowledge`;
 
-2. SENTENCE EQUIVALENCE: 4 questions
-   - Q7-Q10: 6 options A-F, exactly 2 correct that create equivalent meaning
+    const userPrompt = `Generate a complete GRE Verbal Reasoning mock exam section — 20 scorable items.
 
-3. READING COMPREHENSION: 2 passages with questions
-   - Passage 1: 80-100 word academic passage + 3 multiple-choice questions (4 options A-D each)
-   - Passage 2: 100-120 word academic passage + 2 multiple-choice questions (4 options A-D each)
+This is a timed exam simulation. Use ANY GRE-level vocabulary — not limited to any study list.
 
-Total: 6 TC + 4 SE + 5 RC = 15 scored items (but presented as 20 interaction points)
+━━━ SECTION STRUCTURE ━━━
+The 20 items are numbered sequentially. Build difficulty gradually:
+- Items 1-2: Easy TC single-blank
+- Items 3-4: Easy-Medium TC single-blank
+- Items 5-6: Medium SE
+- Item 7: Hard TC double-blank
+- Items 8-9: RC from Passage 1 (2 questions)
+- Item 10: Medium SE
+- Item 11: Hard TC double-blank or triple-blank (your choice of [B1][B2] or [B1][B2][B3])
+- Items 12-14: RC from Passage 2 (3 questions)
+- Item 15: Hard SE
+- Item 16: Hard TC single-blank (hardest TC vocabulary)
+- Items 17-18: RC from Passage 3 (2 questions — inference + vocab in context)
+- Items 19-20: Hard SE (these are the hardest items in the section)
 
-═══ FORMAT ═══
+━━━ TEXT COMPLETION RULES ━━━
+${TC_RULES}
 
-Return EXACT JSON:
+Difficulty examples for reference:
+EASY: "The professor, though renowned for her _______ lectures, surprised students who met her privately with her warmth and accessibility." → (A) abstruse (B) stimulating (C) celebrated (D) lucid (E) conventional
+HARD: "The historian's account, while _______  in its command of primary sources, was nonetheless criticized for the _______ reasoning that connected them, as though sheer accumulation of evidence could substitute for analytical rigor." → B1: (A) prodigal (B) meticulous (C) cursory) / B2: (D) irrefutable (E) tendentious (F) cogent)
+
+━━━ SENTENCE EQUIVALENCE RULES ━━━
+${SE_RULES}
+
+━━━ READING COMPREHENSION RULES ━━━
+${RC_RULES}
+
+PASSAGE REQUIREMENTS:
+- Passage 1 (2 questions): 80-90 words, natural sciences or social sciences topic
+- Passage 2 (3 questions): 100-120 words, humanities topic (literary criticism, art history, philosophy)
+- Passage 3 (2 questions): 90-100 words, any academic topic — must contain a word used in an unusual or technical sense (for vocab-in-context question)
+
+━━━ RETURN EXACTLY THIS JSON STRUCTURE (no other text) ━━━
 {
   "tc": [
     {
       "id": 1,
-      "stem": "sentence with [B1] marker",
+      "stem": "sentence with [B1] marker (and [B2] for double-blank)",
       "blanks": [{"label":"Blank 1","answer":"B","opts":[{"l":"A","t":"word"},{"l":"B","t":"word"},{"l":"C","t":"word"},{"l":"D","t":"word"},{"l":"E","t":"word"}]}],
-      "explain": "The pivot word X signals..."
+      "explain": "PIVOT/CLUE: [identify signal word or definitional clue]. B is correct because [link between clue and definition]. | A wrong: [specific reason]. | C wrong: ... | D wrong: ... | E wrong: ..."
     }
   ],
   "se": [
     {
-      "id": 7,
+      "id": 6,
       "stem": "sentence with _______ blank",
       "answers": ["C","E"],
       "opts": [{"l":"A","t":"word"},{"l":"B","t":"word"},{"l":"C","t":"word"},{"l":"D","t":"word"},{"l":"E","t":"word"},{"l":"F","t":"word"}],
-      "explain": "Both X and Y mean..."
+      "explain": "C and E both convey [shared meaning]. MEANING TEST: With C: [sentence meaning]. With E: [same meaning]. | A wrong: fits grammatically but changes meaning to [X]. | B wrong: ... | D wrong: ... | F wrong: ..."
     }
   ],
   "rc": [
     {
       "id": 1,
-      "passage": "Full academic passage text here...",
-      "topic": "Brief topic label",
+      "passage": "Full academic passage...",
+      "topic": "Brief topic label (e.g., 'Evolutionary Biology', 'Modernist Literature')",
       "questions": [
         {
           "id": 1,
-          "q": "Question text",
+          "q": "Full question text",
           "answer": "A",
-          "opts": [{"l":"A","t":"option1"},{"l":"B","t":"option2"},{"l":"C","t":"option3"},{"l":"D","t":"option4"}],
-          "explain": "Explanation..."
+          "opts": [{"l":"A","t":"option text"},{"l":"B","t":"option text"},{"l":"C","t":"option text"},{"l":"D","t":"option text"}],
+          "explain": "A is correct: [evidence from passage + reasoning]. B wrong: [too narrow/broad/opposite — cite passage]. C wrong: [specific reason]. D wrong: [specific reason]."
         }
       ]
     }
@@ -430,7 +583,7 @@ Return EXACT JSON:
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemPrompt,
-        temperature: 0.8,
+        temperature: 0.78,
         maxOutputTokens: 16384,
         responseMimeType: 'application/json',
       },
@@ -464,10 +617,9 @@ Return EXACT JSON:
 
 app.listen(PORT, () => {
   console.log(`\n  🤖 GRE Complete API on http://localhost:${PORT}`);
-  console.log(`  📡 POST /api/generate       — Verbal practice`);
-  console.log(`  🎯 POST /api/mock-exam      — Verbal mock`);
-  console.log(`  🔢 POST /api/quant-generate — Quant practice`);
-  console.log(`  🧮 POST /api/quant-mock     — Quant mock`);
+  console.log(`  📡 POST /api/generate       — Verbal practice (adaptive)`);
+  console.log(`  🎯 POST /api/mock-exam      — Verbal mock (full section)`);
+  console.log(`  🔢 POST /api/quant-generate — Quant practice (topic-based)`);
+  console.log(`  🧮 POST /api/quant-mock     — Quant mock (full section)`);
   console.log(`  💬 POST /api/chat           — AI tutor\n`);
 });
-

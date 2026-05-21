@@ -50,6 +50,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'Boys and girls in a class are in ratio 3:5. If there are 40 students, how many boys?', work: 'Total parts = 3+5 = 8. Each part = 40/8 = 5. Boys = 3×5 = 15.', ans: '15', trick: 'Ratio parts × multiplier = actual counts.' },
         { q: 'Mix 4L of 20% salt with 6L of 50% salt. What % is the mixture?', work: 'Salt = 4×0.20 + 6×0.50 = 0.8 + 3.0 = 3.8L. Total = 10L. Concentration = 38%.', ans: '38%', trick: 'Total solute / Total solution. Never average the percentages directly.' },
+        { q: 'Ratio of boys to girls is 3:5. Ratio of girls to teachers is 10:1. What is ratio of boys to teachers?', work: 'Girls common: 5 and 10. Scale first ratio ×2: boys:girls = 6:10. So boys:girls:teachers = 6:10:1. Boys:Teachers = 6:1.', ans: '6:1', trick: 'Chain ratios: make the SHARED term equal, then combine.' },
       ],
       traps: ['Averaging percentages without weighting by quantity', 'Confusing part-to-part ratio with part-to-whole'],
     },
@@ -67,6 +68,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'Simplify: (2¹⁵ − 2¹⁴) / 2¹⁴', work: 'Factor: 2¹⁴(2−1) / 2¹⁴ = 1.', ans: '1', trick: 'Factor out the SMALLER power. This is a classic GRE move.' },
         { q: 'If 0 < x < 1, rank: x, x², x³, √x', work: 'Try x=0.5: √0.5≈0.71, x=0.5, x²=0.25, x³=0.125. Order: √x > x > x² > x³.', ans: '√x > x > x² > x³', trick: 'For 0<x<1, higher powers make it SMALLER, roots make it LARGER. Opposite of x>1.' },
+        { q: 'QC: Qty A: 4⁶  Qty B: 8⁴. Which is greater?', work: '4⁶ = (2²)⁶ = 2¹². 8⁴ = (2³)⁴ = 2¹². Equal!', ans: 'C (Equal)', trick: 'Convert to the SAME base to compare exponents directly.' },
       ],
       traps: ['Thinking x² > x always (fails for 0 < x < 1)', 'Forgetting that (−2)² = 4 but −2² = −4 (order of operations)'],
     },
@@ -100,6 +102,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'What is the sum of integers from 1 to 100?', work: 'n(n+1)/2 = 100(101)/2 = 5050.', ans: '5050', trick: 'Gauss formula: n(n+1)/2. Works for 1 to any n.' },
         { q: 'In sequence 3, 7, 11, 15, ..., what is the 20th term?', work: 'd = 4, a₁ = 3. a₂₀ = 3 + (20-1)×4 = 3 + 76 = 79.', ans: '79', trick: 'aₙ = a₁ + (n-1)d. Don\'t add d one too many times.' },
+        { q: 'Sum of all even integers from 2 to 100?', work: 'Arithmetic series: a₁=2, aₙ=100, d=2. n = (100-2)/2 + 1 = 50. Sum = 50(2+100)/2 = 2550.', ans: '2550', trick: 'Count terms carefully: (last-first)/d + 1. Then use Sum = n(first+last)/2.' },
       ],
       traps: ['Off-by-one errors with (n-1) vs n', 'Confusing arithmetic (add d) with geometric (multiply r)'],
     },
@@ -136,6 +139,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'What is 997 × 1003?', work: 'This is (1000-3)(1000+3) = 1000² - 3² = 1,000,000 - 9 = 999,991.', ans: '999,991', trick: 'Difference of squares shortcut. Whenever you see (x-a)(x+a), use it.' },
         { q: 'If x² - 5x + 6 = 0, what is x² + 1/x²? (x > 0)', work: 'Factor: (x-2)(x-3)=0 → x=2 or x=3. If x=2: 4+1/4=17/4. If x=3: 9+1/9=82/9.', ans: 'Depends on which root', trick: 'Factor first, test both roots.' },
+        { q: 'For what value of k does x² + kx + 9 = 0 have exactly one solution?', work: 'One solution when discriminant = 0. b²−4ac = k²−36 = 0. k = ±6.', ans: 'k = 6 or k = −6', trick: 'Discriminant = 0 means perfect square trinomial. One repeated root.' },
       ],
       traps: ['Forgetting ± when taking square roots of both sides', 'Canceling x from both sides of x²=5x (losing the x=0 solution)'],
     },
@@ -152,6 +156,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'A can do a job in 6 hours, B in 12 hours. How long working together?', work: 'Combined rate: 1/6 + 1/12 = 2/12 + 1/12 = 3/12 = 1/4. Time = 4 hours.', ans: '4 hours', trick: 'Add the rates (1/time), then flip back to get time.' },
         { q: 'Driving 60mph for 2hr, then 40mph for 3hr. Average speed?', work: 'Total dist = 120+120 = 240mi. Total time = 5hr. Avg speed = 240/5 = 48mph.', ans: '48 mph (not 50!)', trick: 'NEVER average the speeds. Always use total distance / total time.' },
+        { q: 'Pipe A fills a tank in 6hr, B in 8hr. Both open, but B has a leak draining in 24hr. How long to fill?', work: 'Net rate: 1/6 + 1/8 − 1/24 = 4/24 + 3/24 − 1/24 = 6/24 = 1/4. Time = 4hr.', ans: '4 hours', trick: 'Leaks SUBTRACT from combined rate. Add fill rates, subtract drain rate.' },
       ],
       traps: ['Averaging speeds instead of using total distance/total time', 'Forgetting to convert units (minutes to hours, etc.)'],
     },
@@ -168,6 +173,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'If f(x) = 2x² − 3, what is f(−2)?', work: 'f(−2) = 2(−2)² − 3 = 2(4) − 3 = 8 − 3 = 5.', ans: '5', trick: 'Parenthesize the substitution: (−2)² = 4, not −4.' },
         { q: 'Solve |3x − 6| ≤ 9', work: 'Case: −9 ≤ 3x−6 ≤ 9. Add 6: −3 ≤ 3x ≤ 15. Divide by 3: −1 ≤ x ≤ 5.', ans: '−1 ≤ x ≤ 5', trick: '|expr| ≤ a → sandwich: −a ≤ expr ≤ a.' },
+        { q: 'If f(x) = x² − 4x, what is f(f(3))?', work: 'f(3) = 9−12 = −3. f(−3) = 9−(−12) = 9+12 = 21.', ans: '21', trick: 'Nested functions: compute inside-out. Be careful with negatives in the second substitution.' },
       ],
       traps: ['Forgetting to square the negative sign: (−3)² = 9, not −9', 'Writing |x| < 5 as x < 5 (missing the −5 bound)'],
     },
@@ -205,6 +211,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'A circle has area 49π. What is its circumference?', work: 'πr² = 49π → r=7. Circumference = 2π(7) = 14π.', ans: '14π', trick: 'Extract r from area, then plug into circumference. Two-step pattern.' },
         { q: 'A 60° sector of a circle with radius 6. What is the arc length?', work: '(60/360)×2π(6) = (1/6)×12π = 2π.', ans: '2π', trick: 'Sector = fraction of the full circle. Fraction = angle/360.' },
+        { q: 'An inscribed angle intercepts an arc of 140°. What is the inscribed angle?', work: 'Inscribed angle = ½ × intercepted arc = ½ × 140° = 70°.', ans: '70°', trick: 'Inscribed angle = HALF the arc. Central angle = the arc. Inscribed in semicircle = 90°.' },
       ],
       traps: ['Confusing radius and diameter (area uses r, not d)', 'Forgetting inscribed angle is HALF the central angle'],
     },
@@ -221,6 +228,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'Line passes through (2,3) and (6,11). What is its slope?', work: 'm = (11-3)/(6-2) = 8/4 = 2.', ans: '2', trick: 'Rise over run. Always subtract in the same order.' },
         { q: 'A line has slope 3 and passes through (1,5). What is the y-intercept?', work: 'y = mx + b → 5 = 3(1) + b → b = 2. Line: y = 3x + 2.', ans: 'b = 2', trick: 'Plug the known point into y=mx+b to find b.' },
+        { q: 'Triangle with vertices (0,0), (6,0), (2,4). What is its area?', work: 'Base along x-axis = 6. Height = y-coordinate of third point = 4. Area = ½×6×4 = 12.', ans: '12', trick: 'If one side is on an axis, use it as base. Height = perpendicular distance.' },
       ],
       traps: ['Subtracting coordinates in different order (inconsistent signs)', 'Forgetting vertical lines have undefined slope (not 0)'],
     },
@@ -237,6 +245,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'Two similar triangles have sides in ratio 2:5. If smaller has area 12, find larger area.', work: 'Area ratio = (2/5)² = 4/25. So 12/A = 4/25 → A = 12 × 25/4 = 75.', ans: '75', trick: 'Area scales as the SQUARE of the side ratio.' },
         { q: 'A 6ft person casts an 8ft shadow. A tree casts a 32ft shadow. How tall?', work: 'Similar triangles: 6/8 = h/32. h = 6×32/8 = 24ft.', ans: '24 ft', trick: 'Shadow problems = similar triangles. Set up the proportion.' },
+        { q: 'In triangle ABC, DE is parallel to BC with D on AB and E on AC. If AD=3, DB=6, AE=4, find EC.', work: 'DE∥BC → triangles ADE and ABC are similar. AD/AB = AE/AC → 3/9 = 4/AC → AC = 12. EC = 12−4 = 8.', ans: '8', trick: 'Parallel line inside triangle = similar triangles. Ratios of corresponding sides are equal.' },
       ],
       traps: ['Using side ratio for area (must square it)', 'Assuming same-looking triangles are similar without checking angles'],
     },
@@ -253,6 +262,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'A cylinder has radius 3 and height 10. What is its volume?', work: 'V = πr²h = π(9)(10) = 90π.', ans: '90π', trick: 'Just plug in. Always leave answer as a multiple of π unless told otherwise.' },
         { q: 'A cube has volume 64. What is its surface area?', work: 's³ = 64 → s = 4. SA = 6(4²) = 6(16) = 96.', ans: '96', trick: 'Extract s from volume first, then plug into SA formula.' },
+        { q: 'Water fills a cylindrical tank (r=5, h=20) at 10π cubic units/min. How long to fill?', work: 'V = πr²h = π(25)(20) = 500π. Time = 500π / 10π = 50 min.', ans: '50 minutes', trick: 'Rate × Time = Volume. Divide total volume by fill rate.' },
       ],
       traps: ['Confusing radius and diameter in cylinder problems', 'Forgetting the 2 circular faces in cylinder surface area'],
     },
@@ -272,6 +282,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'The average of 5 numbers is 20. What is their sum?', work: 'Sum = Mean × Count = 20 × 5 = 100.', ans: '100', trick: 'Always convert "average of n things is x" to "sum = nx". This unlocks most mean problems.' },
         { q: 'Set: {3, 7, 7, 10, 13}. If 13 is replaced by 23, what changes?', work: 'Mean changes (sum increases by 10). Median stays 7 (middle unchanged). Mode stays 7. Range increases from 10 to 20.', ans: 'Mean and Range change; Median and Mode don\'t', trick: 'Check each stat independently. Changing an extreme value affects mean and range but often not median.' },
+        { q: 'Average of 8 numbers is 15. One number removed, average becomes 14. What was removed?', work: 'Sum₈ = 8×15 = 120. Sum₇ = 7×14 = 98. Removed = 120−98 = 22.', ans: '22', trick: 'Convert average to sum (Sum = Avg × Count), then subtract.' },
       ],
       traps: ['Confusing mean and median behavior when adding outliers', 'Forgetting median of even count is the AVERAGE of two middle values'],
     },
@@ -289,6 +300,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'Flip a coin 3 times. Probability of at least one head?', work: 'P(no heads) = (1/2)³ = 1/8. P(at least one head) = 1 - 1/8 = 7/8.', ans: '7/8', trick: '"At least one" = complement of "none". NEVER count cases individually.' },
         { q: 'Bag has 3 red, 5 blue. Pick 2 without replacement. P(both red)?', work: 'P(1st red) = 3/8. P(2nd red|1st red) = 2/7. P(both) = 3/8 × 2/7 = 6/56 = 3/28.', ans: '3/28', trick: 'Without replacement: denominator decreases by 1 each time.' },
+        { q: 'Two dice rolled. P(sum = 7)?', work: 'Favorable pairs: (1,6)(2,5)(3,4)(4,3)(5,2)(6,1) = 6. Total = 36. P = 6/36 = 1/6.', ans: '1/6', trick: 'For dice sums: list all pairs systematically. Total outcomes = 6×6 = 36.' },
       ],
       traps: ['Using "with replacement" logic for "without replacement" problems', 'Confusing "at least one" with "exactly one"'],
     },
@@ -305,6 +317,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'How many ways to choose 3 people from 8 for a committee?', work: 'Committee = no order → combination. 8C3 = 8!/(3!5!) = (8×7×6)/(3×2×1) = 56.', ans: '56', trick: 'Committee/group = combination. Lineup/ranking = permutation.' },
         { q: 'How many 4-digit PINs using digits 0-9 (repetition allowed)?', work: '10 choices per digit, 4 digits = 10⁴ = 10,000.', ans: '10,000', trick: 'With repetition: multiply choices. Without: permutation.' },
+        { q: 'How many ways to arrange MISSISSIPPI?', work: '11 letters: M=1, I=4, S=4, P=2. Arrangements = 11!/(4!×4!×2!) = 34,650.', ans: '34,650', trick: 'Repeated items: divide total permutations by factorials of each repeat count.' },
       ],
       traps: ['Using permutation when combination is needed (or vice versa)', 'Forgetting to account for identical items in arrangements'],
     },
@@ -321,6 +334,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'Bar chart shows 2019: $40M, 2020: $52M. What is the percent increase?', work: '(52-40)/40 × 100 = 12/40 × 100 = 30%.', ans: '30%', trick: 'Always divide by the EARLIER value for percent change.' },
         { q: 'Pie chart: 200 students. "Science" slice is 72°. How many study science?', work: '72/360 = 1/5 of total. 200 × 1/5 = 40 students.', ans: '40', trick: 'Degrees/360 = fraction of total. Or: every 3.6° = 1%.' },
+        { q: 'Table: Revenue 2019=$80M, 2020=$100M, 2021=$90M. What is the percent change from 2019 to 2021?', work: '(90−80)/80 × 100 = 10/80 × 100 = 12.5%. Increase.', ans: '12.5% increase', trick: 'Always use the STARTING year as the base, not the peak year.' },
       ],
       traps: ['Misreading axis scales (especially if they don\'t start at 0)', 'Using the wrong base for percent calculations'],
     },
@@ -337,6 +351,7 @@ export const CONCEPTS = {
       examples: [
         { q: 'Set A: {2,4,6,8,10}. Set B: {12,14,16,18,20}. Compare SDs.', work: 'B = A + 10 (constant added). SD is unchanged. Same spread → same SD.', ans: 'Equal SDs', trick: 'Adding/subtracting a constant to every value does NOT change SD.' },
         { q: 'Scores are normally distributed: mean=500, SD=100. What % score between 300 and 700?', work: '300 = mean−2SD, 700 = mean+2SD. Within 2 SD = 95%.', ans: '95%', trick: 'Memorize: 1SD=68%, 2SD=95%, 3SD=99.7%.' },
+        { q: 'Set X: {10,20,30,40,50}. Set Y = 3X+5 (each value ×3 then +5). QC: Qty A: SD of X, Qty B: SD of Y.', work: 'Multiplying by 3 triples the SD. Adding 5 doesn\'t change SD. So SD(Y) = 3×SD(X). B > A.', ans: 'B (SD of Y is greater)', trick: 'Adding constant → SD same. Multiplying by k → SD × |k|. This is THE SD rule for GRE.' },
       ],
       traps: ['Thinking adding 10 to all values changes SD (it doesn\'t)', 'Confusing variance (SD²) with SD'],
     },
@@ -353,6 +368,7 @@ export const CONCEPTS = {
       examples: [
         { q: '60 students: 35 play soccer, 25 play tennis, 10 play both. How many play neither?', work: 'Total = Soccer + Tennis − Both + Neither. 60 = 35 + 25 − 10 + Neither. Neither = 10.', ans: '10', trick: 'Formula: Total = A + B − Both + Neither. Plug in and solve.' },
         { q: 'Of 100 people, 60 like coffee, 40 like tea, 20 like both. How many like ONLY coffee?', work: 'Only coffee = Coffee − Both = 60 − 20 = 40.', ans: '40', trick: '"Only A" always means subtract the overlap.' },
+        { q: '150 students: 80 take Math, 50 take Physics, 30 take Chemistry, 20 take Math∩Physics, 10 take Math∩Chem, 5 take Physics∩Chem, 3 take all three. How many take none?', work: 'Using inclusion-exclusion: 80+50+30−20−10−5+3 = 128. None = 150−128 = 22.', ans: '22', trick: 'Three-set formula: add singles, subtract pairs, add triple, then subtract from total.' },
       ],
       traps: ['Forgetting to subtract the overlap (double-counting)', 'Confusing "A or B" (union) with "A and B" (intersection)'],
     },
