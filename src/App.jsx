@@ -16,6 +16,7 @@ import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
 import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
+import ProgressDashboard from './phases/ProgressDashboard';
 import MockExam from './phases/MockExam';
 import WordRelations from './phases/WordRelations';
 import RootsModule from './phases/RootsModule';
@@ -285,7 +286,7 @@ export default function App() {
               ) : currentDay===-3 ? (
                 <RootsModule/>
               ) : currentDay===0 ? (
-                <ScoreOverview dayScores={dayScores} weakWords={weakWords}/>
+                <ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay}/>
               ) : (
                 <>
                   <div style={{display:'flex', gap:8, marginBottom:24, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
@@ -322,7 +323,7 @@ export default function App() {
               ) : quantPage === 'formulas' ? (
                 <FormulaSheet/>
               ) : quantPage === 'progress' ? (
-                <QuantProgressView scores={quantScores}/>
+                <ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay}/>
               ) : quantPage && QUANT_TOPICS.find(t=>t.id===quantPage) ? (
                 <div>
                   <div style={{display:'flex', gap:8, marginBottom:20, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
@@ -396,49 +397,6 @@ function QuantLanding({ onSelectTopic, scores }) {
       </div>
     </div>
   );
-}
-
-// ─── QUANT PROGRESS ───────────────────────────────────────────────────────────
-function QuantProgressView({ scores }) {
-  const topics = QUANT_TOPICS;
-  const totalCorrect = Object.values(scores).reduce((a, s) => a + (s.correct || 0), 0);
-  const totalQs = Object.values(scores).reduce((a, s) => a + (s.total || 0), 0);
-
-  return (
-    <div>
-      <div style={{textAlign:'center', marginBottom:24}}>
-        <p style={{fontFamily:'Georgia,serif', fontSize:20, color:C.gold, marginBottom:4}}>Quant Progress</p>
-        {totalQs > 0 && <p style={{color:C.textMid, fontSize:14}}>{totalCorrect}/{totalQs} overall ({Math.round(totalCorrect/totalQs*100)}%)</p>}
-      </div>
-      <div style={{display:'grid', gap:12}}>
-        {topics.map(t => {
-          const sc = scores[t.id];
-          const pct = sc ? Math.round(sc.correct / sc.total * 100) : 0;
-          return (
-            <div key={t.id} style={{background:C.card, border:`1px solid ${C.border}`, borderRadius:10, padding:'16px 18px', display:'flex', alignItems:'center', gap:14}}>
-              <span style={{fontSize:24}}>{t.icon}</span>
-              <div style={{flex:1}}>
-                <p style={{color:C.text, fontSize:14, fontWeight:700, margin:0}}>{t.label}</p>
-                <div style={{width:'100%', height:6, background:C.border, borderRadius:3, overflow:'hidden', marginTop:6}}>
-                  <div style={{height:'100%', background: pct>=80?C.green:pct>=50?C.gold:pct>0?C.red:C.border, borderRadius:3, width:`${pct}%`, transition:'width 0.4s'}}/>
-                </div>
-              </div>
-              <div style={{textAlign:'right'}}>
-                {sc ? (
-                  <>
-                    <p style={{fontFamily:'Courier New,monospace', fontSize:18, fontWeight:700, color: pct>=80?C.greenBr:pct>=50?C.gold:C.red, margin:0}}>{pct}%</p>
-                    <p style={{color:C.textDim, fontSize:10, margin:0}}>{sc.correct}/{sc.total}</p>
-                  </>
-                ) : (
-                  <p style={{color:C.textDim, fontSize:12}}>Not practiced</p>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
 
   // ─── DailySession modal ───
   const sessionModal = showDailySession && (
@@ -455,3 +413,4 @@ function QuantProgressView({ scores }) {
     </>
   );
 }
+
