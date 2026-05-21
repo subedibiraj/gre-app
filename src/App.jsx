@@ -357,6 +357,21 @@ export default function App() {
       <AiTutor/>
     </div>
   );
+
+  // ─── DailySession modal ───
+  const sessionModal = showDailySession && (
+    <DailySession
+      onNavigate={(sec, t) => { setSection(sec); if(sec==='verbal') setTab(t); else setQuantTab(t==='learn'?'learn':'practice'); }}
+      onClose={() => setShowDailySession(false)}
+    />
+  );
+
+  return (
+    <>
+      {mainContent}
+      {sessionModal}
+    </>
+  );
 }
 
 // ─── QUANT LANDING PAGE ───────────────────────────────────────────────────────
