@@ -5,7 +5,7 @@ const C = {
   gold:'#C8A535', goldBr:'#E4C060', goldDim:'#5A480F',
   text:'#DDD8C8', textMid:'#7A8CA0', textDim:'#3A4E68',
   green:'#24976A', greenBg:'#061510', greenBr:'#2EBB80',
-  red:'#B53028', redBg:'#1C0808', blue:'#2B6FBF',
+  red:'#B53028', redBg:'#1C0808',
+  blue:'#2B6FBF', blueBg:'#080F22',
 };
-
 export default C;

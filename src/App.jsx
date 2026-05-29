@@ -4,10 +4,9 @@ import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
 import { getStreak } from './engine/streak';
 import { getSRStats } from './engine/spaced';
-import { getOverallStats } from './engine/history';
+import { recordScoreSnapshot } from './components/ScoreGraph';
 import Tag from './components/Tag';
 import AiTutor from './components/AiTutor';
-import WarmupModal from './components/WarmupModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import SettingsPanel from './components/SettingsPanel';
 import XPBar from './components/XPBar';
@@ -17,6 +16,7 @@ import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
 import ProgressDashboard from './phases/ProgressDashboard';
+import DailyRoadmap from './phases/DailyRoadmap';
 import MockExam from './phases/MockExam';
 import WordRelations from './phases/WordRelations';
 import RootsModule from './phases/RootsModule';
@@ -25,6 +25,10 @@ import QuantMock from './phases/quant/QuantMock';
 import FormulaSheet from './phases/quant/FormulaSheet';
 import ConceptLearn from './phases/quant/ConceptLearn';
 import DailySession from './components/DailySession';
+import MorningDrill from './components/MorningDrill';
+import BossChallenge, { getBossStatus, getBossResult, BOSSES } from './components/BossChallenge';
+import WeakWordBlitz from './components/WeakWordBlitz';
+import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 
 // ─── PERSISTENCE HELPERS ──────────────────────────────────────────────────────
 const loadJSON = (key, fallback) => {
@@ -35,7 +39,7 @@ const saveJSON = (key, val) => localStorage.setItem(key, JSON.stringify(val));
 
 export default function App() {
   const [section, setSection]       = useState('verbal'); // verbal | quant
-  const [currentDay, setCurrentDay] = useState(7);
+  const [currentDay, setCurrentDay] = useState(1);
   const [tab, setTab]               = useState('vocab');
   const [weakWords, setWeakWords]   = useState(() => loadJSON('gre_weakWords', []));
   const [dayScores, setDayScores]   = useState(() => loadJSON('gre_dayScores', {}));
@@ -47,11 +51,12 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showDailySession, setShowDailySession] = useState(false);
-  const [showWarmup, setShowWarmup] = useState(() => {
-    const key = `gre_warmup_${new Date().toDateString()}`;
-    if (sessionStorage.getItem(key)) return false;
-    return true;
+  const [showMorningDrill, setShowMorningDrill] = useState(() => {
+    const key = `gre_drill_${new Date().toDateString()}`;
+    return !sessionStorage.getItem(key);
   });
+  const [showBoss, setShowBoss]             = useState(null);
+  const [showWeakBlitz, setShowWeakBlitz]   = useState(false);
 
   // Dynamic page title
   useEffect(() => {
@@ -73,19 +78,14 @@ export default function App() {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       const key = e.key.toLowerCase();
       if (key === 'escape') { setShowSettings(false); return; }
-      if (key === 'v') { setSection('verbal'); setCurrentDay(7); setTab('vocab'); return; }
+      if (key === 'v') { setSection('verbal'); setCurrentDay(1); setTab('vocab'); return; }
       if (key === 'q') { setSection('quant'); setQuantPage(null); return; }
       if (key === 'p' && section === 'verbal' && currentDay > 0) { setTab('practice'); return; }
-      if (key >= '1' && key <= '7' && section === 'verbal') { setCurrentDay(parseInt(key)); setTab('vocab'); return; }
+      if (key >= '1' && key <= '9' && section === 'verbal') { setCurrentDay(parseInt(key)); setTab('vocab'); return; }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [section, currentDay]);
-
-  const closeWarmup = () => {
-    sessionStorage.setItem(`gre_warmup_${new Date().toDateString()}`, '1');
-    setShowWarmup(false);
-  };
 
   const streak = getStreak();
   const srStats = getSRStats();
@@ -111,9 +111,17 @@ export default function App() {
     // Award XP
     addXP(correct * XP_VALUES.practice_correct + (total-correct) * XP_VALUES.practice_wrong, 'Verbal practice');
     addXP(XP_VALUES.complete_practice, 'Practice completed');
+    recordActivity(total);
+    // Record score snapshot for graph
+    const vPct = total > 0 ? correct / total : 0;
+    const estV = Math.round(130 + vPct * 40);
+    const prevQ = Object.values(quantScores);
+    const avgQ = prevQ.length ? prevQ.reduce((a, s) => a + (s.total > 0 ? s.correct / s.total : 0), 0) / prevQ.length : 0;
+    const estQ = Math.round(130 + avgQ * 40);
+    recordScoreSnapshot(estV, estQ);
     const achs = checkAchievements({ practiceCompleted:true, streak:streak.current, wordsStudied:totalWords, perfectScore:correct===total });
     if(achs.length) setAchToast(achs[0]);
-  }, [streak, totalWords]);
+  }, [streak, totalWords, quantScores]);
 
   const cacheQuestionsForDay = useCallback((dayNum, qs) => {
     setCachedQs(prev => ({ ...prev, [dayNum]: qs }));
@@ -128,15 +136,47 @@ export default function App() {
     });
     addXP(correct * XP_VALUES.practice_correct + (total-correct) * XP_VALUES.practice_wrong, 'Quant practice');
     addXP(XP_VALUES.complete_practice, 'Practice completed');
+    recordActivity(total);
+    // Record score snapshot for graph
+    const qPct = total > 0 ? correct / total : 0;
+    const estQ = Math.round(130 + qPct * 40);
+    const prevV = Object.values(dayScores);
+    const avgV = prevV.length ? prevV.reduce((a, s) => { const t = Object.keys(s).filter(k => k.endsWith('Total')).reduce((sum, k) => sum + (s[k]||0), 0); const c = Object.keys(s).filter(k => !k.endsWith('Total')).reduce((sum, k) => sum + (s[k]||0), 0); return a + (t > 0 ? c / t : 0); }, 0) / prevV.length : 0;
+    const estV = Math.round(130 + avgV * 40);
+    recordScoreSnapshot(estV, estQ);
     const practiceTopics = Object.keys({...quantScores, [topicId]:true});
     const achs = checkAchievements({ practiceCompleted:true, streak:streak.current, allQuantTopics:practiceTopics.length>=4, perfectScore:correct===total });
     if(achs.length) setAchToast(achs[0]);
-  }, [streak, quantScores]);
+  }, [streak, quantScores, dayScores]);
 
   const mainContent = (
     <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif", background:C.bg, minHeight:'100vh', color:C.text, display:'flex', flexDirection:'column'}}>
 
-      {showWarmup && <WarmupModal onClose={closeWarmup}/>}
+      {showMorningDrill && (
+        <MorningDrill onClose={() => {
+          sessionStorage.setItem(`gre_drill_${new Date().toDateString()}`, '1');
+          setShowMorningDrill(false);
+          // After drill, surface any unlocked boss challenges
+          const bosses = getBossStatus(currentDay);
+          if (bosses.length > 0) setTimeout(() => setShowBoss(bosses[0]), 900);
+        }} />
+      )}
+      {showBoss && (
+        <BossChallenge boss={showBoss} onClose={() => setShowBoss(null)} />
+      )}
+      {showWeakBlitz && (
+        <WeakWordBlitz
+          weakWords={weakWords}
+          onClose={() => setShowWeakBlitz(false)}
+          onWordGraduated={(word) => {
+            setWeakWords(prev => {
+              const next = prev.filter(w => w !== word);
+              saveJSON('gre_weakWords', next);
+              return next;
+            });
+          }}
+        />
+      )}
 
       {/* Header */}
       <div style={{background:C.surface, borderBottom:`1px solid ${C.border}`, padding:'12px 20px', display:'flex', alignItems:'center', gap:16, position:'sticky', top:0, zIndex:20}}>
@@ -146,7 +186,7 @@ export default function App() {
             {/* Section Switcher */}
             <div style={{display:'flex', background:C.bg, borderRadius:6, border:`1px solid ${C.border}`, overflow:'hidden'}}>
               {[{id:'verbal',label:'V'},{id:'quant',label:'Q'}].map(s=>(
-                <button key={s.id} onClick={()=>{setSection(s.id);if(s.id==='quant')setQuantPage(null);if(s.id==='verbal'){setCurrentDay(7);setTab('vocab');}}} style={{
+                <button key={s.id} onClick={()=>{setSection(s.id);if(s.id==='quant')setQuantPage(null);if(s.id==='verbal'){setCurrentDay(1);setTab('vocab');}}} style={{
                   padding:'4px 14px', border:'none', cursor:'pointer', fontSize:12, fontWeight:700,
                   background: section===s.id?C.gold:'transparent',
                   color: section===s.id?'#07090F':C.textMid, transition:'all 0.15s',
@@ -159,7 +199,7 @@ export default function App() {
           </div>
           <p style={{color:C.textMid, fontSize:11, margin:'2px 0 0'}}>
             {section==='verbal'
-              ? `${day ? `${day.theme}  ·  ` : ''}Target: 165+ Verbal${srStats.mastered > 0 ? `  ·  ${srStats.mastered} mastered` : ''}`
+              ? `${day ? `${day.theme}  ·  ` : ''}Target: 165+ Verbal · ${DAYS.length} days${srStats.mastered > 0 ? ` · ${srStats.mastered} mastered` : ''}`
               : 'Target: 165+ Quant  ·  Master all 4 topics'
             }
           </p>
@@ -173,6 +213,21 @@ export default function App() {
             </div>
           )}
           <button onClick={()=>setShowDailySession(true)} style={{padding:'5px 12px', borderRadius:6, border:`1px solid ${C.gold}33`, background:`${C.gold}15`, color:C.gold, cursor:'pointer', fontSize:11, fontWeight:700, transition:'all 0.15s'}}>📅 Study</button>
+          {weakWords.length > 0 && (
+            <button onClick={() => setShowWeakBlitz(true)} style={{
+              padding:'5px 12px', borderRadius:6, border:`1px solid ${C.red}44`,
+              background:`${C.red}18`, color:C.red,
+              cursor:'pointer', fontSize:11, fontWeight:700, transition:'all 0.15s',
+            }}>⚡ Blitz ({weakWords.length})</button>
+          )}
+          {getBossStatus(currentDay).length > 0 && !showBoss && (
+            <button onClick={() => { const b = getBossStatus(currentDay)[0]; setShowBoss(BOSSES.find(x => x.id === b.id)); }} style={{
+              padding:'5px 12px', borderRadius:6, border:`1px solid ${C.red}55`,
+              background:`${C.red}22`, color:C.red,
+              cursor:'pointer', fontSize:11, fontWeight:700,
+              animation:'pulse 2s ease-in-out infinite',
+            }}>⚔️ Boss!</button>
+          )}
           <XPBar/>
           {section==='verbal' && (
             <div style={{textAlign:'right'}}>
@@ -201,21 +256,38 @@ export default function App() {
                 const sc = dayScores[d.day];
                 const hasSc = sc && Object.keys(sc).length > 0;
                 const isCurrent = currentDay===d.day;
+                // Boss logic
+                const BOSS_DAY_MAP = {2:'boss_2', 4:'boss_4', 7:'boss_7'};
+                const bossId = BOSS_DAY_MAP[d.day];
+                const bossResult = bossId ? getBossResult(bossId) : null;
+                const bossAvailable = bossId && currentDay >= d.day && !bossResult?.beaten;
+                const bossBeaten = bossResult?.beaten;
                 return (
-                  <button key={d.day} onClick={()=>{setCurrentDay(d.day);setTab('vocab');}} style={{
-                    width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
-                    border:'none', cursor:'pointer', transition:'all 0.15s',
-                    background: isCurrent?C.gold:'transparent',
-                    color: isCurrent?'#07090F':hasSc?C.greenBr:C.textMid,
-                  }}>
-                    <div style={{display:'flex', alignItems:'center', gap:8}}>
-                      <span style={{fontSize:13, fontWeight:700, width:20}}>{hasSc?'✓':`D${d.day}`}</span>
-                      <div>
-                        <p style={{fontSize:11, fontWeight:isCurrent?700:400, margin:0}}>{d.theme}</p>
-                        <p style={{fontSize:10, margin:0, opacity:0.7}}>{d.words.length} words</p>
+                  <div key={d.day} style={{display:'flex', flexDirection:'column', gap:2}}>
+                    <button onClick={()=>{setCurrentDay(d.day);setTab('vocab');}} style={{
+                      width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
+                      border:'none', cursor:'pointer', transition:'all 0.15s',
+                      background: isCurrent?C.gold:'transparent',
+                      color: isCurrent?'#07090F':hasSc?C.greenBr:C.textMid,
+                    }}>
+                      <div style={{display:'flex', alignItems:'center', gap:8}}>
+                        <span style={{fontSize:13, fontWeight:700, width:20}}>{hasSc?'✓':`D${d.day}`}</span>
+                        <div style={{flex:1}}>
+                          <p style={{fontSize:11, fontWeight:isCurrent?700:400, margin:0}}>{d.theme}</p>
+                          <p style={{fontSize:10, margin:0, opacity:0.7}}>{d.words.length} words</p>
+                        </div>
+                        {bossBeaten && <span title="Boss defeated!" style={{fontSize:12}}>🏆</span>}
+                        {bossAvailable && <span title="Boss challenge available!" style={{fontSize:12, animation:'pulse 2s infinite'}}>⚔️</span>}
                       </div>
-                    </div>
-                  </button>
+                    </button>
+                    {isCurrent && bossAvailable && (
+                      <button onClick={()=>{const b=BOSSES.find(x=>x.id===bossId);setShowBoss(b);}} style={{
+                        width:'100%', padding:'5px 10px', borderRadius:6, border:`1px solid ${C.red}44`,
+                        background:`${C.red}18`, color:C.red, cursor:'pointer',
+                        fontSize:10, fontWeight:700, textAlign:'left',
+                      }}>⚔️ Boss Challenge unlocked!</button>
+                    )}
+                  </div>
                 );
               })}
               <div style={{marginTop:'auto', paddingTop:16, display:'flex', flexDirection:'column', gap:4}}>
@@ -229,6 +301,9 @@ export default function App() {
                   <span style={{fontSize:13}}>🌱  Roots</span>
                 </button>
                 <button onClick={()=>{setCurrentDay(0);setTab('overview');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===0?C.green+'33':'transparent', color:currentDay===0?C.greenBr:C.textMid}}>
+                  <span style={{fontSize:13}}>☀️  Today's Plan</span>
+                </button>
+                <button onClick={()=>{setCurrentDay(-4);setTab('progress');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===-4?C.green+'33':'transparent', color:currentDay===-4?C.greenBr:C.textMid}}>
                   <span style={{fontSize:13}}>📊  Progress</span>
                 </button>
               </div>
@@ -285,8 +360,30 @@ export default function App() {
                 <WordRelations day={DAYS.length}/>
               ) : currentDay===-3 ? (
                 <RootsModule/>
+              ) : currentDay===-4 ? (
+                <>
+                  <ScoreGraph dayScores={dayScores} quantScores={quantScores} />
+                  <div style={{marginTop:24}}>
+                    <ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay}/>
+                  </div>
+                </>
               ) : currentDay===0 ? (
-                <ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay}/>
+                <DailyRoadmap
+                  currentDay={currentDay}
+                  onNavigate={(nav) => {
+                    if (nav === 'drill') { sessionStorage.removeItem(`gre_drill_${new Date().toDateString()}`); setShowMorningDrill(true); }
+                    else if (nav && nav.startsWith('verbal_vocab')) {
+                    const d = nav.includes('_') ? parseInt(nav.split('_')[2]) || 1 : 1;
+                    setSection('verbal'); setCurrentDay(d); setTab('vocab');
+                  }
+                    else if (nav === 'verbal_practice') { setSection('verbal'); setCurrentDay(1); setTab('practice'); }
+                    else if (nav === 'verbal_mock') { setSection('verbal'); setCurrentDay(-1); }
+                    else if (nav === 'quant_learn') { setSection('quant'); setQuantPage('arithmetic'); setQuantTab('learn'); }
+                    else if (nav === 'quant_practice') { setSection('quant'); setQuantPage('arithmetic'); setQuantTab('practice'); }
+                    else if (nav === 'quant_mock') { setSection('quant'); setQuantPage('mock'); }
+                    else if (nav === 'blitz') { setShowWeakBlitz(true); }
+                  }}
+                />
               ) : (
                 <>
                   <div style={{display:'flex', gap:8, marginBottom:24, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
@@ -323,7 +420,12 @@ export default function App() {
               ) : quantPage === 'formulas' ? (
                 <FormulaSheet/>
               ) : quantPage === 'progress' ? (
-                <ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay}/>
+                <>
+                  <ScoreGraph dayScores={dayScores} quantScores={quantScores} />
+                  <div style={{marginTop:24}}>
+                    <ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay}/>
+                  </div>
+                </>
               ) : quantPage && QUANT_TOPICS.find(t=>t.id===quantPage) ? (
                 <div>
                   <div style={{display:'flex', gap:8, marginBottom:20, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
@@ -361,7 +463,12 @@ export default function App() {
   // ─── DailySession modal ───
   const sessionModal = showDailySession && (
     <DailySession
-      onNavigate={(sec, t) => { setSection(sec); if(sec==='verbal') setTab(t); else setQuantTab(t==='learn'?'learn':'practice'); }}
+      onNavigate={(sec, t, day) => {
+        setSection(sec);
+        if(sec==='verbal') { if(day) setCurrentDay(day); setTab(t); }
+        else setQuantTab(t==='learn'?'learn':'practice');
+        setShowDailySession(false);
+      }}
       onClose={() => setShowDailySession(false)}
     />
   );
@@ -413,19 +520,5 @@ function QuantLanding({ onSelectTopic, scores }) {
     </div>
   );
 
-  // ─── DailySession modal ───
-  const sessionModal = showDailySession && (
-    <DailySession
-      onNavigate={(sec, t) => { setSection(sec); if(sec==='verbal') setTab(t); else setQuantTab(t==='learn'?'learn':'practice'); }}
-      onClose={() => setShowDailySession(false)}
-    />
-  );
-
-  return (
-    <>
-      {mainContent}
-      {sessionModal}
-    </>
-  );
 }
 

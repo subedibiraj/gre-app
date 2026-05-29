@@ -1,241 +1,509 @@
 import { useState, useMemo } from 'react';
 import C from '../theme';
-import { getXP, getLevel } from '../engine/xp';
+import { getXP, getLevel, getUnlockedAchievements, ACHIEVEMENTS } from '../engine/xp';
 import { getStreak } from '../engine/streak';
+import { getSRStats, getAllSR, getSRLevel } from '../engine/spaced';
 import { DAYS } from '../data/days';
 import { QUANT_TOPICS } from '../data/quant-topics';
+import { getQuantWeakAreas, getQuantStats } from '../engine/QuantErrorEngine';
+import { getBossResult, BOSSES } from '../components/BossChallenge';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-const loadJSON = (key, fb) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fb; } catch { return fb; } };
+const loadJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
 
-function MiniBar({ value, max, color, label, height = 6 }) {
+// ─── Sub-components ────────────────────────────────────────────────────────────
+function Bar({ value, max, color, height = 6 }) {
   const pct = max > 0 ? Math.min(value / max * 100, 100) : 0;
   return (
-    <div style={{ flex: 1 }}>
-      {label && <p style={{ color: C.textDim, fontSize: 10, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</p>}
-      <div style={{ height, background: C.border, borderRadius: height / 2, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: height / 2, transition: 'width 0.6s ease' }} />
+    <div style={{ height, background: C.border, borderRadius: height / 2, overflow: 'hidden' }}>
+      <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: height / 2, transition: 'width 0.6s ease' }} />
+    </div>
+  );
+}
+
+function StatPill({ icon, label, value, color }) {
+  return (
+    <div style={{
+      flex: 1, minWidth: 100, textAlign: 'center', padding: '12px 8px',
+      background: `${color}12`, borderRadius: 10, border: `1px solid ${color}22`,
+    }}>
+      <p style={{ fontSize: 20, margin: '0 0 3px' }}>{icon}</p>
+      <p style={{ fontFamily: 'Courier New,monospace', fontSize: 18, fontWeight: 700, color, margin: 0, lineHeight: 1 }}>{value}</p>
+      <p style={{ color: C.textDim, fontSize: 9, margin: '4px 0 0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</p>
+    </div>
+  );
+}
+
+// ─── Score Estimation ─────────────────────────────────────────────────────────
+// Non-linear ETS GRE score scale (matches actual score distribution)
+function scalePct(pct) {
+  const p = Math.min(Math.max(pct, 0), 1);
+  const bands = [
+    [0.00, 0.10, 130, 133], [0.10, 0.18, 133, 136], [0.18, 0.26, 136, 139],
+    [0.26, 0.34, 139, 142], [0.34, 0.42, 142, 145], [0.42, 0.50, 145, 148],
+    [0.50, 0.56, 148, 151], [0.56, 0.62, 151, 153], [0.62, 0.68, 153, 155],
+    [0.68, 0.73, 155, 157], [0.73, 0.78, 157, 159], [0.78, 0.82, 159, 161],
+    [0.82, 0.86, 161, 163], [0.86, 0.90, 163, 165], [0.90, 0.93, 165, 167],
+    [0.93, 0.96, 167, 168], [0.96, 0.99, 168, 169], [0.99, 1.01, 169, 170],
+  ];
+  const band = bands.find(([lo, hi]) => p >= lo && p < hi) || bands[bands.length - 1];
+  const t = band[1] === band[0] ? 1 : (p - band[0]) / (band[1] - band[0]);
+  return Math.round(band[2] + t * (band[3] - band[2]));
+}
+
+function estimateScores(dayScores, quantScores) {
+  const vEntries = Object.values(dayScores).filter(s => s.total > 0);
+  const qEntries = Object.values(quantScores).filter(s => s.total > 0);
+  const avgVPct = vEntries.length ? vEntries.reduce((a, s) => a + s.correct / s.total, 0) / vEntries.length : 0;
+  const avgQPct = qEntries.length ? qEntries.reduce((a, s) => a + s.correct / s.total, 0) / qEntries.length : 0;
+  const estV = avgVPct > 0 ? scalePct(avgVPct) : null;
+  const estQ = avgQPct > 0 ? scalePct(avgQPct) : null;
+  return { estV, estQ, estTotal: estV && estQ ? estV + estQ : null, avgV: Math.round(avgVPct * 100), avgQ: Math.round(avgQPct * 100) };
+}
+
+// ─── Score Gauge ──────────────────────────────────────────────────────────────
+function ScoreGauge({ score, max = 170, label, color }) {
+  const pct   = score ? (score - 130) / 40 : 0;
+  const angle = -90 + pct * 180;
+  const r     = 44;
+  const cx    = 56, cy = 56;
+  const arcX  = cx + r * Math.cos((angle * Math.PI) / 180);
+  const arcY  = cy + r * Math.sin((angle * Math.PI) / 180);
+  const path  = `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`;
+
+  return (
+    <div style={{ textAlign: 'center', flex: 1 }}>
+      <svg width="112" height="64" viewBox="0 0 112 64">
+        {/* Track */}
+        <path d={path} fill="none" stroke={C.border} strokeWidth="8" strokeLinecap="round" />
+        {/* Fill */}
+        {score && (
+          <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${arcX} ${arcY}`}
+            fill="none" stroke={color} strokeWidth="8" strokeLinecap="round" />
+        )}
+        {/* Needle dot */}
+        {score && (
+          <circle cx={arcX} cy={arcY} r="5" fill={color}
+            style={{ filter: `drop-shadow(0 0 4px ${color})` }} />
+        )}
+        {/* Score text */}
+        <text x="56" y="52" textAnchor="middle" fill={score ? color : C.textDim}
+          fontFamily="Courier New,monospace" fontSize="20" fontWeight="700">
+          {score || '—'}
+        </text>
+      </svg>
+      <p style={{ color: C.textDim, fontSize: 10, margin: '-4px 0 0', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</p>
+      <p style={{ color: C.textDim, fontSize: 9, margin: '2px 0 0' }}>130–170</p>
+    </div>
+  );
+}
+
+// ─── Vocabulary mastery stacked bar ───────────────────────────────────────────
+function VocabMastery({ allWords }) {
+  const levels = { Mastered: [], Strong: [], Familiar: [], Learning: [], Weak: [], New: [] };
+  allWords.forEach(w => {
+    const sr = getSRLevel(w.w);
+    (levels[sr.label] || levels.New).push(w.w);
+  });
+  const colors = { Mastered: C.greenBr, Strong: C.green, Familiar: C.gold, Learning: C.blue, Weak: C.red, New: C.textDim };
+  const total  = allWords.length;
+
+  return (
+    <div>
+      {/* Stacked bar */}
+      <div style={{ display: 'flex', height: 18, borderRadius: 6, overflow: 'hidden', marginBottom: 10 }}>
+        {Object.entries(levels).map(([label, words]) => {
+          const pct = (words.length / Math.max(total, 1)) * 100;
+          if (!pct) return null;
+          return (
+            <div key={label} title={`${label}: ${words.length}`} style={{
+              width: `${pct}%`, background: colors[label],
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 9, fontWeight: 700, color: '#07090F',
+            }}>
+              {pct > 10 ? `${Math.round(pct)}%` : ''}
+            </div>
+          );
+        })}
+      </div>
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {Object.entries(levels).map(([label, words]) => (
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: colors[label] }} />
+            <span style={{ color: C.textDim, fontSize: 10 }}>{label} <strong style={{ color: colors[label] }}>{words.length}</strong></span>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-function StatCard({ icon, label, value, sub, color, glow }) {
+// ─── Achievements grid ────────────────────────────────────────────────────────
+function AchievementsGrid({ unlocked }) {
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? ACHIEVEMENTS : ACHIEVEMENTS.slice(0, 8);
   return (
-    <div style={{
-      background: `linear-gradient(135deg, ${color}12, ${color}06)`,
-      border: `1px solid ${color}22`, borderRadius: 12, padding: '16px 18px',
-      flex: 1, minWidth: 120, transition: 'transform 0.2s, box-shadow 0.2s',
-    }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 24px ${color}22`; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <span style={{ fontSize: 18 }}>{icon}</span>
-        <span style={{ color: C.textDim, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</span>
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 8, marginBottom: 10 }}>
+        {visible.map(a => {
+          const isUnlocked = unlocked.includes(a.id);
+          return (
+            <div key={a.id} style={{
+              background: isUnlocked ? `linear-gradient(135deg, ${C.gold}14, ${C.gold}06)` : C.surface,
+              border: `1px solid ${isUnlocked ? C.gold + '44' : C.border}`,
+              borderRadius: 10, padding: '10px 12px',
+              opacity: isUnlocked ? 1 : 0.45, transition: 'all 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                <span style={{ fontSize: 18 }}>{a.icon}</span>
+                <span style={{ color: isUnlocked ? C.gold : C.textDim, fontSize: 11, fontWeight: 700, lineHeight: 1.2 }}>{a.name}</span>
+              </div>
+              <p style={{ color: C.textDim, fontSize: 10, margin: 0, lineHeight: 1.4 }}>{a.desc}</p>
+              <p style={{ color: isUnlocked ? C.greenBr : C.textDim, fontSize: 9, margin: '4px 0 0', fontFamily: 'Courier New,monospace' }}>
+                {isUnlocked ? '✓ Unlocked' : `+${a.xp} XP`}
+              </p>
+            </div>
+          );
+        })}
       </div>
-      <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 800, color, margin: 0 }}>{value}</p>
-      {sub && <p style={{ color: C.textDim, fontSize: 11, margin: '4px 0 0' }}>{sub}</p>}
+      {ACHIEVEMENTS.length > 8 && (
+        <button onClick={() => setShowAll(s => !s)} style={{ background: 'none', border: 'none', color: C.textDim, cursor: 'pointer', fontSize: 12, padding: '4px 0' }}>
+          {showAll ? '▲ Show less' : `▼ Show all ${ACHIEVEMENTS.length} achievements`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ─── Boss tracker ─────────────────────────────────────────────────────────────
+function BossTracker() {
+  return (
+    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+      {BOSSES.map(b => {
+        const result = getBossResult(b.id);
+        const beaten = result?.beaten;
+        return (
+          <div key={b.id} style={{
+            flex: 1, minWidth: 110, padding: '12px 14px', borderRadius: 10,
+            background: beaten ? `${C.greenBr}12` : `${C.red}08`,
+            border: `1px solid ${beaten ? C.greenBr + '44' : C.border}`,
+            textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 24, margin: '0 0 4px' }}>{beaten ? '🏆' : b.emoji}</p>
+            <p style={{ color: beaten ? C.greenBr : C.textMid, fontSize: 11, fontWeight: 700, margin: '0 0 2px' }}>{b.name}</p>
+            <p style={{ color: C.textDim, fontSize: 10, margin: '0 0 4px' }}>After Day {b.afterDay}</p>
+            {beaten
+              ? <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 10, background: `${C.greenBr}22`, color: C.greenBr, fontWeight: 700 }}>✓ Defeated</span>
+              : <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 10, background: `${C.border}`, color: C.textDim, fontWeight: 700 }}>Locked</span>}
+            {result && !beaten && <p style={{ color: C.red, fontSize: 10, margin: '4px 0 0' }}>Best: {result.score}/{result.total}</p>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Day-by-day verbal table ───────────────────────────────────────────────────
+function VerbalTable({ dayScores }) {
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+        <thead>
+          <tr>
+            {['Day', 'Theme', 'Match', 'VIC', 'TC', 'SE', 'RC', 'Total'].map(h => (
+              <th key={h} style={{ padding: '6px 8px', textAlign: 'left', color: C.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${C.border}`, fontWeight: 700 }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {DAYS.map(d => {
+            const sc = dayScores[d.day];
+            const notDone = !sc || Object.keys(sc).length === 0;
+            const totalC = notDone ? null : (sc.contrast || 0) + (sc.vic || 0) + (sc.tc || 0) + (sc.se || 0) + (sc.rc || 0);
+            const totalM = notDone ? null : (sc.contrastTotal || 0) + (sc.vicTotal || 0) + (sc.tcTotal || 0) + (sc.seTotal || 0) + (sc.rcTotal || 0);
+            const pct    = totalM > 0 ? Math.round(totalC / totalM * 100) : null;
+            const color  = pct >= 80 ? C.greenBr : pct >= 60 ? C.gold : C.red;
+            return (
+              <tr key={d.day} style={{ borderBottom: `1px solid ${C.border}`, opacity: notDone ? 0.45 : 1 }}>
+                <td style={{ padding: '8px', color: notDone ? C.textDim : C.greenBr, fontFamily: 'Courier New,monospace', fontWeight: 700 }}>D{d.day}</td>
+                <td style={{ padding: '8px', color: C.textMid, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.theme}</td>
+                <td style={{ padding: '8px', color: C.textMid, fontFamily: 'Courier New,monospace', fontSize: 11 }}>{sc?.contrast != null ? `${sc.contrast}/${sc.contrastTotal}` : '—'}</td>
+                <td style={{ padding: '8px', color: C.textMid, fontFamily: 'Courier New,monospace', fontSize: 11 }}>{sc?.vic != null ? `${sc.vic}/${sc.vicTotal}` : '—'}</td>
+                <td style={{ padding: '8px', color: C.textMid, fontFamily: 'Courier New,monospace', fontSize: 11 }}>{sc?.tc != null ? `${sc.tc}/${sc.tcTotal}` : '—'}</td>
+                <td style={{ padding: '8px', color: C.textMid, fontFamily: 'Courier New,monospace', fontSize: 11 }}>{sc?.se != null ? `${sc.se}/${sc.seTotal}` : '—'}</td>
+                <td style={{ padding: '8px', color: C.textMid, fontFamily: 'Courier New,monospace', fontSize: 11 }}>{sc?.rc != null ? `${sc.rc}/${sc.rcTotal}` : '—'}</td>
+                <td style={{ padding: '8px', fontFamily: 'Courier New,monospace', fontWeight: 700, color: pct != null ? color : C.textDim }}>{pct != null ? `${pct}%` : '—'}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ─── Quant breakdown ──────────────────────────────────────────────────────────
+function QuantBreakdown({ quantScores }) {
+  const weakAreas = getQuantWeakAreas();
+  return (
+    <div>
+      {QUANT_TOPICS.map(t => {
+        const sc  = quantScores[t.id];
+        const pct = sc?.total > 0 ? Math.round(sc.correct / sc.total * 100) : null;
+        const color = pct >= 80 ? C.greenBr : pct >= 60 ? C.gold : C.red;
+        const topicWeak = weakAreas.filter(w => t.subtopics?.includes(w.subtopic)).slice(0, 2);
+        return (
+          <div key={t.id} style={{ padding: '10px 0', borderBottom: `1px solid ${C.border}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: topicWeak.length ? 6 : 0 }}>
+              <span style={{ fontSize: 18 }}>{t.icon}</span>
+              <span style={{ color: C.text, fontSize: 13, flex: 1 }}>{t.label}</span>
+              {pct != null
+                ? <>
+                    <div style={{ width: 80, height: 5, background: C.border, borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3 }} />
+                    </div>
+                    <span style={{ fontFamily: 'Courier New,monospace', fontSize: 12, fontWeight: 700, color, minWidth: 36, textAlign: 'right' }}>{pct}%</span>
+                  </>
+                : <span style={{ color: C.textDim, fontSize: 11 }}>Not practiced</span>}
+            </div>
+            {topicWeak.length > 0 && (
+              <div style={{ paddingLeft: 28, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {topicWeak.map(w => (
+                  <span key={w.subtopic} style={{ fontSize: 10, padding: '1px 7px', borderRadius: 10, background: `${C.red}18`, color: C.red, fontWeight: 700 }}>
+                    {w.subtopic} {w.accuracy}%
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Study Recommendations ────────────────────────────────────────────────────
+function Recommendations({ estV, estQ, avgV, avgQ, weakWords, streak, srStats, quantStats }) {
+  const recs = [];
+  if (streak.current === 0) recs.push({ icon: '🔥', color: C.red, text: 'Start your streak today. Consistency is the single biggest predictor of a 330+ score.' });
+  if (streak.current > 0 && streak.current < 7) recs.push({ icon: '📅', color: C.gold, text: `${streak.current} day streak — keep going! 7 consecutive days unlocks a performance jump.` });
+  if (srStats.due > 5) recs.push({ icon: '🔴', color: C.red, text: `${srStats.due} words due for SR review. Do the Weak Word Blitz before any new content.` });
+  if (weakWords?.length > 10) recs.push({ icon: '📚', color: C.gold, text: `${weakWords.length} weak words flagged. Run the Blitz daily until this drops below 5.` });
+  if (avgV > 0 && avgV < 70) recs.push({ icon: '📖', color: C.blue, text: `Verbal accuracy at ${avgV}%. Focus on TC clue-word strategy and SE synonym pairs.` });
+  if (avgQ > 0 && avgQ < 70) recs.push({ icon: '📐', color: C.greenBr, text: `Quant accuracy at ${avgQ}%. Review concept traps in ConceptLearn before more practice.` });
+  if (quantStats.weakCount > 2) recs.push({ icon: '⚠️', color: C.gold, text: `${quantStats.weakCount} quant subtopics below 60%. Targeted practice on those topics will have the biggest impact.` });
+  if (estV && estV < 155) recs.push({ icon: '🎯', color: C.blue, text: 'Verbal est. below 155. Do timed TC+SE daily — GRE is a pacing game as much as vocab.' });
+  if (estQ && estQ < 155) recs.push({ icon: '🎯', color: C.greenBr, text: 'Quant est. below 155. Take a Quant Mock now to see exactly where you\'re losing points.' });
+  if ((!estV || !estQ) && streak.current === 0) recs.push({ icon: '🚀', color: C.gold, text: 'Start with today\'s roadmap. 30 days of 1-2 hours/day is enough to hit 330+ with this app.' });
+  if (estV && estQ && estV + estQ >= 330) recs.push({ icon: '🏆', color: C.greenBr, text: 'You\'re projecting 330+! Take timed full mocks now to build stamina and eliminate pacing errors.' });
+  if (!recs.length) recs.push({ icon: '✨', color: C.gold, text: 'You\'re on track. Keep your streak alive and take a full mock this week.' });
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {recs.slice(0, 5).map((r, i) => (
+        <div key={i} style={{ display: 'flex', gap: 12, padding: '10px 14px', background: `${r.color}0D`, border: `1px solid ${r.color}22`, borderRadius: 8 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>{r.icon}</span>
+          <p style={{ color: C.text, fontSize: 12, margin: 0, lineHeight: 1.6 }}>{r.text}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Section wrapper ──────────────────────────────────────────────────────────
+function Section({ title, children, defaultOpen = true }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: 'hidden', marginBottom: 14 }}>
+      <button onClick={() => setOpen(o => !o)} style={{
+        width: '100%', padding: '14px 18px', background: 'none', border: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span style={{ color: C.text, fontSize: 14, fontWeight: 700, fontFamily: 'Georgia,serif' }}>{title}</span>
+        <span style={{ color: C.textDim, fontSize: 13, transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'none' }}>▾</span>
+      </button>
+      {open && <div style={{ padding: '0 18px 18px', borderTop: `1px solid ${C.border}` }}>{children}</div>}
     </div>
   );
 }
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function ProgressDashboard({ dayScores, quantScores, weakWords, currentDay }) {
-  const xp = getXP();
-  const level = getLevel(xp.total);
-  const streak = getStreak();
-  const totalWords = DAYS.slice(0, currentDay).flatMap(d => d.words).length;
-  const masteredFormulas = loadJSON('gre_formulaMastered', {});
-  const masteredCount = Object.values(masteredFormulas).filter(Boolean).length;
+  const xp         = getXP();
+  const level      = getLevel(xp.total);
+  const streak     = getStreak();
+  const srStats    = getSRStats();
+  const quantStats = getQuantStats();
+  const unlocked   = getUnlockedAchievements();
+  const allWords   = useMemo(() => DAYS.flatMap(d => d.words), []);
+  const masteredFormulas = useMemo(() => {
+    const raw = loadJSON('gre_formulaMastered', []);
+    return Array.isArray(raw) ? raw.length : Object.values(raw).filter(Boolean).length;
+  }, []);
 
-  // Verbal stats
-  const verbalScores = Object.entries(dayScores).map(([day, scores]) => ({
-    day: parseInt(day),
-    ...scores,
-    pct: scores.total > 0 ? Math.round(scores.correct / scores.total * 100) : 0,
-  })).sort((a, b) => a.day - b.day);
-  const avgVerbal = verbalScores.length > 0 ? Math.round(verbalScores.reduce((a, s) => a + s.pct, 0) / verbalScores.length) : 0;
-
-  // Quant stats
-  const quantEntries = Object.entries(quantScores).map(([topic, sc]) => ({
-    topic,
-    label: QUANT_TOPICS.find(t => t.id === topic)?.label || topic,
-    icon: QUANT_TOPICS.find(t => t.id === topic)?.icon || '📐',
-    ...sc,
-    pct: sc.total > 0 ? Math.round(sc.correct / sc.total * 100) : 0,
-  }));
-  const avgQuant = quantEntries.length > 0 ? Math.round(quantEntries.reduce((a, s) => a + s.pct, 0) / quantEntries.length) : 0;
-
-  // Weak areas
-  const weakVerbalDays = verbalScores.filter(s => s.pct < 70).sort((a, b) => a.pct - b.pct).slice(0, 3);
-  const weakQuantTopics = quantEntries.filter(s => s.pct < 70).sort((a, b) => a.pct - b.pct).slice(0, 3);
-
-  // Estimated scores (rough mapping)
-  const estVerbal = Math.min(170, Math.round(130 + avgVerbal * 0.4));
-  const estQuant = Math.min(170, Math.round(130 + avgQuant * 0.4));
-  const estTotal = estVerbal + estQuant;
-
-  // Study time estimate
-  const daysStudied = verbalScores.length + quantEntries.length;
-  const totalPracticed = verbalScores.reduce((a, s) => a + s.total, 0) + quantEntries.reduce((a, s) => a + s.total, 0);
+  const { estV, estQ, estTotal, avgV, avgQ } = estimateScores(dayScores, quantScores);
+  const daysStudied = Object.keys(dayScores).length + Object.keys(quantScores).length;
+  const totalPracticed = Object.values(dayScores).reduce((a, s) => a + (s.total || 0), 0)
+    + Object.values(quantScores).reduce((a, s) => a + (s.total || 0), 0);
 
   return (
-    <div style={{ maxWidth: 800, margin: '0 auto', padding: '20px 0 40px' }}>
-      {/* Header */}
+    <div style={{ maxWidth: 820, margin: '0 auto', paddingBottom: 40 }}>
+      {/* Page title */}
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 22, color: C.gold, margin: '0 0 4px' }}>
-          📊 Progress Analytics
-        </h2>
-        <p style={{ color: C.textDim, fontSize: 12 }}>Track your journey to 330+</p>
+        <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 22, color: C.gold, margin: '0 0 4px' }}>📊 Progress Dashboard</h2>
+        <p style={{ color: C.textDim, fontSize: 12 }}>Full picture of your GRE preparation</p>
       </div>
 
-      {/* Top Stats Row */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-        <StatCard icon={level.icon} label="Level" value={level.name} sub={`${xp.total} XP earned`} color={C.gold} />
-        <StatCard icon="🔥" label="Streak" value={`${streak.current}d`} sub={`Best: ${streak.best} days`} color="#FF6B35" />
-        <StatCard icon="📝" label="Practiced" value={totalPracticed} sub={`${daysStudied} sessions`} color={C.blue} />
-        <StatCard icon="📚" label="Words" value={totalWords} sub={`${weakWords.length} flagged weak`} color={C.greenBr} />
+      {/* Top stat pills */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+        <StatPill icon={level.icon} label="Level" value={level.name} color={C.gold} />
+        <StatPill icon="🔥" label="Streak" value={`${streak.current}d`} color="#FF6B35" />
+        <StatPill icon="📝" label="Questions" value={totalPracticed} color={C.blue} />
+        <StatPill icon="📚" label="Words" value={allWords.length} color={C.greenBr} />
+        <StatPill icon="📋" label="Formulas" value={`${masteredFormulas}/68`} color="#9B6BDB" />
       </div>
 
-      {/* Estimated Score */}
-      <div style={{
-        background: `linear-gradient(135deg, ${C.gold}15, ${C.blue}10, ${C.greenBr}08)`,
-        border: `1px solid ${C.gold}33`, borderRadius: 14, padding: '20px 24px', marginBottom: 20,
-        textAlign: 'center',
-      }}>
-        <p style={{ color: C.textDim, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 8 }}>
-          Estimated GRE Score
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: 16 }}>
-          <div>
-            <p style={{ fontFamily: 'Courier New,monospace', fontSize: 40, fontWeight: 800, color: C.gold, margin: 0 }}>
-              {daysStudied > 0 ? estTotal : '—'}
-            </p>
-            <p style={{ color: C.textDim, fontSize: 11 }}>Total</p>
-          </div>
-          <span style={{ color: C.textDim, fontSize: 20 }}>=</span>
-          <div>
-            <p style={{ fontFamily: 'Courier New,monospace', fontSize: 24, fontWeight: 700, color: C.blue, margin: 0 }}>{daysStudied > 0 ? estVerbal : '—'}</p>
-            <p style={{ color: C.textDim, fontSize: 10 }}>Verbal</p>
-          </div>
-          <span style={{ color: C.textDim, fontSize: 20 }}>+</span>
-          <div>
-            <p style={{ fontFamily: 'Courier New,monospace', fontSize: 24, fontWeight: 700, color: C.greenBr, margin: 0 }}>{daysStudied > 0 ? estQuant : '—'}</p>
-            <p style={{ color: C.textDim, fontSize: 10 }}>Quant</p>
-          </div>
+      {/* Score projection */}
+      <Section title="🎯 Estimated GRE Score" defaultOpen={true}>
+        <div style={{ paddingTop: 14 }}>
+          {daysStudied === 0 ? (
+            <div style={{ textAlign: 'center', padding: '16px 0' }}>
+              <p style={{ color: C.textMid, fontSize: 13 }}>Complete practice sessions to see your estimated score.</p>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 16, flexWrap: 'wrap' }}>
+                <ScoreGauge score={estV} label="Verbal" color={C.blue} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 20 }}>
+                  <span style={{ color: C.textDim, fontSize: 24, fontWeight: 300 }}>+</span>
+                </div>
+                <ScoreGauge score={estQ} label="Quant" color={C.greenBr} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 20 }}>
+                  <span style={{ color: C.textDim, fontSize: 24, fontWeight: 300 }}>=</span>
+                </div>
+                <div style={{ textAlign: 'center', flex: 1, minWidth: 100 }}>
+                  <p style={{ color: C.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>Total</p>
+                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 48, fontWeight: 700, color: estTotal >= 330 ? C.greenBr : estTotal >= 310 ? C.gold : C.red, margin: 0, lineHeight: 1 }}>
+                    {estTotal || '—'}
+                  </p>
+                  <p style={{ color: C.textDim, fontSize: 11, margin: '4px 0 0' }}>/ 340</p>
+                </div>
+              </div>
+
+              {/* 330 progress bar */}
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ color: C.textDim, fontSize: 11 }}>Progress to 330</span>
+                  <span style={{ color: C.textDim, fontSize: 11 }}>{estTotal ? `${330 - estTotal > 0 ? 330 - estTotal + ' pts to go' : '🎯 Target reached!'}` : '—'}</span>
+                </div>
+                <Bar value={estTotal ? estTotal - 260 : 0} max={80} color={estTotal >= 330 ? C.greenBr : C.gold} height={8} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                  <span style={{ color: C.textDim, fontSize: 9 }}>260</span>
+                  <span style={{ color: C.gold, fontSize: 9 }}>330 target</span>
+                  <span style={{ color: C.textDim, fontSize: 9 }}>340</span>
+                </div>
+              </div>
+            </>
+          )}
         </div>
-        {daysStudied === 0 && <p style={{ color: C.textMid, fontSize: 12, marginTop: 8 }}>Complete practice sessions to see your estimated score</p>}
-        {daysStudied > 0 && estTotal < 330 && (
-          <p style={{ color: C.gold, fontSize: 11, marginTop: 8 }}>
-            💡 {330 - estTotal} points to go! Focus on your weak areas below.
+      </Section>
+
+      {/* XP & level */}
+      <Section title={`⚡ XP & Level — ${level.icon} ${level.name}`} defaultOpen={false}>
+        <div style={{ paddingTop: 14 }}>
+          <div style={{ background: `${C.gold}12`, borderRadius: 10, padding: '14px 16px', marginBottom: 14, border: `1px solid ${C.gold}22` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+              <span style={{ fontFamily: 'Courier New,monospace', fontSize: 32, fontWeight: 700, color: C.gold }}>{xp.total}</span>
+              <span style={{ color: C.textMid, fontSize: 11 }}>Today +{xp.today} XP</span>
+            </div>
+            <Bar value={level.progress * 100} max={100} color={C.gold} height={8} />
+            {level.nextLevel && (
+              <p style={{ color: C.textDim, fontSize: 11, marginTop: 6 }}>
+                {level.nextLevel.min - xp.total} XP to {level.nextLevel.icon} {level.nextLevel.name}
+              </p>
+            )}
+          </div>
+          <AchievementsGrid unlocked={unlocked} />
+        </div>
+      </Section>
+
+      {/* Vocabulary mastery */}
+      <Section title="📚 Vocabulary Mastery" defaultOpen={true}>
+        <div style={{ paddingTop: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+            <span style={{ color: C.textDim, fontSize: 12 }}>{allWords.length} total words across {DAYS.length} days</span>
+            {weakWords?.length > 0 && <span style={{ color: C.red, fontSize: 12, fontWeight: 700 }}>⚠️ {weakWords.length} flagged weak</span>}
+          </div>
+          <VocabMastery allWords={allWords} />
+          {srStats.due > 0 && (
+            <div style={{ marginTop: 12, padding: '8px 14px', background: `${C.red}12`, borderRadius: 8, border: `1px solid ${C.red}22` }}>
+              <p style={{ color: C.red, fontSize: 12, margin: 0 }}>🔴 <strong>{srStats.due}</strong> words due for spaced repetition review — do the Morning Drill or Weak Word Blitz.</p>
+            </div>
+          )}
+        </div>
+      </Section>
+
+      {/* Verbal performance */}
+      <Section title="📖 Verbal Performance — Day by Day" defaultOpen={false}>
+        <div style={{ paddingTop: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <span style={{ color: C.textMid, fontSize: 12 }}>Overall accuracy:</span>
+            <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 16, color: avgV >= 80 ? C.greenBr : avgV >= 60 ? C.gold : avgV > 0 ? C.red : C.textDim }}>
+              {avgV > 0 ? `${avgV}%` : '—'}
+            </span>
+          </div>
+          <VerbalTable dayScores={dayScores} />
+        </div>
+      </Section>
+
+      {/* Quant performance */}
+      <Section title="📐 Quant Performance — By Topic" defaultOpen={false}>
+        <div style={{ paddingTop: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <span style={{ color: C.textMid, fontSize: 12 }}>Overall accuracy:</span>
+            <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 16, color: avgQ >= 80 ? C.greenBr : avgQ >= 60 ? C.gold : avgQ > 0 ? C.red : C.textDim }}>
+              {avgQ > 0 ? `${avgQ}%` : '—'}
+            </span>
+            <span style={{ color: C.textDim, fontSize: 11 }}>· {quantStats.totalAttempts} questions attempted</span>
+          </div>
+          <QuantBreakdown quantScores={quantScores} />
+        </div>
+      </Section>
+
+      {/* Boss battles */}
+      <Section title="⚔️ Boss Battles" defaultOpen={false}>
+        <div style={{ paddingTop: 14 }}>
+          <p style={{ color: C.textMid, fontSize: 12, marginBottom: 12 }}>Defeat all 3 bosses to prove you've mastered cumulative vocabulary.</p>
+          <BossTracker />
+        </div>
+      </Section>
+
+      {/* Formula mastery */}
+      <Section title="📋 Formula Sheet Mastery" defaultOpen={false}>
+        <div style={{ paddingTop: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ color: C.textMid, fontSize: 13 }}>{masteredFormulas} / 68 formulas mastered</span>
+            <span style={{ color: masteredFormulas >= 50 ? C.greenBr : C.gold, fontSize: 13, fontWeight: 700 }}>{Math.round(masteredFormulas / 68 * 100)}%</span>
+          </div>
+          <Bar value={masteredFormulas} max={68} color={C.gold} height={10} />
+          <p style={{ color: C.textDim, fontSize: 11, marginTop: 8 }}>
+            {masteredFormulas < 34 ? '⚠️ Under 50% — spend 10 min on the formula sheet daily.' :
+             masteredFormulas < 55 ? '💪 Good progress — push toward 80% before your exam.' :
+             '🎯 Formula sheet solid. Maintain with quick reviews.'}
           </p>
-        )}
-        {daysStudied > 0 && estTotal >= 330 && (
-          <p style={{ color: C.greenBr, fontSize: 11, marginTop: 8 }}>🎯 You're on track for 330+! Keep it up!</p>
-        )}
-      </div>
-
-      {/* Two Column: Verbal & Quant Breakdown */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
-        {/* Verbal */}
-        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <h3 style={{ fontFamily: 'Georgia,serif', fontSize: 14, color: C.blue, margin: 0 }}>📖 Verbal</h3>
-            <span style={{ fontFamily: 'Courier New,monospace', fontSize: 18, fontWeight: 800, color: avgVerbal >= 80 ? C.greenBr : avgVerbal >= 50 ? C.gold : C.red }}>{avgVerbal}%</span>
-          </div>
-          <MiniBar value={avgVerbal} max={100} color={C.blue} label={`${verbalScores.length} days practiced`} />
-          {verbalScores.slice(-5).map(s => (
-            <div key={s.day} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: `1px solid ${C.border}` }}>
-              <span style={{ color: C.textMid, fontSize: 11 }}>Day {s.day}</span>
-              <span style={{ fontFamily: 'Courier New,monospace', fontSize: 12, fontWeight: 700, color: s.pct >= 80 ? C.greenBr : s.pct >= 50 ? C.gold : C.red }}>{s.pct}%</span>
-            </div>
-          ))}
-          {verbalScores.length === 0 && <p style={{ color: C.textDim, fontSize: 11, marginTop: 8 }}>No verbal practice yet</p>}
         </div>
+      </Section>
 
-        {/* Quant */}
-        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <h3 style={{ fontFamily: 'Georgia,serif', fontSize: 14, color: C.greenBr, margin: 0 }}>📐 Quant</h3>
-            <span style={{ fontFamily: 'Courier New,monospace', fontSize: 18, fontWeight: 800, color: avgQuant >= 80 ? C.greenBr : avgQuant >= 50 ? C.gold : C.red }}>{avgQuant}%</span>
-          </div>
-          <MiniBar value={avgQuant} max={100} color={C.greenBr} label={`${quantEntries.length} topics practiced`} />
-          {quantEntries.map(s => (
-            <div key={s.topic} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: `1px solid ${C.border}` }}>
-              <span style={{ color: C.textMid, fontSize: 11 }}>{s.icon} {s.label}</span>
-              <span style={{ fontFamily: 'Courier New,monospace', fontSize: 12, fontWeight: 700, color: s.pct >= 80 ? C.greenBr : s.pct >= 50 ? C.gold : C.red }}>{s.pct}%</span>
-            </div>
-          ))}
-          {quantEntries.length === 0 && <p style={{ color: C.textDim, fontSize: 11, marginTop: 8 }}>No quant practice yet</p>}
+      {/* Recommendations */}
+      <Section title="💡 Personalised Recommendations" defaultOpen={true}>
+        <div style={{ paddingTop: 14 }}>
+          <Recommendations
+            estV={estV} estQ={estQ} avgV={avgV} avgQ={avgQ}
+            weakWords={weakWords} streak={streak}
+            srStats={srStats} quantStats={quantStats}
+          />
         </div>
-      </div>
-
-      {/* Weak Areas */}
-      {(weakVerbalDays.length > 0 || weakQuantTopics.length > 0) && (
-        <div style={{
-          background: `linear-gradient(135deg, ${C.red}08, ${C.card})`,
-          border: `1px solid ${C.red}22`, borderRadius: 12, padding: '16px 18px', marginBottom: 20,
-        }}>
-          <h3 style={{ fontSize: 13, color: C.red, margin: '0 0 12px', fontWeight: 700 }}>
-            ⚠️ Focus Areas (below 70%)
-          </h3>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            {weakVerbalDays.map(s => (
-              <div key={s.day} style={{ background: C.surface, borderRadius: 8, padding: '8px 14px', border: `1px solid ${C.border}` }}>
-                <p style={{ color: C.text, fontSize: 12, fontWeight: 700, margin: 0 }}>📖 Verbal Day {s.day}</p>
-                <p style={{ color: C.red, fontSize: 11, margin: '2px 0 0', fontFamily: 'Courier New,monospace' }}>{s.pct}% ({s.correct}/{s.total})</p>
-              </div>
-            ))}
-            {weakQuantTopics.map(s => (
-              <div key={s.topic} style={{ background: C.surface, borderRadius: 8, padding: '8px 14px', border: `1px solid ${C.border}` }}>
-                <p style={{ color: C.text, fontSize: 12, fontWeight: 700, margin: 0 }}>{s.icon} {s.label}</p>
-                <p style={{ color: C.red, fontSize: 11, margin: '2px 0 0', fontFamily: 'Courier New,monospace' }}>{s.pct}% ({s.correct}/{s.total})</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Formula Mastery */}
-      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 20 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <h3 style={{ fontFamily: 'Georgia,serif', fontSize: 14, color: C.gold, margin: 0 }}>📋 Formula Mastery</h3>
-          <span style={{ fontFamily: 'Courier New,monospace', fontSize: 14, fontWeight: 700, color: C.gold }}>{masteredCount}/68</span>
-        </div>
-        <MiniBar value={masteredCount} max={68} color={C.gold} label={`${Math.round(masteredCount / 68 * 100)}% mastered`} />
-      </div>
-
-      {/* Study Recommendations */}
-      <div style={{
-        background: `linear-gradient(135deg, ${C.greenBr}08, ${C.card})`,
-        border: `1px solid ${C.greenBr}22`, borderRadius: 12, padding: '16px 18px',
-      }}>
-        <h3 style={{ fontSize: 13, color: C.greenBr, margin: '0 0 12px', fontWeight: 700 }}>💡 Recommendations</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {streak.current === 0 && (
-            <p style={{ color: C.textMid, fontSize: 12, margin: 0 }}>🔥 Start a streak today! Consistency is the #1 factor for 330+.</p>
-          )}
-          {weakWords.length > 10 && (
-            <p style={{ color: C.textMid, fontSize: 12, margin: 0 }}>📚 You have {weakWords.length} weak words. Review them daily to lock in vocabulary.</p>
-          )}
-          {masteredCount < 34 && (
-            <p style={{ color: C.textMid, fontSize: 12, margin: 0 }}>📋 Master at least 50% of formulas. You're at {Math.round(masteredCount / 68 * 100)}%.</p>
-          )}
-          {avgVerbal > 0 && avgVerbal < 75 && (
-            <p style={{ color: C.textMid, fontSize: 12, margin: 0 }}>📖 Verbal avg is {avgVerbal}%. Focus on TC patterns and word clusters.</p>
-          )}
-          {avgQuant > 0 && avgQuant < 75 && (
-            <p style={{ color: C.textMid, fontSize: 12, margin: 0 }}>📐 Quant avg is {avgQuant}%. Review concept traps and do more timed practice.</p>
-          )}
-          {daysStudied === 0 && (
-            <p style={{ color: C.textMid, fontSize: 12, margin: 0 }}>🚀 Get started! Complete your first Verbal and Quant practice sessions.</p>
-          )}
-          {avgVerbal >= 80 && avgQuant >= 80 && (
-            <p style={{ color: C.greenBr, fontSize: 12, margin: 0 }}>🎯 Both sections above 80%! Focus on timed mock exams to build stamina.</p>
-          )}
-        </div>
-      </div>
+      </Section>
     </div>
   );
 }
