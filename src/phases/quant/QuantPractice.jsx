@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { apiFetch } from '../../lib/gemini';
 import C from '../../theme';
 import { QUANT_TOPICS } from '../../data/quant-topics';
 import { recordQuantResults, saveLastSessionWrong, getLastSessionWrong, getWeakSubtopics, getQuantWeakAreas } from '../../engine/QuantErrorEngine';
@@ -80,8 +81,17 @@ function QCCard({ q, num, answer, onAnswer, checked, timed }) {
       </div>
 
       {q.info && (
-        <div style={{ background: C.bg, borderRadius: 8, padding: '10px 14px', marginBottom: 14, borderLeft: `3px solid ${C.textDim}` }}>
+        <div style={{ background: C.bg, borderRadius: 8, padding: '10px 14px', marginBottom: 10, borderLeft: `3px solid ${C.textDim}` }}>
           <p style={{ color: C.textMid, fontSize: 12, margin: 0, lineHeight: 1.7, fontStyle: 'italic' }}>{q.info}</p>
+        </div>
+      )}
+
+      {!checked && (
+        <div style={{ background: `${C.blue}08`, borderRadius: 6, padding: '7px 12px', marginBottom: 12, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+          <span style={{ color: C.blue, fontSize: 10, flexShrink: 0, marginTop: 1 }}>💡</span>
+          <p style={{ color: C.textDim, fontSize: 11, margin: 0, lineHeight: 1.5 }}>
+            QC Strategy: test x=0, x=1, x=−1, x=½, x=large. If results differ → D. Never multiply by a variable without knowing its sign.
+          </p>
         </div>
       )}
 
@@ -434,11 +444,40 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
         </div>
       </div>
 
+      {/* High Frequency Topics */}
+      {topicData.highFrequency?.length > 0 && (
+        <div style={card({ borderLeft: `3px solid ${C.gold}`, background: `linear-gradient(135deg, ${C.gold}08, ${C.card})` })}>
+          <p style={{ color: C.gold, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>⭐ High-Frequency on GRE</p>
+          {topicData.highFrequency.slice(0, 5).map((t, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+              <span style={{ color: C.gold, fontSize: 11, fontWeight: 700, minWidth: 16 }}>{i+1}.</span>
+              <p style={{ color: C.textMid, fontSize: 12, margin: 0, lineHeight: 1.5 }}>{t}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* QC Strategy (for QC-heavy topics) */}
+      {topicData.quantComparisons?.length > 0 && (
+        <div style={card({ borderLeft: `3px solid ${C.blue}`, background: `linear-gradient(135deg, ${C.blue}08, ${C.card})` })}>
+          <p style={{ color: C.blue, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>⚖️ QC Strategy — Before You Answer</p>
+          {topicData.quantComparisons.slice(0, 4).map((t, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+              <span style={{ color: C.blue, fontSize: 12 }}>→</span>
+              <p style={{ color: C.textMid, fontSize: 12, margin: 0, lineHeight: 1.5 }}>{t}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Traps */}
       <div style={card({ borderLeft: `3px solid ${C.red}`, background: `linear-gradient(135deg, ${C.red}08, ${C.card})` })}>
         <p style={{ color: C.red, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>⚠️ Common Traps</p>
-        {topicData.traps.slice(0, 3).map((t, i) => (
-          <p key={i} style={{ color: C.textMid, fontSize: 12, margin: '5px 0', lineHeight: 1.5 }}>• {t}</p>
+        {topicData.traps.slice(0, 4).map((t, i) => (
+          <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+            <span style={{ color: C.red, fontSize: 11 }}>✗</span>
+            <p style={{ color: C.textMid, fontSize: 12, margin: 0, lineHeight: 1.5 }}>{t}</p>
+          </div>
         ))}
       </div>
 
@@ -528,10 +567,19 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
             boxShadow: `0 4px 16px ${C.gold}44`,
           }}>Check All Answers →</button>
         ) : (
-          <button onClick={() => setShowReview(true)} style={{
-            padding: '12px 28px', borderRadius: 8, border: 'none',
-            background: C.gold, color: '#07090F', cursor: 'pointer', fontSize: 13, fontWeight: 700,
-          }}>View Session Analysis →</button>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button onClick={() => setShowReview(true)} style={{
+              padding: '12px 28px', borderRadius: 8, border: 'none',
+              background: `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
+              color: '#07090F', cursor: 'pointer', fontSize: 13, fontWeight: 700,
+              boxShadow: `0 4px 12px ${C.gold}33`,
+            }}>📊 Session Analysis →</button>
+            <button onClick={() => { setQs(null); setShowReview(false); }} style={{
+              padding: '12px 20px', borderRadius: 8,
+              border: `1px solid ${C.border}`, background: 'transparent',
+              color: C.textMid, cursor: 'pointer', fontSize: 13,
+            }}>↺ New Set</button>
+          </div>
         )}
       </div>
     </div>

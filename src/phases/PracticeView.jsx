@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { apiFetch } from '../lib/gemini';
 import C from '../theme';
 import { DAYS } from '../data/days';
 import { recordPractice } from '../engine/streak';

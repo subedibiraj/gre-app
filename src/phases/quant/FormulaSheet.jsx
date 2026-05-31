@@ -1,11 +1,123 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import C from '../../theme';
 import { FORMULAS } from '../../data/formulas';
+
+// ─── Formula Quick-Test Mode ───────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function QuickTest({ formulas, onExit }) {
+  const pool = shuffle(formulas.filter(f => f.note));
+  const [idx, setIdx] = React.useState(0);
+  const [revealed, setRevealed] = React.useState(false);
+  const [results, setResults] = React.useState([]);
+  const done = idx >= pool.length;
+  const f = pool[idx];
+
+  const answer = (knew) => {
+    setResults(r => [...r, { name: f.name, knew }]);
+    setRevealed(false);
+    setIdx(i => i+1);
+  };
+
+  if (done) {
+    const score = results.filter(r=>r.knew).length;
+    const pct = Math.round(score/results.length*100);
+    const forgot = results.filter(r=>!r.knew).map(r=>r.name);
+    return (
+      <div style={{ maxWidth:520, margin:'0 auto', textAlign:'center', padding:'20px 0' }}>
+        <p style={{ fontSize:44, margin:'0 0 12px' }}>{pct>=80?'🎯':pct>=60?'💪':'📚'}</p>
+        <p style={{ fontFamily:'Courier New,monospace', fontSize:36, fontWeight:700, color:C.gold, margin:'0 0 6px' }}>
+          {score}/{results.length}
+        </p>
+        <p style={{ color:C.textMid, fontSize:13, marginBottom:20 }}>
+          {pct>=80?'Formula recall is strong. Keep it there.':pct>=60?'Good base. The missed ones need one more pass.':'Focus on the missed formulas before the exam.'}
+        </p>
+        {forgot.length > 0 && (
+          <div style={{ background:`${C.red}10`, border:`1px solid ${C.red}22`, borderRadius:10, padding:'14px 18px', marginBottom:20, textAlign:'left' }}>
+            <p style={{ color:C.red, fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Review These</p>
+            {forgot.map(n=>(
+              <p key={n} style={{ color:C.textMid, fontSize:12, margin:'4px 0' }}>• {n}</p>
+            ))}
+          </div>
+        )}
+        <div style={{ display:'flex', gap:10, justifyContent:'center' }}>
+          <button onClick={onExit} style={{ padding:'10px 24px', borderRadius:8, border:`1px solid ${C.border}`, background:'transparent', color:C.textMid, cursor:'pointer', fontSize:13 }}>Back to Sheet</button>
+        </div>
+      </div>
+    );
+  }
+
+  const catColors = { Arithmetic:'#2B6FBF', Algebra:'#E4A060', Geometry:'#2EBB80', 'Data Analysis':'#9B6BDB' };
+  const fc = catColors[f._category] || C.gold;
+
+  return (
+    <div style={{ maxWidth:540, margin:'0 auto' }}>
+      {/* Progress */}
+      <div style={{ display:'flex', gap:4, marginBottom:20 }}>
+        {pool.map((_,i) => (
+          <div key={i} style={{
+            flex:1, height:4, borderRadius:2, transition:'all 0.2s',
+            background: i<idx ? (results[i]?.knew ? C.green : C.red) : i===idx ? C.gold : C.border,
+          }}/>
+        ))}
+      </div>
+
+      <div style={{ background:C.card, border:`1px solid ${revealed?fc+'44':C.border}`, borderRadius:14, padding:'28px 24px', textAlign:'center', minHeight:200, display:'flex', flexDirection:'column', justifyContent:'center', transition:'border-color 0.2s' }}>
+        {!revealed ? (
+          <>
+            <p style={{ color:C.textDim, fontSize:10, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:10 }}>
+              What is the formula for...
+            </p>
+            <p style={{ color:C.text, fontSize:22, fontWeight:700, fontFamily:'Georgia,serif', margin:'0 0 20px', lineHeight:1.4 }}>
+              {f.name}
+            </p>
+            <span style={{ display:'inline-block', padding:'3px 12px', borderRadius:20, fontSize:10, fontWeight:700, background:fc+'22', color:fc, marginBottom:20 }}>
+              {f._category}
+            </span>
+            <div style={{ display:'flex', justifyContent:'center' }}>
+              <button onClick={()=>setRevealed(true)} style={{ padding:'11px 32px', borderRadius:8, border:'none', cursor:'pointer', background:`linear-gradient(135deg, ${C.gold}, ${C.goldBr})`, color:'#07090F', fontWeight:700, fontSize:14 }}>
+                Reveal Formula
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p style={{ color:C.textDim, fontSize:12, marginBottom:6 }}>{f.name}</p>
+            <p style={{ fontFamily:'Courier New,monospace', fontSize:18, fontWeight:700, color:fc, lineHeight:1.6, margin:'0 0 12px' }}>
+              {f.formula}
+            </p>
+            {f.note && (
+              <p style={{ color:C.gold, fontSize:12, fontStyle:'italic', margin:'0 0 20px', lineHeight:1.6 }}>
+                💡 {f.note}
+              </p>
+            )}
+            <div style={{ display:'flex', gap:10, justifyContent:'center' }}>
+              <button onClick={()=>answer(false)} style={{ padding:'10px 22px', borderRadius:8, border:`1px solid ${C.red}44`, background:`${C.red}18`, color:C.red, cursor:'pointer', fontSize:13, fontWeight:700 }}>✗ Missed it</button>
+              <button onClick={()=>answer(true)}  style={{ padding:'10px 22px', borderRadius:8, border:`1px solid ${C.green}44`, background:`${C.green}18`, color:C.greenBr, cursor:'pointer', fontSize:13, fontWeight:700 }}>✓ Got it</button>
+            </div>
+          </>
+        )}
+      </div>
+      <p style={{ textAlign:'center', color:C.textDim, fontSize:11, marginTop:12 }}>
+        {idx+1} of {pool.length} formulas
+      </p>
+    </div>
+  );
+}
 
 const catColors = { Arithmetic:'#2B6FBF', Algebra:'#E4A060', Geometry:'#2EBB80', 'Data Analysis':'#9B6BDB' };
 const catIcons = { Arithmetic:'🔢', Algebra:'📐', Geometry:'📏', 'Data Analysis':'📊' };
 
 export default function FormulaSheet() {
+  const [testMode, setTestMode] = useState(false);
+
+  // For QuickTest: flatten all formulas with category tag
+  const allFormulasFlat = FORMULAS.flatMap(g => g.formulas.map(f => ({ ...f, _category: g.category })));
+
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState(null);
@@ -38,6 +150,8 @@ export default function FormulaSheet() {
 
   const visibleCount = visible.reduce((a,g) => a+g.formulas.length, 0);
 
+  if (testMode) return <QuickTest formulas={allFormulasFlat} onExit={() => setTestMode(false)} />;
+
   return (
     <div>
       {/* Header */}
@@ -50,6 +164,9 @@ export default function FormulaSheet() {
               {totalFormulas} formulas · {mastered.length} mastered · {totalFormulas-mastered.length} remaining
             </p>
           </div>
+          <button onClick={() => setTestMode(true)} style={{ padding:'6px 14px', borderRadius:8, border:`1px solid ${C.gold}44`, background:`${C.gold}15`, color:C.gold, cursor:'pointer', fontSize:11, fontWeight:700, whiteSpace:'nowrap', flexShrink:0 }}>
+            🧪 Quick Test
+          </button>
         </div>
         {/* Progress bar */}
         <div style={{ height:6, background:C.border, borderRadius:3, overflow:'hidden', marginTop:8 }}>

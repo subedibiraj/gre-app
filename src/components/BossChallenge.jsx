@@ -159,7 +159,7 @@ export default function BossChallenge({ boss, onClose }) {
       } else {
         setQIdx(i => i + 1);
       }
-    }, 650);
+    }, beaten => { }, 650);
   };
 
   const handleDefAnswer = (l) => {

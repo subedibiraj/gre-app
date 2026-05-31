@@ -4,14 +4,16 @@ import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
 import { getStreak } from './engine/streak';
 import { getSRStats } from './engine/spaced';
-import { recordScoreSnapshot } from './components/ScoreGraph';
+import { getOverallStats } from './engine/history';
 import Tag from './components/Tag';
 import AiTutor from './components/AiTutor';
 import ErrorBoundary from './components/ErrorBoundary';
 import SettingsPanel from './components/SettingsPanel';
+import { AuthButton } from './lib/auth.jsx';
 import XPBar from './components/XPBar';
 import AchievementToast from './components/AchievementToast';
 import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
+import { apiFetch } from './lib/gemini';
 import VocabView from './phases/VocabView';
 import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
@@ -112,16 +114,9 @@ export default function App() {
     addXP(correct * XP_VALUES.practice_correct + (total-correct) * XP_VALUES.practice_wrong, 'Verbal practice');
     addXP(XP_VALUES.complete_practice, 'Practice completed');
     recordActivity(total);
-    // Record score snapshot for graph
-    const vPct = total > 0 ? correct / total : 0;
-    const estV = Math.round(130 + vPct * 40);
-    const prevQ = Object.values(quantScores);
-    const avgQ = prevQ.length ? prevQ.reduce((a, s) => a + (s.total > 0 ? s.correct / s.total : 0), 0) / prevQ.length : 0;
-    const estQ = Math.round(130 + avgQ * 40);
-    recordScoreSnapshot(estV, estQ);
     const achs = checkAchievements({ practiceCompleted:true, streak:streak.current, wordsStudied:totalWords, perfectScore:correct===total });
     if(achs.length) setAchToast(achs[0]);
-  }, [streak, totalWords, quantScores]);
+  }, [streak, totalWords]);
 
   const cacheQuestionsForDay = useCallback((dayNum, qs) => {
     setCachedQs(prev => ({ ...prev, [dayNum]: qs }));
@@ -137,17 +132,10 @@ export default function App() {
     addXP(correct * XP_VALUES.practice_correct + (total-correct) * XP_VALUES.practice_wrong, 'Quant practice');
     addXP(XP_VALUES.complete_practice, 'Practice completed');
     recordActivity(total);
-    // Record score snapshot for graph
-    const qPct = total > 0 ? correct / total : 0;
-    const estQ = Math.round(130 + qPct * 40);
-    const prevV = Object.values(dayScores);
-    const avgV = prevV.length ? prevV.reduce((a, s) => { const t = Object.keys(s).filter(k => k.endsWith('Total')).reduce((sum, k) => sum + (s[k]||0), 0); const c = Object.keys(s).filter(k => !k.endsWith('Total')).reduce((sum, k) => sum + (s[k]||0), 0); return a + (t > 0 ? c / t : 0); }, 0) / prevV.length : 0;
-    const estV = Math.round(130 + avgV * 40);
-    recordScoreSnapshot(estV, estQ);
     const practiceTopics = Object.keys({...quantScores, [topicId]:true});
     const achs = checkAchievements({ practiceCompleted:true, streak:streak.current, allQuantTopics:practiceTopics.length>=4, perfectScore:correct===total });
     if(achs.length) setAchToast(achs[0]);
-  }, [streak, quantScores, dayScores]);
+  }, [streak, quantScores]);
 
   const mainContent = (
     <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif", background:C.bg, minHeight:'100vh', color:C.text, display:'flex', flexDirection:'column'}}>
@@ -241,6 +229,7 @@ export default function App() {
           <button onClick={()=>setSidebarOpen(s=>!s)} style={{display:'none', padding:'4px 8px', borderRadius:4, border:'none', cursor:'pointer', background:C.surface, color:C.textMid, fontSize:16}} className='sidebar-toggle'>☰</button>
           {/* Settings gear */}
           <button onClick={()=>setShowSettings(true)} style={{padding:'4px 8px', borderRadius:4, border:'none', cursor:'pointer', background:'transparent', color:C.textDim, fontSize:16, transition:'all 0.15s'}} title='Settings & Study Plan'>⚙️</button>
+          <AuthButton compact />
         </div>
       </div>
 
@@ -303,9 +292,6 @@ export default function App() {
                 <button onClick={()=>{setCurrentDay(0);setTab('overview');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===0?C.green+'33':'transparent', color:currentDay===0?C.greenBr:C.textMid}}>
                   <span style={{fontSize:13}}>☀️  Today's Plan</span>
                 </button>
-                <button onClick={()=>{setCurrentDay(-4);setTab('progress');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===-4?C.green+'33':'transparent', color:currentDay===-4?C.greenBr:C.textMid}}>
-                  <span style={{fontSize:13}}>📊  Progress</span>
-                </button>
               </div>
             </>
           ) : (
@@ -360,13 +346,6 @@ export default function App() {
                 <WordRelations day={DAYS.length}/>
               ) : currentDay===-3 ? (
                 <RootsModule/>
-              ) : currentDay===-4 ? (
-                <>
-                  <ScoreGraph dayScores={dayScores} quantScores={quantScores} />
-                  <div style={{marginTop:24}}>
-                    <ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay}/>
-                  </div>
-                </>
               ) : currentDay===0 ? (
                 <DailyRoadmap
                   currentDay={currentDay}

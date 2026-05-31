@@ -1,20 +1,17 @@
 {
   "name": "gre_app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "node server/index.js",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@google/genai": "^2.0.1",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
+    "@supabase/supabase-js": "^2.50.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

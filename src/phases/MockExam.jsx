@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { apiFetch } from '../lib/gemini';
 import C from '../theme';
 import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';

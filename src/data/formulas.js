@@ -45,8 +45,8 @@ export const FORMULAS = [
       },
       {
         name: 'Root Rules & Fractional Exponents',
-        formula: '√(ab)=√a·√b   √(a/b)=√a/√b   aᵐ/ⁿ=(ⁿ√a)ᵐ',
-        note: 'For 0<x<1: x² < x < √x (higher powers shrink, roots grow — the reverse of x>1). √x is only real for x≥0. ⁿ√(aᵐ) = aᵐ/ⁿ. Simplify: √48=4√3. Rationalizing: multiply by conjugate.',
+        formula: '√(ab)=√a·√b   √(a/b)=√a/√b   a^(m/n)=(ⁿ√a)ᵐ',
+        note: 'For 0<x<1: x² < x < √x (higher powers shrink, roots grow — the reverse of x>1). √x is only real for x≥0. ⁿ√(aᵐ) = a^(m/n). Simplify: √48=4√3. Rationalizing: multiply by conjugate.',
       },
       {
         name: 'Divisibility Rules — All',

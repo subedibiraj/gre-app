@@ -165,7 +165,7 @@ export const CONCEPTS = {
       core: 'Exponent laws, simplification, fractional exponents, behavior in different number ranges. GRE specifically tests 0<x<1 and negative base behavior.',
       rules: [
         'aᵐ·aⁿ = aᵐ⁺ⁿ, aᵐ÷aⁿ = aᵐ⁻ⁿ, (aᵐ)ⁿ = aᵐⁿ, (ab)ⁿ = aⁿbⁿ',
-        'a⁰ = 1 (a ≠ 0). a⁻ⁿ = 1/aⁿ. aᵐ/ⁿ = ⁿ√(aᵐ)',
+        'a⁰ = 1 (a ≠ 0). a⁻ⁿ = 1/aⁿ. a^(m/n) = ⁿ√(aᵐ)',
         'If 0 < x < 1: x² < x < √x (squaring makes smaller; rooting makes larger)',
         'If x > 1: x < x² < x³ (powers grow)',
         '(−a)ⁿ: positive if n even, negative if n odd',
@@ -191,14 +191,14 @@ export const CONCEPTS = {
           trick: 'For 0<x<1: powers decrease, roots increase, reciprocal exceeds 1. Completely opposite to x>1.',
         },
         {
-          q: 'If 3²ˣ = 81, what is x?',
+          q: 'If 3^(2x) = 81, what is x?',
           work: '81 = 3⁴. So 2x = 4, x = 2.',
           ans: 'x = 2',
           trick: 'Express the right side as a power of the same base. Then equate exponents.',
         },
         {
-          q: 'QC: x > 0. Qty A: x⅓. Qty B: x¼.',
-          work: 'Test x=1: both = 1. Test x=8: A=2, B=8¼≈1.68 → A>B. Test x=1/16: A=(1/16)⅓≈0.40, B=(1/16)¼=0.5 → B>A. Different results.',
+          q: 'QC: x > 0. Qty A: x^(1/3). Qty B: x^(1/4).',
+          work: 'Test x=1: both = 1. Test x=8: A=2, B=8^(1/4)≈1.68 → A>B. Test x=1/16: A=(1/16)^(1/3)≈0.40, B=(1/16)^(1/4)=0.5 → B>A. Different results.',
           ans: 'D (Cannot determine)',
           trick: 'Test the edge case 0<x<1 AND x>1. For 0<x<1, smaller exponent → larger value.',
         },

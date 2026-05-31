@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { apiFetch } from '../../lib/gemini';
 import C from '../../theme';
 import { recordQuantResults, saveLastSessionWrong, getQuantWeakAreas } from '../../engine/QuantErrorEngine';
 import { recordScoreSnapshot } from '../../components/ScoreGraph';
@@ -329,7 +330,20 @@ export default function QuantMock() {
     const total = qc + mc + mcm + ne;
     const max   = (exam.qc?.length || 0) + (exam.mc?.length || 0) + (exam.mcm?.length || 0) + (exam.ne?.length || 0);
     const pct   = max > 0 ? total / max : 0;
-    const scaledScore = Math.round(130 + pct * 40);
+    // Non-linear ETS GRE score scale
+    const scalePct = (p) => {
+      const bands = [
+        [0.00,0.10,130,133],[0.10,0.18,133,136],[0.18,0.26,136,139],[0.26,0.34,139,142],
+        [0.34,0.42,142,145],[0.42,0.50,145,148],[0.50,0.56,148,151],[0.56,0.62,151,153],
+        [0.62,0.68,153,155],[0.68,0.73,155,157],[0.73,0.78,157,159],[0.78,0.82,159,161],
+        [0.82,0.86,161,163],[0.86,0.90,163,165],[0.90,0.93,165,167],[0.93,0.96,167,168],
+        [0.96,0.99,168,169],[0.99,1.01,169,170],
+      ];
+      const b = bands.find(([lo,hi])=>p>=lo&&p<hi)||bands[bands.length-1];
+      const t = b[1]===b[0]?1:(p-b[0])/(b[1]-b[0]);
+      return Math.round(b[2]+t*(b[3]-b[2]));
+    };
+    const scaledScore = scalePct(pct);
     return { qc, mc, mcm, ne, total, max, pct, scaledScore, qcMax: exam.qc?.length || 0, mcMax: exam.mc?.length || 0, mcmMax: exam.mcm?.length || 0, neMax: exam.ne?.length || 0 };
   };
 
