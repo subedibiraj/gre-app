@@ -28,9 +28,16 @@ export default function SettingsPanel({ open, onClose }) {
     : null;
 
   const saveKey = () => {
-    setGeminiKey(geminiKey);
+    const trimmed = geminiKey.trim();
+    setGeminiKey(trimmed);          // writes to localStorage
+    setGeminiKeyState(trimmed);     // keep state in sync
     setKeySaved(true);
-    setTimeout(() => setKeySaved(false), 2000);
+    setTimeout(() => setKeySaved(false), 2500);
+  };
+
+  // Also save on Enter key
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') saveKey();
   };
 
   const clearKey = () => {
@@ -166,6 +173,7 @@ export default function SettingsPanel({ open, onClose }) {
                 type={keyVisible ? 'text' : 'password'}
                 value={geminiKey}
                 onChange={e => setGeminiKeyState(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="AIza..."
                 style={{
                   width: '100%', padding: '9px 40px 9px 14px',
@@ -182,20 +190,25 @@ export default function SettingsPanel({ open, onClose }) {
                 {keyVisible ? '🙈' : '👁'}
               </button>
             </div>
-            <Btn small onClick={saveKey}>
-              {keySaved ? '✓ Saved' : 'Save'}
+            <Btn small onClick={saveKey} style={{ background: keySaved ? '#24976A' : undefined }}>
+              {keySaved ? '✓ Saved!' : 'Save Key'}
             </Btn>
             {geminiKey && (
               <Btn small variant="ghost" onClick={clearKey}>Clear</Btn>
             )}
           </div>
           {geminiKey ? (
-            <p style={{ color: C.greenBr, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span>✓</span> Key configured — AI features active
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <p style={{ color: C.greenBr, fontSize: 11 }}>
+                ✓ Key saved — AI features active
+              </p>
+              <p style={{ color: C.textDim, fontSize: 10, fontFamily: 'Courier New, monospace' }}>
+                {geminiKey.slice(0, 8)}...
+              </p>
+            </div>
           ) : (
             <p style={{ color: C.red, fontSize: 11 }}>
-              ✗ No key — AI generation will fail
+              ✗ No key set — paste your key above and click Save Key
             </p>
           )}
         </Card>

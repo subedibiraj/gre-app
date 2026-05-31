@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   try {
     const apiKey = getGeminiKey(req);
     if (!apiKey) {
-      return res.status(500).json({ error: 'No Gemini API key configured. Add it in Settings.' });
+      return res.status(400).json({ error: 'No Gemini API key found. Go to Settings (⚙️) and paste your key from aistudio.google.com/apikey' });
     }
 
     const { dayNum, theme, currentWords, allWords, weakWords, scores } = req.body;

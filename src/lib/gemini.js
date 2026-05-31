@@ -1,20 +1,21 @@
 // ─── GEMINI API KEY MANAGEMENT ────────────────────────────────────────────────
-// Key priority: localStorage (user-set in Settings) → env variable (Vercel)
-// The key is sent in the x-gemini-key header to all API routes.
-// The server reads it from that header, falling back to its own env var.
-
 const GEMINI_KEY_STORAGE = 'gre_gemini_key';
 
 export function getGeminiKey() {
-  return localStorage.getItem(GEMINI_KEY_STORAGE) || '';
+  try {
+    return localStorage.getItem(GEMINI_KEY_STORAGE)?.trim() || '';
+  } catch { return ''; }
 }
 
 export function setGeminiKey(key) {
-  if (key) {
-    localStorage.setItem(GEMINI_KEY_STORAGE, key.trim());
-  } else {
-    localStorage.removeItem(GEMINI_KEY_STORAGE);
-  }
+  try {
+    const trimmed = (key || '').trim();
+    if (trimmed) {
+      localStorage.setItem(GEMINI_KEY_STORAGE, trimmed);
+    } else {
+      localStorage.removeItem(GEMINI_KEY_STORAGE);
+    }
+  } catch (e) { console.error('Failed to save Gemini key:', e); }
 }
 
 export function hasGeminiKey() {
@@ -22,10 +23,9 @@ export function hasGeminiKey() {
 }
 
 // ─── API FETCH HELPER ─────────────────────────────────────────────────────────
-// Wraps all API calls to inject the Gemini key header automatically.
-
 export async function apiFetch(endpoint, body) {
   const key = getGeminiKey();
+
   const headers = { 'Content-Type': 'application/json' };
   if (key) headers['x-gemini-key'] = key;
 
@@ -35,10 +35,11 @@ export async function apiFetch(endpoint, body) {
     body: JSON.stringify(body),
   });
 
+  const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-    throw new Error(err.error || `Request failed: ${res.status}`);
+    throw new Error(data.error || `Request failed: ${res.status}`);
   }
 
-  return res.json();
+  return data;
 }

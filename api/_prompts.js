@@ -60,6 +60,9 @@ WRONG ANSWER CONSTRUCTION:
 `;
 
 export function getGeminiKey(req) {
-  // Priority: request header (user-supplied) → environment variable
-  return req.headers['x-gemini-key'] || process.env.GEMINI_API_KEY || '';
+  // Vercel normalizes headers to lowercase
+  const userKey = (req.headers['x-gemini-key'] || '').trim();
+  const envKey = (process.env.GEMINI_API_KEY || '').trim();
+  const key = userKey || envKey;
+  return key;
 }

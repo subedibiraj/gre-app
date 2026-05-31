@@ -194,13 +194,13 @@ export default function App() {
         </div>
         <div style={{marginLeft:'auto', display:'flex', gap:12, alignItems:'center'}}>
           {streak.current > 0 && (
-            <div style={{display:'flex', alignItems:'center', gap:6, background:C.goldDim+'33', border:`1px solid ${C.goldDim}`, borderRadius:20, padding:'4px 12px'}}>
+            <div className="header-streak" style={{display:'flex', alignItems:'center', gap:6, background:C.goldDim+'33', border:`1px solid ${C.goldDim}`, borderRadius:20, padding:'4px 12px'}}>
               <span style={{fontSize:16}}>🔥</span>
               <span style={{fontFamily:'Courier New,monospace', fontWeight:700, fontSize:14, color:C.gold}}>{streak.current}</span>
               <span style={{color:C.textDim, fontSize:10}}>day{streak.current!==1?'s':''}</span>
             </div>
           )}
-          <button onClick={()=>setShowDailySession(true)} style={{padding:'5px 12px', borderRadius:6, border:`1px solid ${C.gold}33`, background:`${C.gold}15`, color:C.gold, cursor:'pointer', fontSize:11, fontWeight:700, transition:'all 0.15s'}}>📅 Study</button>
+          <button className="header-study-btn" onClick={()=>setShowDailySession(true)} style={{padding:'5px 12px', borderRadius:6, border:`1px solid ${C.gold}33`, background:`${C.gold}15`, color:C.gold, cursor:'pointer', fontSize:11, fontWeight:700, transition:'all 0.15s'}}>📅 Study</button>
           {weakWords.length > 0 && (
             <button onClick={() => setShowWeakBlitz(true)} style={{
               padding:'5px 12px', borderRadius:6, border:`1px solid ${C.red}44`,
@@ -234,6 +234,11 @@ export default function App() {
       </div>
 
       <div style={{display:'flex', flex:1, overflow:'hidden'}}>
+
+        {/* Sidebar backdrop for mobile */}
+        {sidebarOpen && (
+          <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+        )}
 
         {/* ═══ SIDEBAR ═══ */}
         <div className='app-sidebar' style={{width:sidebarOpen?190:0, borderRight:sidebarOpen?`1px solid ${C.border}`:'none', padding:sidebarOpen?'16px 10px':'0', overflowY:'auto', overflowX:'hidden', flexShrink:0, background:C.surface, display:'flex', flexDirection:'column', gap:4, transition:'width 0.2s ease, padding 0.2s ease'}}>
@@ -334,7 +339,7 @@ export default function App() {
         </div>
 
         {/* ═══ MAIN CONTENT ═══ */}
-        <div style={{flex:1, overflow:'auto', padding:'24px 28px 100px'}}>
+        <div className="main-content" style={{flex:1, overflow:'auto', padding:'24px 28px 100px'}}>
          <ErrorBoundary>
 
           {section === 'verbal' ? (
@@ -436,6 +441,25 @@ export default function App() {
       <SettingsPanel open={showSettings} onClose={()=>setShowSettings(false)}/>
       <AchievementToast achievement={achToast} onDone={()=>setAchToast(null)}/>
       <AiTutor/>
+
+      {/* ═══ MOBILE BOTTOM NAV ═══ */}
+      <nav className="mobile-bottom-nav">
+        <button className={section==='verbal'?'active':''} onClick={()=>{setSection('verbal');setSidebarOpen(false);}}>
+          <span className="icon">📖</span>Verbal
+        </button>
+        <button className={section==='quant'?'active':''} onClick={()=>{setSection('quant');setSidebarOpen(false);}}>
+          <span className="icon">📐</span>Quant
+        </button>
+        <button onClick={()=>setSidebarOpen(s=>!s)}>
+          <span className="icon">☰</span>Days
+        </button>
+        <button onClick={()=>setShowDailySession(true)}>
+          <span className="icon">📅</span>Plan
+        </button>
+        <button onClick={()=>setShowSettings(true)}>
+          <span className="icon">⚙️</span>Settings
+        </button>
+      </nav>
     </div>
   );
 

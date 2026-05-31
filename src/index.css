@@ -1,8 +1,7 @@
-/* ─── GRE VERBAL APP — GLOBAL STYLES ───────────────────────────────────────── */
+/* ─── GRE COMPLETE — GLOBAL STYLES ─────────────────────────────────────────── */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* ─── CSS Custom Properties (from theme.js palette) ─── */
 :root {
   --bg:       #07090F;
   --surface:  #0C1220;
@@ -25,19 +24,15 @@
   --blue-bg:  #080F22;
 }
 
-/* ─── Reset & Base ─── */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ─── Reset ─── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent font scaling in landscape on iOS */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -46,145 +41,176 @@ body {
   color: var(--text);
   line-height: 1.5;
   min-height: 100vh;
+  min-height: 100dvh; /* dynamic viewport on mobile (accounts for browser chrome) */
   overflow-x: hidden;
 }
 
-#root {
-  min-height: 100vh;
-}
+#root { min-height: 100vh; min-height: 100dvh; }
 
-/* ─── Scrollbar Styling ─── */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hi);
-}
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hi); }
 
 /* ─── Selection ─── */
-::selection {
-  background: var(--gold);
-  color: var(--bg);
-}
+::selection { background: var(--gold); color: var(--bg); }
 
-/* ─── Focus States ─── */
-input:focus,
-button:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-}
+/* ─── Focus ─── */
+input:focus, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+button:focus:not(:focus-visible) { outline: none; }
 
-button:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* ─── Transitions ─── */
-button {
-  transition: all 0.15s ease;
-}
-
-button:hover:not(:disabled) {
-  filter: brightness(1.1);
-}
-
-button:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-/* ─── Typing Animation for AI Tutor ─── */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.typing-dots::after {
-  content: '...';
-  animation: blink 1.2s ease-in-out infinite;
-}
-
-/* ─── Subtle Fade In for content ─── */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ─── Card hover effect ─── */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
+/* ─── Buttons ─── */
+button { transition: all 0.15s ease; }
+button:hover:not(:disabled) { filter: brightness(1.1); }
+button:active:not(:disabled) { transform: scale(0.97); }
 
 /* ─── Links ─── */
-a {
-  color: var(--gold);
-  text-decoration: none;
-  transition: color 0.15s;
+a { color: var(--gold); text-decoration: none; transition: color 0.15s; }
+a:hover { color: var(--gold-br); }
+
+/* ─── Animations ─── */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+.typing-dots::after { content: '...'; animation: blink 1.2s ease-in-out infinite; }
+.fade-in { animation: fadeIn 0.25s ease-out; }
+
+/* ─── Table ─── */
+table { border-spacing: 0; }
+
+/* ════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE
+════════════════════════════════════════════════════════════ */
+
+/* ── Sidebar: desktop always visible, mobile overlay ── */
+.app-sidebar {
+  transition: width 0.2s ease, padding 0.2s ease, transform 0.2s ease;
 }
 
-a:hover {
-  color: var(--gold-br);
+.sidebar-toggle { display: none !important; }
+
+/* ── Tab bars: allow horizontal scroll on small screens ── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-bar button { flex-shrink: 0; }
+
+/* ── Main content area ── */
+.main-content {
+  flex: 1;
+  overflow: auto;
+  padding: 24px 28px 100px;
 }
 
-/* ─── Table base ─── */
-table {
-  border-spacing: 0;
-}
-
-/* ─── Responsive adjustments ─── */
 @media (max-width: 768px) {
-  body {
-    font-size: 14px;
-  }
+  html { font-size: 15px; }
 
+  /* Sidebar becomes a fixed overlay on mobile */
   .app-sidebar {
     position: fixed !important;
-    left: 0;
-    top: 56px;
-    bottom: 0;
-    z-index: 18;
-    width: 220px !important;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.4);
+    left: 0 !important;
+    top: 52px !important;
+    bottom: 0 !important;
+    z-index: 50 !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+    overflow-y: auto;
   }
 
-  .sidebar-toggle {
-    display: inline-flex !important;
+  /* Show hamburger on mobile */
+  .sidebar-toggle { display: inline-flex !important; }
+
+  /* Overlay backdrop when sidebar open */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: 52px;
+    background: rgba(0,0,0,0.5);
+    z-index: 49;
+    backdrop-filter: blur(2px);
   }
+
+  /* Tighter main content padding on mobile */
+  .main-content {
+    padding: 16px 14px 90px !important;
+  }
+
+  /* Header: hide non-essential items */
+  .header-streak { display: none !important; }
+  .header-study-btn { display: none !important; }
+  .header-mastered { display: none !important; }
 }
 
 @media (max-width: 480px) {
+  html { font-size: 14px; }
+
   .app-sidebar {
     width: 100vw !important;
   }
+
+  /* Full-width cards on very small screens */
+  .main-content {
+    padding: 12px 10px 80px !important;
+  }
+
+  /* Bottom nav bar for mobile */
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
 }
 
-/* ─── Smooth content transitions ─── */
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
+/* ── Bottom navigation for mobile ── */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 0;
+  height: 56px;
 }
 
-/* ─── Spinner animation ─── */
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.mobile-bottom-nav button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 4px;
+  transition: color 0.15s;
+  filter: none !important;
 }
 
-/* ─── Pulse for urgency ─── */
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+.mobile-bottom-nav button.active {
+  color: var(--gold);
 }
 
-/* ─── Print styles ─── */
+.mobile-bottom-nav button span.icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ── Print ── */
 @media print {
   body { background: white; color: black; }
-  .app-sidebar, .sidebar-toggle, button { display: none !important; }
+  .app-sidebar, .sidebar-toggle, button, .mobile-bottom-nav { display: none !important; }
 }
