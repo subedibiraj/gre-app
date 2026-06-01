@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { apiFetch } from '../../lib/gemini';
+import { apiFetch, hasGeminiKey } from '../../lib/gemini';
+import { QuantLoadingSkeleton } from '../../components/LoadingSkeleton';
 import C from '../../theme';
 import { QUANT_TOPICS } from '../../data/quant-topics';
 import { recordQuantResults, saveLastSessionWrong, getLastSessionWrong, getWeakSubtopics, getQuantWeakAreas } from '../../engine/QuantErrorEngine';
@@ -359,15 +360,11 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
     setShowReview(false);
     try {
       const weakAreas = getWeakSubtopics(4);
-      const res = await fetch('/api/quant-generate', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const _qs = await apiFetch('/api/quant-generate', {
           topicId: topicData.id, topicLabel: topicData.label,
           subtopics: topicData.subtopics, weakAreas,
-        }),
       });
-      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || `Error: ${res.status}`); }
-      setQs(await res.json());
+      setQs(_qs.json());
     } catch (e) { setError(e.message); }
     setLoading(false);
   }, [topicData]);
@@ -482,8 +479,17 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
       </div>
 
       {error && <p style={{ color: C.red, textAlign: 'center', margin: '12px 0' }}>{error}</p>}
+      {!hasGeminiKey() && (
+        <div style={{ background:`${C.gold}10`, border:`1px solid ${C.gold}33`, borderRadius:10, padding:'14px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:12 }}>
+          <span style={{ fontSize:20 }}>🔑</span>
+          <div style={{ flex:1 }}>
+            <p style={{ color:C.gold, fontSize:13, fontWeight:700, margin:'0 0 2px' }}>Gemini API Key Required</p>
+            <p style={{ color:C.textDim, fontSize:12, margin:0 }}>Add your key in ⚙️ Settings to generate AI questions. <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" style={{ color:C.gold }}>Get free key →</a></p>
+          </div>
+        </div>
+      )}
       <div style={{ textAlign: 'center', marginTop: 16 }}>
-        <button onClick={generate} style={{
+        <button onClick={generate} disabled={!hasGeminiKey()} style={{
           padding: '13px 36px', borderRadius: 10, border: 'none', cursor: 'pointer',
           background: `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`, color: '#07090F',
           fontWeight: 700, fontSize: 14, fontFamily: 'Georgia,serif',

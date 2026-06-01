@@ -74,6 +74,16 @@ export default function App() {
     }
   }, [section, currentDay, quantPage]);
 
+  // ─── Online/offline detection ──────────────────────────────────────────────
+  const [offline, setOffline] = useState(!navigator.onLine);
+  useEffect(() => {
+    const on  = () => setOffline(false);
+    const off = () => setOffline(true);
+    window.addEventListener('online', on);
+    window.addEventListener('offline', off);
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
+  }, []);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handler = (e) => {
@@ -441,6 +451,19 @@ export default function App() {
       <SettingsPanel open={showSettings} onClose={()=>setShowSettings(false)}/>
       <AchievementToast achievement={achToast} onDone={()=>setAchToast(null)}/>
       <AiTutor/>
+
+      {/* ─── Offline toast ─── */}
+      {offline && (
+        <div style={{
+          position:'fixed', top:60, left:'50%', transform:'translateX(-50%)', zIndex:500,
+          background:'#1C0808', border:'1px solid #B5302844', borderRadius:8,
+          padding:'8px 16px', display:'flex', alignItems:'center', gap:8,
+          boxShadow:'0 4px 20px rgba(0,0,0,0.4)', whiteSpace:'nowrap',
+        }}>
+          <span>📡</span>
+          <span style={{ color:'#B53028', fontSize:12, fontWeight:600 }}>No internet connection</span>
+        </div>
+      )}
 
       {/* ═══ MOBILE BOTTOM NAV ═══ */}
       <nav className="mobile-bottom-nav">

@@ -5,8 +5,10 @@ export default function Btn({ children, onClick, variant='primary', disabled, sm
     border:'none', cursor: disabled ? 'not-allowed' : 'pointer',
     fontFamily:'Georgia,serif', fontWeight:700, letterSpacing:'0.04em',
     borderRadius:6, transition:'all 0.15s',
-    padding: small ? '6px 14px' : '10px 22px',
-    fontSize: small ? 12 : 13,
+    padding: small ? '8px 14px' : '11px 22px',
+    fontSize: small ? 13 : 14,  // 13px+ prevents iOS zoom
+    minHeight: small ? 36 : 44, // 44px minimum touch target
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     opacity: disabled ? 0.4 : 1, ...style,
   };
   const v = {

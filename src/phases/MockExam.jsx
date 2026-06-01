@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { apiFetch } from '../lib/gemini';
+import { apiFetch, hasGeminiKey } from '../lib/gemini';
 import C from '../theme';
 import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';
@@ -430,16 +430,7 @@ export default function MockExam() {
     setRCAnswers({});
 
     try {
-      const res = await fetch('/api/mock-exam', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `Server error: ${res.status}`);
-      }
-      const data = await res.json();
+      const data = await apiFetch('/api/mock-exam', {});
       setExam(data);
       setTimerActive(true);
     } catch (e) {

@@ -214,3 +214,108 @@ table { border-spacing: 0; }
   body { background: white; color: black; }
   .app-sidebar, .sidebar-toggle, button, .mobile-bottom-nav { display: none !important; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   ADDITIONAL MOBILE FIXES
+════════════════════════════════════════════════════════════ */
+
+/* Prevent text overflow in cards */
+.word-card p, .word-card span { word-break: break-word; }
+
+/* Quant QC grid: stack on very small screens */
+@media (max-width: 380px) {
+  .qc-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .qc-vs {
+    display: none !important;
+  }
+}
+
+/* Stem renderer blanks: full width on mobile */
+@media (max-width: 480px) {
+  .stem-blank {
+    min-width: 80px !important;
+  }
+}
+
+/* Answer options: comfortable tap targets */
+.answer-option {
+  min-height: 48px;
+  padding: 12px 14px;
+}
+
+/* Inputs: always 16px to prevent iOS zoom */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* Modals: full-screen on mobile */
+@media (max-width: 540px) {
+  .modal-panel {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-height: 100dvh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+/* Score/stat grids: 2-col on mobile */
+@media (max-width: 480px) {
+  .stat-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .stat-grid-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* XP bar: hide label text on small screens */
+@media (max-width: 360px) {
+  .xp-label { display: none !important; }
+}
+
+/* Boss challenge modal: ensure scrollable */
+@media (max-width: 540px) {
+  .boss-modal {
+    max-height: 100dvh !important;
+    overflow-y: auto !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Prevent horizontal scroll bleed */
+.main-content > * {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Better tap highlight */
+@media (hover: none) {
+  button:active {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+  /* Remove hover effects on touch */
+  button:hover {
+    filter: none !important;
+  }
+}
+
+/* Safe area insets for iPhone notch/home bar */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(56px + env(safe-area-inset-bottom));
+  }
+  .main-content {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom)) !important;
+  }
+}

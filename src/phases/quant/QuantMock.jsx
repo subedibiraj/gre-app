@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { apiFetch } from '../../lib/gemini';
+import { apiFetch, hasGeminiKey } from '../../lib/gemini';
 import C from '../../theme';
 import { recordQuantResults, saveLastSessionWrong, getQuantWeakAreas } from '../../engine/QuantErrorEngine';
 import { recordScoreSnapshot } from '../../components/ScoreGraph';
@@ -283,9 +283,7 @@ export default function QuantMock() {
     setQCA({}); setMCA({}); setMCMA({}); setNEA({});
     setFlagged(new Set()); setCurrentQ(null);
     try {
-      const res = await fetch('/api/quant-mock', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || `Error: ${res.status}`); }
-      const data = await res.json();
+      const data = await apiFetch('/api/quant-mock', {});
       setExam(data);
       setTimerActive(true);
       // set first Q

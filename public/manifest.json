@@ -1,0 +1,13 @@
+{
+  "name": "GRE Complete",
+  "short_name": "GRE",
+  "description": "AI-powered GRE prep for Verbal 165+ and Quant 165+",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07090F",
+  "theme_color": "#C8A535",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

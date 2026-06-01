@@ -1,13 +1,28 @@
 import C from '../theme';
 
-export default function Input({ value, onChange, placeholder, correct, checked }) {
+export default function Input({ value, onChange, placeholder, correct, checked, style = {} }) {
   const borderColor = !checked ? C.border : correct ? C.green : C.red;
   const bg = !checked ? C.surface : correct ? C.greenBg : C.redBg;
   return (
-    <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      style={{ width:'100%', background:bg, border:`1px solid ${borderColor}`,
-        borderRadius:6, padding:'8px 12px', color:C.text, fontFamily:'Courier New, monospace',
-        fontSize:13, fontWeight:700, letterSpacing:'0.1em', outline:'none',
-        textTransform:'uppercase', boxSizing:'border-box', transition:'all 0.2s' }} />
+    <input
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      placeholder={placeholder}
+      style={{
+        width: '100%',
+        padding: '10px 14px',
+        borderRadius: 8,
+        border: `1.5px solid ${borderColor}`,
+        background: bg,
+        color: C.text,
+        fontSize: 16,        // 16px prevents iOS auto-zoom
+        fontFamily: 'inherit',
+        outline: 'none',
+        transition: 'border-color 0.2s',
+        minHeight: 44,       // touch target
+        boxSizing: 'border-box',
+        ...style,
+      }}
+    />
   );
 }
