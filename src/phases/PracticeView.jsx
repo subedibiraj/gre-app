@@ -101,13 +101,12 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
       </div>
     );
 
-    if (!qs) {
     if (!hasGeminiKey()) return (
       <div style={{ textAlign:'center', padding:'40px 20px', background:C.card, borderRadius:14, border:`1px solid ${C.border}` }}>
         <p style={{ fontSize:36, margin:'0 0 12px' }}>🔑</p>
         <h3 style={{ fontFamily:'Georgia,serif', color:C.gold, fontSize:18, marginBottom:8 }}>Gemini API Key Required</h3>
         <p style={{ color:C.textMid, fontSize:13, lineHeight:1.7, marginBottom:16, maxWidth:340, margin:'0 auto 16px' }}>
-          AI question generation needs a Gemini API key. It is free and takes 30 seconds to get.
+          AI question generation needs a free Gemini API key.
         </p>
         <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer"
           style={{ display:'inline-block', padding:'10px 20px', borderRadius:8, background:`${C.gold}22`, color:C.gold, border:`1px solid ${C.gold}44`, fontSize:13, fontWeight:700, marginBottom:12, textDecoration:'none' }}>
@@ -116,7 +115,8 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
         <p style={{ color:C.textDim, fontSize:12, marginTop:8 }}>Then paste it in Settings</p>
       </div>
     );
-    return (
+
+    if (!qs) return (
       <div style={{padding:30, textAlign:'center'}}>
         <p style={{color:C.textMid, fontSize:14, marginBottom:8}}>AI-generated practice adapted to your performance</p>
         <p style={{color:C.textMid, fontSize:13, marginBottom:4}}>5 VIC + 4 TC + 3 SE + 1 RC passage</p>
@@ -127,7 +127,7 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
             <p style={{color:C.textMid, fontSize:11, fontFamily:'Courier New,monospace'}}>{weakWords.slice(0,10).join(' · ')}</p>
           </div>
         )}
-        <div><Btn onClick={load}>Generate AI Questions ⚡</Btn></div>
+        <div><Btn onClick={load}>Generate AI Questions</Btn></div>
       </div>
     );
 
