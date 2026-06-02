@@ -96,7 +96,7 @@ function QCCard({ q, num, answer, onAnswer, checked, timed }) {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 44px 1fr', gap: 0, marginBottom: 16, alignItems: 'stretch' }}>
+      <div className="qc-grid-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 44px 1fr', gap: 0, marginBottom: 16, alignItems: 'stretch' }}>
         <div style={{ background: `linear-gradient(135deg, ${C.blue}15, ${C.blue}06)`, borderRadius: '10px 0 0 10px', padding: '16px 18px', textAlign: 'center', border: `1px solid ${checked && q.answer === 'A' ? C.green : C.blue}22` }}>
           <p style={{ color: C.blue, fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 6 }}>Quantity A</p>
           <p style={{ color: C.text, fontSize: 16, fontWeight: 700, margin: 0, fontFamily: 'Georgia,serif', lineHeight: 1.5 }}>{q.qtyA}</p>

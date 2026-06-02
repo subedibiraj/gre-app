@@ -71,11 +71,12 @@ export default function WarmupModal({ onClose }) {
       background: 'rgba(7,9,15,0.92)', backdropFilter: 'blur(10px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <div style={{
+      <div className="modal-inner" style={{
         width: 500, maxWidth: '92vw',
         background: C.surface, border: `1px solid ${C.border}`,
         borderRadius: 18, overflow: 'hidden',
         boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
+        // mobile: see .modal-inner in CSS
       }}>
 
         {/* ── Header ── */}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import C from './theme';
 import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
@@ -32,15 +32,16 @@ import BossChallenge, { getBossStatus, getBossResult, BOSSES } from './component
 import WeakWordBlitz from './components/WeakWordBlitz';
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 
-// ─── PERSISTENCE HELPERS ──────────────────────────────────────────────────────
-const loadJSON = (key, fallback) => {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
-  catch { return fallback; }
-};
-const saveJSON = (key, val) => localStorage.setItem(key, JSON.stringify(val));
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const loadJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
+const saveJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
+// ─── MOBILE DETECTION ─────────────────────────────────────────────────────────
+const isMobile = () => window.innerWidth < 768;
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [section, setSection]       = useState('verbal'); // verbal | quant
+  const [section, setSection]       = useState('verbal');
   const [currentDay, setCurrentDay] = useState(1);
   const [tab, setTab]               = useState('vocab');
   const [weakWords, setWeakWords]   = useState(() => loadJSON('gre_weakWords', []));
@@ -48,503 +49,532 @@ export default function App() {
   const [cachedQs, setCachedQs]     = useState({});
   const [quantPage, setQuantPage]   = useState(null);
   const [quantScores, setQuantScores] = useState(() => loadJSON('gre_quantScores', {}));
-  const [quantTab, setQuantTab]     = useState('learn'); // learn | practice
+  const [quantTab, setQuantTab]     = useState('learn');
   const [achToast, setAchToast]     = useState(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showDailySession, setShowDailySession] = useState(false);
   const [showMorningDrill, setShowMorningDrill] = useState(() => {
     const key = `gre_drill_${new Date().toDateString()}`;
     return !sessionStorage.getItem(key);
   });
-  const [showBoss, setShowBoss]             = useState(null);
-  const [showWeakBlitz, setShowWeakBlitz]   = useState(false);
+  const [showBoss, setShowBoss]           = useState(null);
+  const [showWeakBlitz, setShowWeakBlitz] = useState(false);
+  const [drawerOpen, setDrawerOpen]       = useState(false); // mobile day/topic drawer
+  const [offline, setOffline]             = useState(!navigator.onLine);
+  const mainRef = useRef(null);
 
-  // Dynamic page title
+  // ─── Document title ──────────────────────────────────────────────────────────
   useEffect(() => {
     const base = 'GRE Complete';
     if (section === 'verbal') {
       if (currentDay > 0) document.title = `${base} — Day ${currentDay}: ${DAYS[currentDay-1]?.theme}`;
       else if (currentDay === -1) document.title = `${base} — Verbal Mock`;
-      else document.title = `${base} — Verbal`;
+      else document.title = base;
     } else {
-      if (quantPage === 'mock') document.title = `${base} — Quant Mock`;
-      else if (quantPage) document.title = `${base} — ${quantPage}`;
-      else document.title = `${base} — Quant`;
+      document.title = quantPage ? `${base} — ${quantPage}` : `${base} — Quant`;
     }
   }, [section, currentDay, quantPage]);
 
-  // ─── Online/offline detection ──────────────────────────────────────────────
-  const [offline, setOffline] = useState(!navigator.onLine);
+  // ─── Online/offline ───────────────────────────────────────────────────────────
   useEffect(() => {
-    const on  = () => setOffline(false);
+    const on = () => setOffline(false);
     const off = () => setOffline(true);
     window.addEventListener('online', on);
     window.addEventListener('offline', off);
     return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
   }, []);
 
-  // Keyboard shortcuts
+  // ─── Scroll to top on navigation ─────────────────────────────────────────────
   useEffect(() => {
-    const handler = (e) => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [section, currentDay, tab, quantPage, quantTab]);
+
+  // ─── Close drawer on navigation ──────────────────────────────────────────────
+  useEffect(() => { setDrawerOpen(false); }, [section, currentDay, quantPage]);
+
+  // ─── Keyboard shortcuts ───────────────────────────────────────────────────────
+  useEffect(() => {
+    const h = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      const key = e.key.toLowerCase();
-      if (key === 'escape') { setShowSettings(false); return; }
-      if (key === 'v') { setSection('verbal'); setCurrentDay(1); setTab('vocab'); return; }
-      if (key === 'q') { setSection('quant'); setQuantPage(null); return; }
-      if (key === 'p' && section === 'verbal' && currentDay > 0) { setTab('practice'); return; }
-      if (key >= '1' && key <= '9' && section === 'verbal') { setCurrentDay(parseInt(key)); setTab('vocab'); return; }
+      const k = e.key.toLowerCase();
+      if (k === 'escape') { setShowSettings(false); setDrawerOpen(false); return; }
+      if (k === 'v') { setSection('verbal'); setCurrentDay(1); setTab('vocab'); return; }
+      if (k === 'q') { setSection('quant'); setQuantPage(null); return; }
+      if (k === 'p' && section === 'verbal' && currentDay > 0) { setTab('practice'); return; }
+      if (k >= '1' && k <= '9' && section === 'verbal') { setCurrentDay(parseInt(k)); setTab('vocab'); return; }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
   }, [section, currentDay]);
 
-  const streak = getStreak();
+  const streak  = getStreak();
   const srStats = getSRStats();
   const totalWords = DAYS.flatMap(d => d.words).length;
   const day = currentDay > 0 ? DAYS[currentDay-1] : null;
 
-  // ─── Verbal callbacks ───
+  // ─── Callbacks ────────────────────────────────────────────────────────────────
   const addWeakWords = useCallback((words) => {
     setWeakWords(prev => {
-      const s = new Set([...prev, ...words]);
-      const next = [...s];
+      const next = [...new Set([...prev, ...words])];
       saveJSON('gre_weakWords', next);
       return next;
     });
   }, []);
 
-  const updateScore = useCallback((dayNum, section, correct, total) => {
+  const updateScore = useCallback((dayNum, sec, correct, total) => {
     setDayScores(prev => {
-      const next = { ...prev, [dayNum]: { ...prev[dayNum], [section]: correct, [`${section}Total`]: total } };
+      const next = { ...prev, [dayNum]: { ...prev[dayNum], [sec]: correct, [`${sec}Total`]: total } };
       saveJSON('gre_dayScores', next);
       return next;
     });
-    // Award XP
-    addXP(correct * XP_VALUES.practice_correct + (total-correct) * XP_VALUES.practice_wrong, 'Verbal practice');
+    addXP(correct * XP_VALUES.practice_correct + (total - correct) * XP_VALUES.practice_wrong, 'Verbal practice');
     addXP(XP_VALUES.complete_practice, 'Practice completed');
     recordActivity(total);
-    const achs = checkAchievements({ practiceCompleted:true, streak:streak.current, wordsStudied:totalWords, perfectScore:correct===total });
-    if(achs.length) setAchToast(achs[0]);
+    const achs = checkAchievements({ practiceCompleted: true, streak: streak.current, wordsStudied: totalWords, perfectScore: correct === total });
+    if (achs.length) setAchToast(achs[0]);
   }, [streak, totalWords]);
 
-  const cacheQuestionsForDay = useCallback((dayNum, qs) => {
-    setCachedQs(prev => ({ ...prev, [dayNum]: qs }));
-  }, []);
-
-  // ─── Quant callbacks ───
   const updateQuantScore = useCallback((topicId, correct, total) => {
     setQuantScores(prev => {
       const next = { ...prev, [topicId]: { correct, total, date: new Date().toISOString() } };
       saveJSON('gre_quantScores', next);
       return next;
     });
-    addXP(correct * XP_VALUES.practice_correct + (total-correct) * XP_VALUES.practice_wrong, 'Quant practice');
+    addXP(correct * XP_VALUES.practice_correct + (total - correct) * XP_VALUES.practice_wrong, 'Quant practice');
     addXP(XP_VALUES.complete_practice, 'Practice completed');
     recordActivity(total);
-    const practiceTopics = Object.keys({...quantScores, [topicId]:true});
-    const achs = checkAchievements({ practiceCompleted:true, streak:streak.current, allQuantTopics:practiceTopics.length>=4, perfectScore:correct===total });
-    if(achs.length) setAchToast(achs[0]);
+    const practiceTopics = Object.keys({ ...quantScores, [topicId]: true });
+    const achs = checkAchievements({ practiceCompleted: true, streak: streak.current, allQuantTopics: practiceTopics.length >= 4, perfectScore: correct === total });
+    if (achs.length) setAchToast(achs[0]);
   }, [streak, quantScores]);
 
-  const mainContent = (
-    <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif", background:C.bg, minHeight:'100vh', color:C.text, display:'flex', flexDirection:'column'}}>
+  const cacheQuestionsForDay = useCallback((dayNum, qs) => {
+    setCachedQs(prev => ({ ...prev, [dayNum]: qs }));
+  }, []);
 
+  // ─── Navigate helper ──────────────────────────────────────────────────────────
+  const navigate = (nav) => {
+    if (!nav) return;
+    if (nav.startsWith('verbal_vocab')) { const d = parseInt(nav.split('_')[2]) || 1; setSection('verbal'); setCurrentDay(d); setTab('vocab'); }
+    else if (nav === 'verbal_practice') { setSection('verbal'); setCurrentDay(1); setTab('practice'); }
+    else if (nav === 'verbal_mock') { setSection('verbal'); setCurrentDay(-1); }
+    else if (nav === 'quant_learn') { setSection('quant'); setQuantPage('arithmetic'); setQuantTab('learn'); }
+    else if (nav === 'quant_practice') { setSection('quant'); setQuantPage('arithmetic'); setQuantTab('practice'); }
+    else if (nav === 'quant_mock') { setSection('quant'); setQuantPage('mock'); }
+    else if (nav === 'blitz') setShowWeakBlitz(true);
+    else if (nav === 'drill') { sessionStorage.removeItem(`gre_drill_${new Date().toDateString()}`); setShowMorningDrill(true); }
+  };
+
+  // ─── VERBAL CONTENT ───────────────────────────────────────────────────────────
+  const verbalContent = currentDay === -1 ? <MockExam /> :
+    currentDay === -2 ? <WordRelations day={DAYS.length} /> :
+    currentDay === -3 ? <RootsModule /> :
+    currentDay === 0  ? <DailyRoadmap currentDay={currentDay} onNavigate={navigate} /> :
+    <>
+      {/* Tab bar */}
+      <div style={{ display: 'flex', borderBottom: `1px solid ${C.border}`, marginBottom: 20, gap: 0 }}>
+        {[{ id: 'vocab', label: '📖 Words' }, { id: 'practice', label: '⚔️ Practice' }].map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{
+            padding: '12px 20px', border: 'none', cursor: 'pointer',
+            fontWeight: 700, fontSize: 13, background: 'transparent',
+            borderBottom: tab === t.id ? `2px solid ${C.gold}` : '2px solid transparent',
+            color: tab === t.id ? C.gold : C.textMid,
+            transition: 'all 0.15s', marginBottom: -1, minHeight: 44,
+          }}>{t.label}</button>
+        ))}
+      </div>
+      {tab === 'vocab' && <VocabView day={currentDay} />}
+      {tab === 'practice' && (
+        <PracticeView
+          day={currentDay} weakWords={weakWords}
+          onWeakUpdate={addWeakWords} onScoreUpdate={updateScore}
+          dayScores={dayScores[currentDay]}
+          cachedQuestions={cachedQs[currentDay] || null}
+          onCacheQuestions={(qs) => cacheQuestionsForDay(currentDay, qs)}
+        />
+      )}
+    </>;
+
+  // ─── QUANT CONTENT ────────────────────────────────────────────────────────────
+  const quantContent = quantPage === 'mock' ? <QuantMock /> :
+    quantPage === 'formulas' ? <FormulaSheet /> :
+    quantPage === 'progress' ? (
+      <><ScoreGraph dayScores={dayScores} quantScores={quantScores} /><div style={{ marginTop: 24 }}><ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay} /></div></>
+    ) :
+    quantPage && QUANT_TOPICS.find(t => t.id === quantPage) ? (
+      <>
+        <div style={{ display: 'flex', borderBottom: `1px solid ${C.border}`, marginBottom: 20, gap: 0 }}>
+          {[{ id: 'learn', label: '📚 Learn' }, { id: 'practice', label: '⚔️ Practice' }].map(t => (
+            <button key={t.id} onClick={() => setQuantTab(t.id)} style={{
+              padding: '12px 20px', border: 'none', cursor: 'pointer',
+              fontWeight: 700, fontSize: 13, background: 'transparent',
+              borderBottom: quantTab === t.id ? `2px solid ${C.gold}` : '2px solid transparent',
+              color: quantTab === t.id ? C.gold : C.textMid,
+              transition: 'all 0.15s', marginBottom: -1, minHeight: 44,
+            }}>{t.label}</button>
+          ))}
+        </div>
+        {quantTab === 'learn' ? <ConceptLearn topicId={quantPage} /> : <QuantPractice topic={quantPage} onScoreUpdate={updateQuantScore} />}
+      </>
+    ) :
+    <QuantLanding onSelectTopic={setQuantPage} scores={quantScores} />;
+
+  // ─── SIDEBAR CONTENT ─────────────────────────────────────────────────────────
+  const BOSS_DAY_MAP = { 2: 'boss_2', 4: 'boss_4', 7: 'boss_7' };
+  const sidebarContent = section === 'verbal' ? (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <p style={{ fontSize: 10, color: C.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, paddingLeft: 4, fontWeight: 700 }}>30 Days</p>
+      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {DAYS.map(d => {
+          const sc = dayScores[d.day];
+          const hasSc = sc && Object.keys(sc).length > 0;
+          const isCurrent = currentDay === d.day;
+          const bossId = BOSS_DAY_MAP[d.day];
+          const bossResult = bossId ? getBossResult(bossId) : null;
+          const bossAvailable = bossId && currentDay >= d.day && !bossResult?.beaten;
+          const bossBeaten = bossResult?.beaten;
+          return (
+            <button key={d.day} onClick={() => { setCurrentDay(d.day); setTab('vocab'); }} style={{
+              width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+              border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+              background: isCurrent ? C.gold : 'transparent',
+              color: isCurrent ? '#07090F' : hasSc ? C.greenBr : C.textMid,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, width: 22, flexShrink: 0, fontFamily: 'Courier New,monospace' }}>
+                  {hasSc ? '✓' : `D${d.day}`}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: isCurrent ? 700 : 500, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.theme}</p>
+                  <p style={{ fontSize: 10, margin: 0, opacity: 0.65 }}>{d.words.length} words</p>
+                </div>
+                {bossBeaten && <span style={{ fontSize: 11 }}>🏆</span>}
+                {bossAvailable && <span style={{ fontSize: 11, animation: 'pulse 2s infinite' }}>⚔️</span>}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      {/* Bottom nav items */}
+      <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
+        {[
+          { id: -1,  label: '🎯 Mock Exam',    tab: 'mock' },
+          { id: -2,  label: '🔗 Word Map',     tab: 'relations' },
+          { id: -3,  label: '🌱 Roots',        tab: 'roots' },
+          { id: 0,   label: "☀️ Today's Plan", tab: 'overview', green: true },
+        ].map(item => (
+          <button key={item.id} onClick={() => { setCurrentDay(item.id); setTab(item.tab); }} style={{
+            width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+            border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+            background: currentDay === item.id ? (item.green ? C.green + '33' : C.gold + '22') : 'transparent',
+            color: currentDay === item.id ? (item.green ? C.greenBr : C.gold) : C.textMid,
+            fontSize: 13, fontWeight: 600,
+          }}>{item.label}</button>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <p style={{ fontSize: 10, color: C.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, paddingLeft: 4, fontWeight: 700 }}>Topics</p>
+      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {QUANT_TOPICS.map(t => {
+          const sc = quantScores[t.id];
+          const isCurrent = quantPage === t.id;
+          return (
+            <button key={t.id} onClick={() => setQuantPage(t.id)} style={{
+              width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+              border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+              background: isCurrent ? C.gold : 'transparent',
+              color: isCurrent ? '#07090F' : sc ? C.greenBr : C.textMid,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 20 }}>{t.icon}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: isCurrent ? 700 : 500, margin: 0 }}>{t.label}</p>
+                  <p style={{ fontSize: 10, margin: 0, opacity: 0.65 }}>{t.subtopics.length} subtopics</p>
+                </div>
+                {sc && <span style={{ fontSize: 10, color: isCurrent ? '#07090F' : C.greenBr }}>✓</span>}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
+        {[
+          { id: 'mock',     label: '🧮 Mock Exam' },
+          { id: 'formulas', label: '📐 Formulas' },
+          { id: 'progress', label: '📊 Progress', green: true },
+        ].map(item => (
+          <button key={item.id} onClick={() => setQuantPage(item.id)} style={{
+            width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+            border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+            background: quantPage === item.id ? (item.green ? C.green + '33' : C.gold + '22') : 'transparent',
+            color: quantPage === item.id ? (item.green ? C.greenBr : C.gold) : C.textMid,
+            fontSize: 13, fontWeight: 600,
+          }}>{item.label}</button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ─── MOBILE CONTEXT LABEL ─────────────────────────────────────────────────────
+  const mobileContextLabel = section === 'verbal'
+    ? (currentDay > 0 ? `Day ${currentDay}: ${day?.theme}` : currentDay === -1 ? 'Mock Exam' : currentDay === -2 ? 'Word Map' : currentDay === -3 ? 'Roots' : "Today's Plan")
+    : (quantPage ? QUANT_TOPICS.find(t => t.id === quantPage)?.label || quantPage : 'Quant Overview');
+
+  return (
+    <div style={{ background: C.bg, minHeight: '100dvh', color: C.text, display: 'flex', flexDirection: 'column', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+
+      {/* ── Modals ── */}
       {showMorningDrill && (
         <MorningDrill onClose={() => {
           sessionStorage.setItem(`gre_drill_${new Date().toDateString()}`, '1');
           setShowMorningDrill(false);
-          // After drill, surface any unlocked boss challenges
           const bosses = getBossStatus(currentDay);
           if (bosses.length > 0) setTimeout(() => setShowBoss(bosses[0]), 900);
         }} />
       )}
-      {showBoss && (
-        <BossChallenge boss={showBoss} onClose={() => setShowBoss(null)} />
-      )}
+      {showBoss && <BossChallenge boss={showBoss} onClose={() => setShowBoss(null)} />}
       {showWeakBlitz && (
-        <WeakWordBlitz
-          weakWords={weakWords}
-          onClose={() => setShowWeakBlitz(false)}
+        <WeakWordBlitz weakWords={weakWords} onClose={() => setShowWeakBlitz(false)}
           onWordGraduated={(word) => {
-            setWeakWords(prev => {
-              const next = prev.filter(w => w !== word);
-              saveJSON('gre_weakWords', next);
-              return next;
-            });
-          }}
-        />
+            setWeakWords(prev => { const next = prev.filter(w => w !== word); saveJSON('gre_weakWords', next); return next; });
+          }} />
       )}
 
-      {/* Header */}
-      <div style={{background:C.surface, borderBottom:`1px solid ${C.border}`, padding:'12px 20px', display:'flex', alignItems:'center', gap:16, position:'sticky', top:0, zIndex:20}}>
-        <div>
-          <div style={{display:'flex', alignItems:'center', gap:10}}>
-            <span style={{fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:C.gold, letterSpacing:'0.03em'}}>GRE Complete</span>
-            {/* Section Switcher */}
-            <div style={{display:'flex', background:C.bg, borderRadius:6, border:`1px solid ${C.border}`, overflow:'hidden'}}>
-              {[{id:'verbal',label:'V'},{id:'quant',label:'Q'}].map(s=>(
-                <button key={s.id} onClick={()=>{setSection(s.id);if(s.id==='quant')setQuantPage(null);if(s.id==='verbal'){setCurrentDay(1);setTab('vocab');}}} style={{
-                  padding:'4px 14px', border:'none', cursor:'pointer', fontSize:12, fontWeight:700,
-                  background: section===s.id?C.gold:'transparent',
-                  color: section===s.id?'#07090F':C.textMid, transition:'all 0.15s',
-                }}>{s.label}</button>
-              ))}
-            </div>
-            {section==='verbal' && day && <Tag color={C.gold}>Day {currentDay}</Tag>}
-            {section==='verbal' && <Tag color={C.blue}>{totalWords} words</Tag>}
-            {section==='verbal' && srStats.due > 0 && <Tag color={C.red}>{srStats.due} due</Tag>}
+      {/* ── HEADER ── */}
+      <header style={{
+        background: C.surface, borderBottom: `1px solid ${C.border}`,
+        padding: '0 16px', height: 52, display: 'flex', alignItems: 'center',
+        gap: 12, position: 'sticky', top: 0, zIndex: 30, flexShrink: 0,
+      }}>
+        {/* Logo */}
+        <span style={{ fontFamily: 'Georgia,serif', fontSize: 16, fontWeight: 700, color: C.gold, letterSpacing: '0.03em', flexShrink: 0 }}>
+          GRE
+        </span>
+
+        {/* Section switcher */}
+        <div style={{ display: 'flex', background: C.bg, borderRadius: 6, border: `1px solid ${C.border}`, overflow: 'hidden', flexShrink: 0 }}>
+          {[{ id: 'verbal', label: 'Verbal' }, { id: 'quant', label: 'Quant' }].map(s => (
+            <button key={s.id} onClick={() => { setSection(s.id); if (s.id === 'quant') setQuantPage(null); if (s.id === 'verbal') { setCurrentDay(1); setTab('vocab'); } }} style={{
+              padding: '5px 12px', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700,
+              background: section === s.id ? C.gold : 'transparent',
+              color: section === s.id ? '#07090F' : C.textMid,
+              transition: 'all 0.15s', minHeight: 32,
+            }}>{s.label}</button>
+          ))}
+        </div>
+
+        {/* Streak — desktop only */}
+        {streak.current > 0 && (
+          <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: 5, background: C.goldDim + '33', border: `1px solid ${C.goldDim}`, borderRadius: 20, padding: '3px 10px' }}>
+            <span style={{ fontSize: 14 }}>🔥</span>
+            <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 13, color: C.gold }}>{streak.current}</span>
           </div>
-          <p style={{color:C.textMid, fontSize:11, margin:'2px 0 0'}}>
-            {section==='verbal'
-              ? `${day ? `${day.theme}  ·  ` : ''}Target: 165+ Verbal · ${DAYS.length} days${srStats.mastered > 0 ? ` · ${srStats.mastered} mastered` : ''}`
-              : 'Target: 165+ Quant  ·  Master all 4 topics'
-            }
-          </p>
-        </div>
-        <div style={{marginLeft:'auto', display:'flex', gap:12, alignItems:'center'}}>
-          {streak.current > 0 && (
-            <div className="header-streak" style={{display:'flex', alignItems:'center', gap:6, background:C.goldDim+'33', border:`1px solid ${C.goldDim}`, borderRadius:20, padding:'4px 12px'}}>
-              <span style={{fontSize:16}}>🔥</span>
-              <span style={{fontFamily:'Courier New,monospace', fontWeight:700, fontSize:14, color:C.gold}}>{streak.current}</span>
-              <span style={{color:C.textDim, fontSize:10}}>day{streak.current!==1?'s':''}</span>
-            </div>
-          )}
-          <button className="header-study-btn" onClick={()=>setShowDailySession(true)} style={{padding:'5px 12px', borderRadius:6, border:`1px solid ${C.gold}33`, background:`${C.gold}15`, color:C.gold, cursor:'pointer', fontSize:11, fontWeight:700, transition:'all 0.15s'}}>📅 Study</button>
-          {weakWords.length > 0 && (
-            <button onClick={() => setShowWeakBlitz(true)} style={{
-              padding:'5px 12px', borderRadius:6, border:`1px solid ${C.red}44`,
-              background:`${C.red}18`, color:C.red,
-              cursor:'pointer', fontSize:11, fontWeight:700, transition:'all 0.15s',
-            }}>⚡ Blitz ({weakWords.length})</button>
-          )}
-          {getBossStatus(currentDay).length > 0 && !showBoss && (
-            <button onClick={() => { const b = getBossStatus(currentDay)[0]; setShowBoss(BOSSES.find(x => x.id === b.id)); }} style={{
-              padding:'5px 12px', borderRadius:6, border:`1px solid ${C.red}55`,
-              background:`${C.red}22`, color:C.red,
-              cursor:'pointer', fontSize:11, fontWeight:700,
-              animation:'pulse 2s ease-in-out infinite',
-            }}>⚔️ Boss!</button>
-          )}
-          <XPBar/>
-          {section==='verbal' && (
-            <div style={{textAlign:'right'}}>
-              <div style={{width:80, height:4, background:C.border, borderRadius:3, overflow:'hidden', marginBottom:2}}>
-                <div style={{height:'100%', background:C.gold, borderRadius:3, width:`${(srStats.mastered/Math.max(totalWords,1))*100}%`, transition:'width 0.4s'}}/>
-              </div>
-              <span style={{color:C.textDim, fontSize:10}}>{srStats.mastered}/{totalWords} mastered</span>
-            </div>
-          )}
-          {/* Sidebar toggle for mobile */}
-          <button onClick={()=>setSidebarOpen(s=>!s)} style={{display:'none', padding:'4px 8px', borderRadius:4, border:'none', cursor:'pointer', background:C.surface, color:C.textMid, fontSize:16}} className='sidebar-toggle'>☰</button>
-          {/* Settings gear */}
-          <button onClick={()=>setShowSettings(true)} style={{padding:'4px 8px', borderRadius:4, border:'none', cursor:'pointer', background:'transparent', color:C.textDim, fontSize:16, transition:'all 0.15s'}} title='Settings & Study Plan'>⚙️</button>
-          <AuthButton compact />
-        </div>
-      </div>
-
-      <div style={{display:'flex', flex:1, overflow:'hidden'}}>
-
-        {/* Sidebar backdrop for mobile */}
-        {sidebarOpen && (
-          <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
         )}
 
-        {/* ═══ SIDEBAR ═══ */}
-        <div className='app-sidebar' style={{width:sidebarOpen?190:0, borderRight:sidebarOpen?`1px solid ${C.border}`:'none', padding:sidebarOpen?'16px 10px':'0', overflowY:'auto', overflowX:'hidden', flexShrink:0, background:C.surface, display:'flex', flexDirection:'column', gap:4, transition:'width 0.2s ease, padding 0.2s ease'}}>
+        {/* XP — desktop only */}
+        <div className="hide-mobile"><XPBar /></div>
 
-          {section === 'verbal' ? (
-            <>
-              <p style={{fontSize:10, color:C.textDim, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8, paddingLeft:8}}>Days</p>
-              {DAYS.map(d => {
-                const sc = dayScores[d.day];
-                const hasSc = sc && Object.keys(sc).length > 0;
-                const isCurrent = currentDay===d.day;
-                // Boss logic
-                const BOSS_DAY_MAP = {2:'boss_2', 4:'boss_4', 7:'boss_7'};
-                const bossId = BOSS_DAY_MAP[d.day];
-                const bossResult = bossId ? getBossResult(bossId) : null;
-                const bossAvailable = bossId && currentDay >= d.day && !bossResult?.beaten;
-                const bossBeaten = bossResult?.beaten;
-                return (
-                  <div key={d.day} style={{display:'flex', flexDirection:'column', gap:2}}>
-                    <button onClick={()=>{setCurrentDay(d.day);setTab('vocab');}} style={{
-                      width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
-                      border:'none', cursor:'pointer', transition:'all 0.15s',
-                      background: isCurrent?C.gold:'transparent',
-                      color: isCurrent?'#07090F':hasSc?C.greenBr:C.textMid,
-                    }}>
-                      <div style={{display:'flex', alignItems:'center', gap:8}}>
-                        <span style={{fontSize:13, fontWeight:700, width:20}}>{hasSc?'✓':`D${d.day}`}</span>
-                        <div style={{flex:1}}>
-                          <p style={{fontSize:11, fontWeight:isCurrent?700:400, margin:0}}>{d.theme}</p>
-                          <p style={{fontSize:10, margin:0, opacity:0.7}}>{d.words.length} words</p>
-                        </div>
-                        {bossBeaten && <span title="Boss defeated!" style={{fontSize:12}}>🏆</span>}
-                        {bossAvailable && <span title="Boss challenge available!" style={{fontSize:12, animation:'pulse 2s infinite'}}>⚔️</span>}
-                      </div>
-                    </button>
-                    {isCurrent && bossAvailable && (
-                      <button onClick={()=>{const b=BOSSES.find(x=>x.id===bossId);setShowBoss(b);}} style={{
-                        width:'100%', padding:'5px 10px', borderRadius:6, border:`1px solid ${C.red}44`,
-                        background:`${C.red}18`, color:C.red, cursor:'pointer',
-                        fontSize:10, fontWeight:700, textAlign:'left',
-                      }}>⚔️ Boss Challenge unlocked!</button>
-                    )}
-                  </div>
-                );
-              })}
-              <div style={{marginTop:'auto', paddingTop:16, display:'flex', flexDirection:'column', gap:4}}>
-                <button onClick={()=>{setCurrentDay(-1);setTab('mock');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===-1?C.gold+'33':'transparent', color:currentDay===-1?C.gold:C.textMid}}>
-                  <span style={{fontSize:13}}>🎯  Mock Exam</span>
-                </button>
-                <button onClick={()=>{setCurrentDay(-2);setTab('relations');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===-2?C.gold+'33':'transparent', color:currentDay===-2?C.gold:C.textMid}}>
-                  <span style={{fontSize:13}}>🔗  Word Map</span>
-                </button>
-                <button onClick={()=>{setCurrentDay(-3);setTab('roots');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===-3?C.gold+'33':'transparent', color:currentDay===-3?C.gold:C.textMid}}>
-                  <span style={{fontSize:13}}>🌱  Roots</span>
-                </button>
-                <button onClick={()=>{setCurrentDay(0);setTab('overview');}} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:currentDay===0?C.green+'33':'transparent', color:currentDay===0?C.greenBr:C.textMid}}>
-                  <span style={{fontSize:13}}>☀️  Today's Plan</span>
-                </button>
+        {/* Spacer */}
+        <div style={{ flex: 1 }} />
+
+        {/* Weak blitz button */}
+        {weakWords.length > 0 && (
+          <button onClick={() => setShowWeakBlitz(true)} style={{
+            padding: '5px 10px', borderRadius: 6, border: `1px solid ${C.red}44`,
+            background: `${C.red}18`, color: C.red, cursor: 'pointer',
+            fontSize: 11, fontWeight: 700, flexShrink: 0, minHeight: 32,
+          }}>⚡ {weakWords.length}</button>
+        )}
+
+        {/* Boss button */}
+        {getBossStatus(currentDay).length > 0 && !showBoss && (
+          <button onClick={() => { const b = getBossStatus(currentDay)[0]; setShowBoss(BOSSES.find(x => x.id === b.id)); }} style={{
+            padding: '5px 10px', borderRadius: 6, border: `1px solid ${C.red}55`,
+            background: `${C.red}22`, color: C.red, cursor: 'pointer',
+            fontSize: 11, fontWeight: 700, flexShrink: 0, minHeight: 32,
+            animation: 'pulse 2s ease-in-out infinite',
+          }}>⚔️</button>
+        )}
+
+        {/* Settings */}
+        <button onClick={() => setShowSettings(true)} style={{
+          padding: '6px 8px', borderRadius: 6, border: 'none', cursor: 'pointer',
+          background: 'transparent', color: C.textMid, fontSize: 18, flexShrink: 0, minHeight: 36,
+        }}>⚙️</button>
+
+        {/* Auth — desktop only */}
+        <div className="hide-mobile"><AuthButton compact /></div>
+      </header>
+
+      {/* ── BODY: sidebar + content ── */}
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+
+        {/* DESKTOP SIDEBAR */}
+        <aside className="desktop-sidebar" style={{
+          width: 200, flexShrink: 0, background: C.surface,
+          borderRight: `1px solid ${C.border}`, padding: '16px 10px',
+          overflowY: 'auto', display: 'flex', flexDirection: 'column',
+        }}>
+          {sidebarContent}
+        </aside>
+
+        {/* MOBILE DRAWER BACKDROP */}
+        {drawerOpen && (
+          <div onClick={() => setDrawerOpen(false)} style={{
+            position: 'fixed', inset: 0, top: 52, background: 'rgba(0,0,0,0.6)',
+            zIndex: 40, backdropFilter: 'blur(3px)',
+          }} />
+        )}
+
+        {/* MOBILE DRAWER */}
+        <aside style={{
+          position: 'fixed', left: 0, top: 52, bottom: 0, zIndex: 41,
+          width: 260, background: C.surface, borderRight: `1px solid ${C.border}`,
+          padding: '16px 12px', overflowY: 'auto', display: 'flex', flexDirection: 'column',
+          transform: drawerOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.25s ease',
+          // Only show as overlay on mobile — desktop-sidebar covers desktop
+        }} className="mobile-drawer">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <p style={{ fontFamily: 'Georgia,serif', color: C.gold, fontSize: 14, fontWeight: 700, margin: 0 }}>
+              {section === 'verbal' ? '30 Days' : 'Topics'}
+            </p>
+            <button onClick={() => setDrawerOpen(false)} style={{ background: 'none', border: 'none', color: C.textMid, cursor: 'pointer', fontSize: 20, padding: 4, minHeight: 36 }}>✕</button>
+          </div>
+          {sidebarContent}
+        </aside>
+
+        {/* MAIN CONTENT */}
+        <main ref={mainRef} style={{
+          flex: 1, overflowY: 'auto', overflowX: 'hidden',
+          padding: '20px 20px 80px',
+          // On desktop, reduce padding since sidebar is visible
+        }} className="main-content">
+
+          {/* Mobile: context bar — shows current day/topic and drawer toggle */}
+          <div className="mobile-context-bar" style={{
+            display: 'none', alignItems: 'center', gap: 10,
+            background: C.surface, border: `1px solid ${C.border}`,
+            borderRadius: 10, padding: '10px 14px', marginBottom: 16,
+          }}>
+            <button onClick={() => setDrawerOpen(d => !d)} style={{
+              background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6,
+              padding: '6px 10px', cursor: 'pointer', color: C.textMid,
+              fontSize: 16, minHeight: 36, flexShrink: 0,
+            }}>☰</button>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ color: C.text, fontSize: 13, fontWeight: 700, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {mobileContextLabel}
+              </p>
+              <p style={{ color: C.textDim, fontSize: 11, margin: '1px 0 0' }}>
+                {section === 'verbal' ? `${totalWords} words · ${srStats.mastered} mastered` : 'Master all 4 topics'}
+              </p>
+            </div>
+            {streak.current > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                <span style={{ fontSize: 14 }}>🔥</span>
+                <span style={{ fontFamily: 'Courier New,monospace', fontSize: 13, fontWeight: 700, color: C.gold }}>{streak.current}</span>
               </div>
-            </>
-          ) : (
-            /* ─── QUANT SIDEBAR ─── */
-            <>
-              <p style={{fontSize:10, color:C.textDim, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8, paddingLeft:8}}>Topics</p>
-              {QUANT_TOPICS.map(t => {
-                const sc = quantScores[t.id];
-                const isCurrent = quantPage===t.id;
-                return (
-                  <button key={t.id} onClick={()=>setQuantPage(t.id)} style={{
-                    width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8,
-                    border:'none', cursor:'pointer', transition:'all 0.15s',
-                    background: isCurrent?C.gold:'transparent',
-                    color: isCurrent?'#07090F':sc?C.greenBr:C.textMid,
-                  }}>
-                    <div style={{display:'flex', alignItems:'center', gap:8}}>
-                      <span style={{fontSize:16}}>{t.icon}</span>
-                      <div>
-                        <p style={{fontSize:11, fontWeight:isCurrent?700:400, margin:0}}>{t.label}</p>
-                        <p style={{fontSize:10, margin:0, opacity:0.7}}>{t.subtopics.length} subtopics</p>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-              <div style={{marginTop:'auto', paddingTop:16, display:'flex', flexDirection:'column', gap:4}}>
-                <button onClick={()=>setQuantPage('mock')} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:quantPage==='mock'?C.gold+'33':'transparent', color:quantPage==='mock'?C.gold:C.textMid}}>
-                  <span style={{fontSize:13}}>🧮  Mock Exam</span>
-                </button>
-                <button onClick={()=>setQuantPage('formulas')} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:quantPage==='formulas'?C.gold+'33':'transparent', color:quantPage==='formulas'?C.gold:C.textMid}}>
-                  <span style={{fontSize:13}}>📐  Formulas</span>
-                </button>
-                <button onClick={()=>setQuantPage('progress')} style={{width:'100%', textAlign:'left', padding:'9px 10px', borderRadius:8, border:'none', cursor:'pointer', transition:'all 0.15s', background:quantPage==='progress'?C.green+'33':'transparent', color:quantPage==='progress'?C.greenBr:C.textMid}}>
-                  <span style={{fontSize:13}}>📊  Progress</span>
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* ═══ MAIN CONTENT ═══ */}
-        <div className="main-content" style={{flex:1, overflow:'auto', padding:'24px 28px 100px'}}>
-         <ErrorBoundary>
-
-          {section === 'verbal' ? (
-            /* ─── VERBAL CONTENT ─── */
-            <>
-              {currentDay===-1 ? (
-                <MockExam/>
-              ) : currentDay===-2 ? (
-                <WordRelations day={DAYS.length}/>
-              ) : currentDay===-3 ? (
-                <RootsModule/>
-              ) : currentDay===0 ? (
-                <DailyRoadmap
-                  currentDay={currentDay}
-                  onNavigate={(nav) => {
-                    if (nav === 'drill') { sessionStorage.removeItem(`gre_drill_${new Date().toDateString()}`); setShowMorningDrill(true); }
-                    else if (nav && nav.startsWith('verbal_vocab')) {
-                    const d = nav.includes('_') ? parseInt(nav.split('_')[2]) || 1 : 1;
-                    setSection('verbal'); setCurrentDay(d); setTab('vocab');
-                  }
-                    else if (nav === 'verbal_practice') { setSection('verbal'); setCurrentDay(1); setTab('practice'); }
-                    else if (nav === 'verbal_mock') { setSection('verbal'); setCurrentDay(-1); }
-                    else if (nav === 'quant_learn') { setSection('quant'); setQuantPage('arithmetic'); setQuantTab('learn'); }
-                    else if (nav === 'quant_practice') { setSection('quant'); setQuantPage('arithmetic'); setQuantTab('practice'); }
-                    else if (nav === 'quant_mock') { setSection('quant'); setQuantPage('mock'); }
-                    else if (nav === 'blitz') { setShowWeakBlitz(true); }
-                  }}
-                />
-              ) : (
-                <>
-                  <div style={{display:'flex', gap:8, marginBottom:24, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
-                    {[{id:'vocab',label:'📖  Vocabulary'},{id:'practice',label:'⚔️  Practice'}].map(t=>(
-                      <button key={t.id} onClick={()=>setTab(t.id)} style={{
-                        padding:'10px 20px', border:'none', cursor:'pointer',
-                        fontFamily:'Georgia,serif', fontWeight:700, fontSize:13,
-                        background:'transparent', transition:'all 0.15s',
-                        borderBottom: tab===t.id?`2px solid ${C.gold}`:'2px solid transparent',
-                        color: tab===t.id?C.gold:C.textMid, marginBottom:-1,
-                      }}>{t.label}</button>
-                    ))}
-                  </div>
-                  {tab==='vocab' && <VocabView day={currentDay}/>}
-                  {tab==='practice' && (
-                    <PracticeView
-                      day={currentDay}
-                      weakWords={weakWords}
-                      onWeakUpdate={addWeakWords}
-                      onScoreUpdate={updateScore}
-                      dayScores={dayScores[currentDay]}
-                      cachedQuestions={cachedQs[currentDay] || null}
-                      onCacheQuestions={(qs) => cacheQuestionsForDay(currentDay, qs)}
-                    />
-                  )}
-                </>
-              )}
-            </>
-          ) : (
-            /* ─── QUANT CONTENT ─── */
-            <>
-              {quantPage === 'mock' ? (
-                <QuantMock/>
-              ) : quantPage === 'formulas' ? (
-                <FormulaSheet/>
-              ) : quantPage === 'progress' ? (
-                <>
-                  <ScoreGraph dayScores={dayScores} quantScores={quantScores} />
-                  <div style={{marginTop:24}}>
-                    <ProgressDashboard dayScores={dayScores} quantScores={quantScores} weakWords={weakWords} currentDay={currentDay}/>
-                  </div>
-                </>
-              ) : quantPage && QUANT_TOPICS.find(t=>t.id===quantPage) ? (
-                <div>
-                  <div style={{display:'flex', gap:8, marginBottom:20, borderBottom:`1px solid ${C.border}`, paddingBottom:0}}>
-                    {[{id:'learn',label:'📚  Learn'},{id:'practice',label:'⚔️  Practice'}].map(t=>(
-                      <button key={t.id} onClick={()=>setQuantTab(t.id)} style={{
-                        padding:'10px 20px', border:'none', cursor:'pointer',
-                        fontFamily:'Georgia,serif', fontWeight:700, fontSize:13,
-                        background:'transparent', transition:'all 0.15s',
-                        borderBottom: quantTab===t.id?`2px solid ${C.gold}`:'2px solid transparent',
-                        color: quantTab===t.id?C.gold:C.textMid, marginBottom:-1,
-                      }}>{t.label}</button>
-                    ))}
-                  </div>
-                  {quantTab==='learn' ? (
-                    <ConceptLearn topicId={quantPage}/>
-                  ) : (
-                    <QuantPractice topic={quantPage} onScoreUpdate={updateQuantScore}/>
-                  )}
-                </div>
-              ) : (
-                <QuantLanding onSelectTopic={setQuantPage} scores={quantScores}/>
-              )}
-            </>
-          )}
-         </ErrorBoundary>
-        </div>
+          <ErrorBoundary>
+            {section === 'verbal' ? verbalContent : quantContent}
+          </ErrorBoundary>
+        </main>
       </div>
 
-      <SettingsPanel open={showSettings} onClose={()=>setShowSettings(false)}/>
-      <AchievementToast achievement={achToast} onDone={()=>setAchToast(null)}/>
-      <AiTutor/>
-
-      {/* ─── Offline toast ─── */}
-      {offline && (
-        <div style={{
-          position:'fixed', top:60, left:'50%', transform:'translateX(-50%)', zIndex:500,
-          background:'#1C0808', border:'1px solid #B5302844', borderRadius:8,
-          padding:'8px 16px', display:'flex', alignItems:'center', gap:8,
-          boxShadow:'0 4px 20px rgba(0,0,0,0.4)', whiteSpace:'nowrap',
-        }}>
-          <span>📡</span>
-          <span style={{ color:'#B53028', fontSize:12, fontWeight:600 }}>No internet connection</span>
-        </div>
-      )}
-
-      {/* ═══ MOBILE BOTTOM NAV ═══ */}
+      {/* ── BOTTOM NAV (mobile only) ── */}
       <nav className="mobile-bottom-nav">
-        <button className={section==='verbal'?'active':''} onClick={()=>{setSection('verbal');setSidebarOpen(false);}}>
+        <button className={section === 'verbal' ? 'active' : ''} onClick={() => { setSection('verbal'); setCurrentDay(1); setTab('vocab'); }}>
           <span className="icon">📖</span>Verbal
         </button>
-        <button className={section==='quant'?'active':''} onClick={()=>{setSection('quant');setSidebarOpen(false);}}>
+        <button className={section === 'quant' ? 'active' : ''} onClick={() => { setSection('quant'); setQuantPage(null); }}>
           <span className="icon">📐</span>Quant
         </button>
-        <button onClick={()=>setSidebarOpen(s=>!s)}>
-          <span className="icon">☰</span>Days
+        <button onClick={() => setDrawerOpen(d => !d)} className={drawerOpen ? 'active' : ''}>
+          <span className="icon">☰</span>Navigate
         </button>
-        <button onClick={()=>setShowDailySession(true)}>
+        <button onClick={() => setShowDailySession(true)}>
           <span className="icon">📅</span>Plan
         </button>
-        <button onClick={()=>setShowSettings(true)}>
+        <button onClick={() => setShowSettings(true)}>
           <span className="icon">⚙️</span>Settings
         </button>
       </nav>
+
+      {/* ── OVERLAYS ── */}
+      <SettingsPanel open={showSettings} onClose={() => setShowSettings(false)} />
+      <AchievementToast achievement={achToast} onDone={() => setAchToast(null)} />
+      <AiTutor />
+
+      {offline && (
+        <div style={{
+          position: 'fixed', top: 60, left: '50%', transform: 'translateX(-50%)', zIndex: 500,
+          background: '#1C0808', border: '1px solid #B5302844', borderRadius: 8,
+          padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 8,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.4)', whiteSpace: 'nowrap',
+        }}>
+          <span>📡</span>
+          <span style={{ color: '#B53028', fontSize: 12, fontWeight: 600 }}>No internet connection</span>
+        </div>
+      )}
+
+      {/* Daily session modal */}
+      {showDailySession && (
+        <DailySession
+          onNavigate={(sec, t, day) => {
+            setSection(sec);
+            if (sec === 'verbal') { if (day) setCurrentDay(day); setTab(t); }
+            else setQuantTab(t === 'learn' ? 'learn' : 'practice');
+            setShowDailySession(false);
+          }}
+          onClose={() => setShowDailySession(false)}
+        />
+      )}
     </div>
-  );
-
-  // ─── DailySession modal ───
-  const sessionModal = showDailySession && (
-    <DailySession
-      onNavigate={(sec, t, day) => {
-        setSection(sec);
-        if(sec==='verbal') { if(day) setCurrentDay(day); setTab(t); }
-        else setQuantTab(t==='learn'?'learn':'practice');
-        setShowDailySession(false);
-      }}
-      onClose={() => setShowDailySession(false)}
-    />
-  );
-
-  return (
-    <>
-      {mainContent}
-      {sessionModal}
-    </>
   );
 }
 
-// ─── QUANT LANDING PAGE ───────────────────────────────────────────────────────
+// ─── QUANT LANDING ────────────────────────────────────────────────────────────
 function QuantLanding({ onSelectTopic, scores }) {
   return (
     <div>
-      <div style={{textAlign:'center', marginBottom:24}}>
-        <p style={{fontSize:40, marginBottom:4}}>🧮</p>
-        <h2 style={{fontFamily:'Georgia,serif', fontSize:22, color:C.gold, marginBottom:8}}>GRE Quantitative Reasoning</h2>
-        <p style={{color:C.textMid, fontSize:13}}>Master all 4 topics. Practice with AI-generated questions.</p>
+      <div style={{ textAlign: 'center', marginBottom: 28 }}>
+        <p style={{ fontSize: 40, marginBottom: 6 }}>🧮</p>
+        <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 22, color: C.gold, marginBottom: 8 }}>Quantitative Reasoning</h2>
+        <p style={{ color: C.textMid, fontSize: 13 }}>Master all 4 topics. AI-generated adaptive practice.</p>
       </div>
-      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', gap:16}}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 14 }}>
         {QUANT_TOPICS.map(t => {
           const sc = scores[t.id];
           return (
-            <div key={t.id} onClick={()=>onSelectTopic(t.id)} style={{
-              background:C.card, border:`1px solid ${C.border}`, borderRadius:12,
-              padding:'20px 16px', cursor:'pointer', transition:'all 0.2s',
-              borderLeft:`4px solid ${C.gold}`,
+            <button key={t.id} onClick={() => onSelectTopic(t.id)} style={{
+              background: C.card, border: `1px solid ${C.border}`, borderRadius: 12,
+              padding: '20px 16px', cursor: 'pointer', transition: 'all 0.2s',
+              borderLeft: `4px solid ${C.gold}`, textAlign: 'left',
+              minHeight: 80,
             }}>
-              <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:12}}>
-                <span style={{fontSize:28}}>{t.icon}</span>
-                <div>
-                  <p style={{fontFamily:'Georgia,serif', fontSize:16, fontWeight:700, color:C.text, margin:0}}>{t.label}</p>
-                  <p style={{color:C.textDim, fontSize:11, margin:0}}>{t.subtopics.length} subtopics</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+                <span style={{ fontSize: 28 }}>{t.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontFamily: 'Georgia,serif', fontSize: 15, fontWeight: 700, color: C.text, margin: 0 }}>{t.label}</p>
+                  <p style={{ color: C.textDim, fontSize: 11, margin: '2px 0 0' }}>{t.subtopics.length} subtopics</p>
                 </div>
-                {sc && <Tag color={C.greenBr} style={{marginLeft:'auto'}}>{sc.correct}/{sc.total}</Tag>}
+                {sc && <Tag color={C.greenBr}>{sc.correct}/{sc.total}</Tag>}
               </div>
-              <div style={{display:'flex', flexWrap:'wrap', gap:4}}>
-                {t.subtopics.slice(0,3).map(s=>(
-                  <span key={s} style={{fontSize:10, color:C.textDim, background:C.surface, padding:'2px 8px', borderRadius:4}}>{s}</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {t.subtopics.slice(0, 3).map(s => (
+                  <span key={s} style={{ fontSize: 10, color: C.textDim, background: C.surface, padding: '2px 8px', borderRadius: 4 }}>{s}</span>
                 ))}
-                {t.subtopics.length>3 && <span style={{fontSize:10, color:C.textDim}}>+{t.subtopics.length-3} more</span>}
+                {t.subtopics.length > 3 && <span style={{ fontSize: 10, color: C.textDim }}>+{t.subtopics.length - 3} more</span>}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
     </div>
   );
-
 }
-

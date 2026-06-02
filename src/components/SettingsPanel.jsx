@@ -90,7 +90,7 @@ export default function SettingsPanel({ open, onClose }) {
       zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center',
       backdropFilter: 'blur(6px)',
     }} onClick={onClose}>
-      <div style={{
+      <div className="settings-panel" style={{
         background: C.card, border: `1px solid ${C.border}`, borderRadius: 18,
         padding: '28px 24px', maxWidth: 500, width: '92%',
         maxHeight: '88vh', overflowY: 'auto',

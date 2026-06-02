@@ -11,9 +11,10 @@ import Btn from '../components/Btn';
 // ─── Tab Switcher ─────────────────────────────────────────────────────────────
 function TabBar({ tabs, active, onChange }) {
   return (
-    <div style={{
+    <div className="tab-scroll" style={{
       display: 'flex', gap: 2, background: C.surface,
-      borderRadius: 10, padding: 4, marginBottom: 20, width: 'fit-content',
+      borderRadius: 10, padding: 4, marginBottom: 20,
+      width: '100%', overflowX: 'auto',
     }}>
       {tabs.map(t => (
         <button key={t.id} onClick={() => onChange(t.id)} style={{
@@ -183,7 +184,8 @@ function WordCard({ v, displayDay, isOpen, onToggle }) {
       <div style={{
         background: isOpen ? C.cardHi : C.card,
         border: `1px solid ${isOpen ? cc + '66' : C.border}`,
-        borderRadius: 10, padding: 16, transition: 'all 0.2s',
+        borderRadius: 10, padding: '14px 14px', transition: 'all 0.2s',
+        minHeight: 56,  // mobile tap target
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 3, height: 34, background: cc, borderRadius: 2, flexShrink: 0 }} />
@@ -206,7 +208,7 @@ function WordCard({ v, displayDay, isOpen, onToggle }) {
               <p style={{ color: C.textMid, fontSize: 12, margin: 0, lineHeight: 1.5 }}>{v.def}</p>
             )}
           </div>
-          <span style={{ color: C.textDim, fontSize: 13, flexShrink: 0 }}>
+          <span style={{ color: C.textDim, fontSize: 16, flexShrink: 0, padding: '4px 6px', minHeight: 36, display: 'flex', alignItems: 'center' }}>
             {isOpen ? '▲' : '▼'}
           </span>
         </div>
