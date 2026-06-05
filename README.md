@@ -115,7 +115,12 @@ Open [http://localhost:5173](http://localhost:5173).
 ```
 VITE_SUPABASE_URL        → https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY   → your-anon-key
+SUPABASE_SERVICE_KEY     → your-service-role-key (for Stripe webhooks)
 GEMINI_API_KEY           → AIza...  (optional fallback)
+STRIPE_SECRET_KEY        → sk_test_...
+STRIPE_WEBHOOK_SECRET    → whsec_...
+STRIPE_PRICE_MONTHLY     → price_...
+STRIPE_PRICE_ANNUAL      → price_...
 ```
 
 4. Deploy. That's it — Vercel auto-detects Vite and the `/api/` serverless functions.
@@ -126,6 +131,25 @@ GEMINI_API_KEY           → AIza...  (optional fallback)
 npm i -g vercel
 vercel --prod
 ```
+
+---
+
+## Stripe Integration Setup
+
+1. Add the subscription columns to your Supabase `user_progress` table:
+```sql
+ALTER TABLE user_progress ADD COLUMN plan text DEFAULT 'free';
+ALTER TABLE user_progress ADD COLUMN stripe_customer_id text;
+ALTER TABLE user_progress ADD COLUMN plan_expires timestamptz;
+```
+
+2. Create two products in Stripe (e.g., "GRE Complete Pro") with Monthly and Annual prices.
+3. Add the Price IDs to `STRIPE_PRICE_MONTHLY` and `STRIPE_PRICE_ANNUAL` in Vercel.
+4. Add your Stripe Secret Key (`sk_...`) to Vercel.
+5. In Stripe Dashboard, go to Developers → Webhooks and add an endpoint pointing to `https://your-app.vercel.app/api/stripe-webhook`.
+   - Events to listen for: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
+6. Reveal the webhook secret (`whsec_...`) and add it to `STRIPE_WEBHOOK_SECRET` in Vercel.
+7. Add your `SUPABASE_SERVICE_KEY` to Vercel (found in Supabase → Project Settings → API). This is required for the webhook to update user plans.
 
 ---
 

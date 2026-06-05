@@ -1,6 +1,7 @@
 // ─── AUTH CONTEXT ─────────────────────────────────────────────────────────────
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, signInWithGoogle, signOut, pullProgressFromCloud, pushProgressToCloud } from './supabase.js';
+import { syncPlanFromCloud } from './subscription.js';
 import C from '../theme.js';
 
 const AuthContext = createContext(null);
@@ -29,13 +30,17 @@ export function AuthProvider({ children }) {
         if (restored) {
           setSynced(true);
           setTimeout(() => setSynced(false), 3000);
-          // Reload to pick up restored localStorage data
-          window.location.reload();
         } else {
           // Push local progress to cloud
           await pushProgressToCloud(newUser.id);
         }
+        // Sync subscription plan from cloud (pro / free)
+        await syncPlanFromCloud(newUser.id);
         setSyncing(false);
+        if (restored) {
+          // Reload to pick up restored localStorage data
+          window.location.reload();
+        }
       }
 
       if (event === 'SIGNED_OUT') {

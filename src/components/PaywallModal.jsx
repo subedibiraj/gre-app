@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import C from '../theme';
 import { FREE_LIMITS, getGenerationsLeft, isPro } from '../lib/subscription';
+import { checkoutRedirect } from '../lib/subscription';
 import { hasGeminiKey } from '../lib/gemini';
+import { useAuth } from '../lib/auth.jsx';
 
 // ─── PAYWALL MODAL ────────────────────────────────────────────────────────────
 export default function PaywallModal({ onClose, reason = 'days' }) {
   const [showByok, setShowByok] = useState(false);
+  const [priceType, setPriceType] = useState('annual'); // 'monthly' | 'annual'
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const gensLeft = getGenerationsLeft();
+  const { user, signIn } = useAuth();
 
   const reasons = {
     days: { title: 'Unlock All 30 Days', subtitle: 'Days 8-30 are for Pro members' },
@@ -26,6 +32,22 @@ export default function PaywallModal({ onClose, reason = 'days' }) {
     { icon: '☁️', free: '—', pro: 'Cloud sync across devices' },
     { icon: '🧠', free: '—', pro: 'AI Tutor chat' },
   ];
+
+  const handleUpgrade = async () => {
+    if (!user) {
+      // Not signed in — trigger sign-in first
+      signIn();
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      await checkoutRedirect(priceType, user.id, user.email);
+    } catch (e) {
+      setError(e.message || 'Something went wrong. Please try again.');
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{
@@ -100,46 +122,114 @@ export default function PaywallModal({ onClose, reason = 'days' }) {
             ))}
           </div>
 
-          {/* Pricing */}
+          {/* Pricing with toggle */}
           <div style={{
             textAlign: 'center', padding: '18px 16px', marginBottom: 16,
             background: `linear-gradient(135deg, ${C.gold}14, ${C.goldBr}08)`,
             border: `1px solid ${C.gold}33`, borderRadius: 14,
           }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 10 }}>
-              <div>
-                <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 700, color: C.gold, margin: '0 0 2px' }}>$2.99</p>
-                <p style={{ color: C.textDim, fontSize: 11, margin: 0 }}>/ month</p>
-              </div>
-              <div style={{ borderLeft: `1px solid ${C.border}`, padding: '0 0 0 20px' }}>
-                <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 700, color: C.greenBr, margin: '0 0 2px' }}>$19.99</p>
-                <p style={{ color: C.textDim, fontSize: 11, margin: 0 }}>/ year <span style={{ color: C.greenBr, fontWeight: 700 }}>Save 44%</span></p>
-              </div>
+            {/* Monthly / Annual toggle */}
+            <div style={{
+              display: 'inline-flex', borderRadius: 8, overflow: 'hidden',
+              border: `1px solid ${C.border}`, marginBottom: 14,
+            }}>
+              <button
+                onClick={() => setPriceType('monthly')}
+                style={{
+                  padding: '8px 18px', border: 'none', cursor: 'pointer',
+                  fontSize: 12, fontWeight: 600, transition: 'all 0.2s',
+                  background: priceType === 'monthly' ? C.gold : 'transparent',
+                  color: priceType === 'monthly' ? '#07090F' : C.textDim,
+                }}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setPriceType('annual')}
+                style={{
+                  padding: '8px 18px', border: 'none', cursor: 'pointer',
+                  fontSize: 12, fontWeight: 600, transition: 'all 0.2s',
+                  background: priceType === 'annual' ? C.gold : 'transparent',
+                  color: priceType === 'annual' ? '#07090F' : C.textDim,
+                }}
+              >
+                Annual
+              </button>
             </div>
-            <p style={{ color: C.textDim, fontSize: 10, margin: 0 }}>
+
+            <div>
+              {priceType === 'monthly' ? (
+                <div>
+                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 700, color: C.gold, margin: '0 0 2px' }}>$2.99</p>
+                  <p style={{ color: C.textDim, fontSize: 11, margin: 0 }}>/ month</p>
+                </div>
+              ) : (
+                <div>
+                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 700, color: C.greenBr, margin: '0 0 2px' }}>$19.99</p>
+                  <p style={{ color: C.textDim, fontSize: 11, margin: 0 }}>/ year <span style={{ color: C.greenBr, fontWeight: 700 }}>Save 44%</span></p>
+                </div>
+              )}
+            </div>
+            <p style={{ color: C.textDim, fontSize: 10, margin: '8px 0 0' }}>
               .edu email? <span style={{ color: C.gold }}>50% off automatically</span>
             </p>
           </div>
 
-          {/* CTA buttons */}
-          <button
-            onClick={() => {
-              // TODO: Stripe checkout integration
-              alert('Stripe Checkout coming soon! For now, use your own Gemini API key in Settings for unlimited AI.');
-            }}
-            style={{
-              width: '100%', padding: '15px', borderRadius: 12, border: 'none',
-              background: `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
-              color: '#07090F', fontWeight: 700, fontSize: 15, cursor: 'pointer',
-              minHeight: 52, marginBottom: 10,
-              boxShadow: `0 4px 20px ${C.gold}44`,
-              transition: 'transform 0.15s',
-            }}
-            onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
-            onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            Upgrade to Pro →
-          </button>
+          {/* Error message */}
+          {error && (
+            <p style={{
+              color: C.red, fontSize: 12, textAlign: 'center',
+              margin: '0 0 10px', padding: '8px 12px',
+              background: C.redBg, borderRadius: 8,
+            }}>{error}</p>
+          )}
+
+          {/* CTA button — sign in first if needed */}
+          {!user ? (
+            <button
+              onClick={handleUpgrade}
+              style={{
+                width: '100%', padding: '15px', borderRadius: 12, border: 'none',
+                background: `linear-gradient(135deg, ${C.blue}, #4A90D9)`,
+                color: '#fff', fontWeight: 700, fontSize: 15, cursor: 'pointer',
+                minHeight: 52, marginBottom: 10,
+                boxShadow: `0 4px 20px ${C.blue}44`,
+                transition: 'transform 0.15s',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              }}
+              onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
+              onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Sign in first to upgrade →
+            </button>
+          ) : (
+            <button
+              onClick={handleUpgrade}
+              disabled={loading}
+              style={{
+                width: '100%', padding: '15px', borderRadius: 12, border: 'none',
+                background: loading
+                  ? C.textDim
+                  : `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
+                color: '#07090F', fontWeight: 700, fontSize: 15,
+                cursor: loading ? 'wait' : 'pointer',
+                minHeight: 52, marginBottom: 10,
+                boxShadow: loading ? 'none' : `0 4px 20px ${C.gold}44`,
+                transition: 'transform 0.15s',
+                opacity: loading ? 0.7 : 1,
+              }}
+              onMouseDown={e => !loading && (e.currentTarget.style.transform = 'scale(0.98)')}
+              onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              {loading ? 'Redirecting to Stripe…' : 'Upgrade to Pro →'}
+            </button>
+          )}
 
           {/* BYOK escape hatch */}
           <button onClick={() => setShowByok(!showByok)} style={{

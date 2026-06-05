@@ -103,6 +103,72 @@ function hasOwnKey() {
   } catch { return false; }
 }
 
+// ─── Cloud plan sync ─────────────────────────────────────────────────────────
+import { supabase } from './supabase.js';
+
+/**
+ * Fetch plan status from Supabase user_progress and update localStorage
+ * if the cloud plan is 'pro' and not expired.
+ */
+export async function syncPlanFromCloud(userId) {
+  if (!userId) return;
+  try {
+    const { data, error } = await supabase
+      .from('user_progress')
+      .select('plan, plan_expires')
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data) return;
+
+    if (data.plan === 'pro') {
+      // Check expiry — if plan_expires is set and in the past, treat as free
+      if (data.plan_expires && new Date(data.plan_expires) < new Date()) {
+        setPlan('free');
+        return;
+      }
+      // Cloud says pro and not expired — update localStorage
+      setPlan('pro', data.plan_expires || null);
+    }
+  } catch (e) {
+    console.warn('syncPlanFromCloud failed:', e);
+  }
+}
+
+/**
+ * Redirect the user to Stripe Checkout for a given price type.
+ * Calls /api/create-checkout which returns { url }.
+ */
+export async function checkoutRedirect(priceType, userId, email) {
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        priceType,     // 'monthly' | 'annual'
+        userId,
+        email,
+        returnUrl: window.location.origin,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Checkout failed (${res.status})`);
+    }
+
+    const { url } = await res.json();
+    if (url) {
+      window.location.href = url;
+    } else {
+      throw new Error('No checkout URL returned');
+    }
+  } catch (e) {
+    console.error('checkoutRedirect error:', e);
+    throw e;
+  }
+}
+
 // ─── Feature access summary ──────────────────────────────────────────────────
 export function getAccessSummary() {
   const plan = getPlan();
