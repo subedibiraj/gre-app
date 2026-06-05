@@ -72,8 +72,8 @@ export default function AiTutor() {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} style={{
-        position:'fixed', bottom:80, right:28, width:56, height:56,
+      <button className="ai-tutor-btn" onClick={() => setOpen(true)} style={{
+        position:'fixed', bottom:28, right:28, width:56, height:56,
         borderRadius:'50%', border:'none', cursor:'pointer',
         background:`linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
         color:'#07090F', fontSize:24, fontWeight:700,
@@ -89,8 +89,8 @@ export default function AiTutor() {
   }
 
   return (
-    <div style={{
-      position:'fixed', bottom:80, right:28, width:420, height:560,
+    <div className="ai-tutor-modal" style={{
+      position:'fixed', bottom:28, right:28, width:420, height:600,
       background:C.surface, border:`1px solid ${C.border}`, borderRadius:16,
       display:'flex', flexDirection:'column', zIndex:100,
       boxShadow:`0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px ${C.border}`,
