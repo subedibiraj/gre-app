@@ -11,8 +11,16 @@ export function AuthProvider({ children }) {
   const [loading, setLoading]   = useState(true);
   const [syncing, setSyncing]   = useState(false);
   const [synced, setSynced]     = useState(false);
+  const [authErrorMsg, setAuthErrorMsg] = useState(null);
 
   useEffect(() => {
+    // Check URL hash for OAuth errors
+    const hash = window.location.hash;
+    if (hash.includes('error_description=')) {
+      const params = new URLSearchParams(hash.replace('#', '?'));
+      setAuthErrorMsg(params.get('error_description'));
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -21,6 +29,8 @@ export function AuthProvider({ children }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('AUTH EVENT:', event, session ? 'Has Session' : 'No Session');
+      
       const newUser = session?.user ?? null;
       setUser(newUser);
 
@@ -43,11 +53,7 @@ export function AuthProvider({ children }) {
         
         if (event === 'SIGNED_IN' || restored || isStuckOnOnboarding) {
           localStorage.setItem('gre_onboarded', '1');
-          
-          // Small delay to ensure localStorage is flushed before reload
-          setTimeout(() => {
-            window.location.reload();
-          }, 100);
+          window.dispatchEvent(new Event('gre_progress_synced'));
         }
       }
 
@@ -100,6 +106,17 @@ export function AuthProvider({ children }) {
           boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
         }}>
           <span style={{ color: C.greenBr, fontSize: 12 }}>✓ Progress restored from cloud</span>
+        </div>
+      )}
+      {authErrorMsg && (
+        <div style={{
+          position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 500,
+          background: C.redBg, border: `1px solid ${C.red}`, borderRadius: 10,
+          padding: '12px 20px', boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+        }}>
+          <p style={{ color: C.red, margin: 0, fontWeight: 700, fontSize: 13 }}>Authentication Failed</p>
+          <p style={{ color: C.red, margin: '4px 0 0', fontSize: 12 }}>{authErrorMsg}</p>
+          <button onClick={() => setAuthErrorMsg(null)} style={{ marginTop: 8, background: 'transparent', border: `1px solid ${C.red}`, color: C.red, padding: '4px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 11 }}>Dismiss</button>
         </div>
       )}
     </AuthContext.Provider>
