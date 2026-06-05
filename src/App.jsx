@@ -12,7 +12,7 @@ import Tag from './components/Tag';
 import AiTutor from './components/AiTutor';
 import ErrorBoundary from './components/ErrorBoundary';
 import SettingsPanel from './components/SettingsPanel';
-import { AuthButton } from './lib/auth.jsx';
+import { AuthButton, useAuth } from './lib/auth.jsx';
 import ExamWeekBanner from './components/ExamWeekBanner';
 import ExamWeekDashboard from './components/ExamWeekDashboard';
 import XPBar from './components/XPBar';
@@ -40,6 +40,7 @@ const QuantPractice = lazy(() => import('./phases/quant/QuantPractice'));
 const QuantMock = lazy(() => import('./phases/quant/QuantMock'));
 const BossChallenge = lazy(() => import('./components/BossChallenge'));
 const DailySession = lazy(() => import('./components/DailySession'));
+const AdminDashboard = lazy(() => import('./phases/AdminDashboard'));
 import AwaView from './phases/AwaView';
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 
@@ -75,6 +76,10 @@ export default function App() {
   const [offline, setOffline]             = useState(!navigator.onLine);
   const [onboarded, setOnboarded]         = useState(() => localStorage.getItem('gre_onboarded') === '1');
   const [showPaywall, setShowPaywall]     = useState(null); // null or reason string
+  
+  const { user } = useAuth();
+  const isAdmin = user?.email === (import.meta.env.VITE_ADMIN_EMAIL || 'biraj.077bct031@acem.edu.np');
+
   const [sessionComplete, setSessionComplete] = useState(null); // null or { correct, total, ... }
   const [toast, setToast]                 = useState(null); // null or { message, type }
   const mainRef = useRef(null);
@@ -267,6 +272,9 @@ export default function App() {
     </div>
   );
 
+  // ─── ADMIN CONTENT ────────────────────────────────────────────────────────────
+  const adminContent = isAdmin ? <AdminDashboard /> : <div style={{color: C.red, padding: 40}}>Access Denied</div>;
+
   // ─── SIDEBAR CONTENT ─────────────────────────────────────────────────────────
   const BOSS_DAY_MAP = { 2: 'boss_2', 4: 'boss_4', 7: 'boss_7' };
   const sidebarContent = section === 'verbal' ? (
@@ -324,6 +332,17 @@ export default function App() {
           }}>{item.label}</button>
         ))}
       </div>
+      {isAdmin && (
+        <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
+          <button onClick={() => setSection('admin')} style={{
+            width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+            border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+            background: section === 'admin' ? `${C.red}33` : 'transparent',
+            color: section === 'admin' ? C.red : C.textMid,
+            fontSize: 13, fontWeight: 600,
+          }}>🛡️ Admin Panel</button>
+        </div>
+      )}
     </div>
   ) : (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -366,10 +385,32 @@ export default function App() {
           }}>{item.label}</button>
         ))}
       </div>
+      {isAdmin && (
+        <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
+          <button onClick={() => setSection('admin')} style={{
+            width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+            border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+            background: section === 'admin' ? `${C.red}33` : 'transparent',
+            color: section === 'admin' ? C.red : C.textMid,
+            fontSize: 13, fontWeight: 600,
+          }}>🛡️ Admin Panel</button>
+        </div>
+      )}
     </div>
   );
 
-  const sidebarContentRender = section === 'awa' ? (
+  const sidebarContentRender = section === 'admin' ? (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <p style={{ fontSize: 10, color: C.red, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, paddingLeft: 4, fontWeight: 700 }}>Admin View</p>
+      <button style={{
+        width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+        border: `1px solid ${C.red}`, cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+        background: C.red + '22', color: C.red, fontSize: 13, fontWeight: 600,
+      }}>
+        🛡️ Dashboard
+      </button>
+    </div>
+  ) : section === 'awa' ? (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <p style={{ fontSize: 10, color: C.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, paddingLeft: 4, fontWeight: 700 }}>AWA Writing</p>
       <button 
@@ -606,7 +647,7 @@ export default function App() {
                 transition={{ duration: 0.2 }}
               >
                 <Suspense fallback={<div style={{height:'400px', display:'flex', alignItems:'center', justifyContent:'center', color:C.gold}}>Loading...</div>}>
-                  {section === 'verbal' ? verbalContent : section === 'quant' ? quantContent : awaContent}
+                  {section === 'verbal' ? verbalContent : section === 'quant' ? quantContent : section === 'awa' ? awaContent : adminContent}
                 </Suspense>
               </motion.div>
             </AnimatePresence>
