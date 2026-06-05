@@ -22,7 +22,8 @@ export function AuthProvider({ children }) {
     }
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) setAuthErrorMsg(error.message);
       setUser(session?.user ?? null);
       setLoading(false);
     });
