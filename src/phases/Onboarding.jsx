@@ -2,6 +2,7 @@ import { useState } from 'react';
 import C from '../theme';
 import { recordSectionResult } from '../engine/adaptive';
 import { updateWordSR } from '../engine/spaced';
+import { useAuth } from '../lib/auth.jsx';
 
 // ─── DIAGNOSTIC QUESTIONS ─────────────────────────────────────────────────────
 // 10 questions: 3 VIC, 3 TC, 2 SE, 2 QC
@@ -251,6 +252,8 @@ function DiagnosticQuestion({ q, onAnswer, answered }) {
 
 // ─── SETUP SCREENS ────────────────────────────────────────────────────────────
 function WelcomeScreen({ onStart }) {
+  const { signIn } = useAuth();
+  
   return (
     <div style={{ textAlign: 'center', padding: '10px 0 20px' }} className="fade-in">
       <div style={{ fontSize: 56, marginBottom: 16 }}>🎯</div>
@@ -277,9 +280,17 @@ function WelcomeScreen({ onStart }) {
         marginTop: 28, padding: '14px 40px', borderRadius: 10, border: 'none',
         background: `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
         color: '#07090F', fontWeight: 700, fontSize: 16, cursor: 'pointer',
-        boxShadow: `0 4px 20px ${C.gold}44`, minHeight: 52,
+        boxShadow: `0 4px 20px ${C.gold}44`, minHeight: 52, width: '100%', maxWidth: 300,
       }}>
         Get Started →
+      </button>
+
+      <button onClick={signIn} style={{
+        marginTop: 16, padding: '10px', borderRadius: 8, border: 'none',
+        background: 'transparent', color: C.textMid, fontSize: 13, cursor: 'pointer',
+        textDecoration: 'underline', width: '100%', maxWidth: 300,
+      }}>
+        Already have an account? Sign in
       </button>
     </div>
   );
