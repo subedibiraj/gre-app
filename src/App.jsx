@@ -350,15 +350,24 @@ export default function App() {
           { id: -2,  label: '🔗 Word Map',     tab: 'relations' },
           { id: -3,  label: '🌱 Roots',        tab: 'roots' },
           { id: 0,   label: "☀️ Today's Plan", tab: 'overview', green: true },
-        ].map(item => (
-          <button key={item.id} onClick={() => { setCurrentDay(item.id); setTab(item.tab); }} style={{
-            width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
-            border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
-            background: currentDay === item.id ? (item.green ? C.green + '33' : C.gold + '22') : 'transparent',
-            color: currentDay === item.id ? (item.green ? C.greenBr : C.gold) : C.textMid,
-            fontSize: 13, fontWeight: 600,
-          }}>{item.label}</button>
-        ))}
+        ].map(item => {
+          const locked = !canAccessDay(item.id);
+          return (
+            <button key={item.id} onClick={() => {
+              if (locked) { setShowPaywall('features'); return; }
+              setCurrentDay(item.id); setTab(item.tab);
+            }} style={{
+              width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+              border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+              background: currentDay === item.id ? (item.green ? C.green + '33' : C.gold + '22') : 'transparent',
+              color: currentDay === item.id ? (item.green ? C.greenBr : C.gold) : locked ? C.textDim + '88' : C.textMid,
+              fontSize: 13, fontWeight: 600, opacity: locked ? 0.6 : 1,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <span>{locked ? '🔒' : ''} {item.label}</span>
+            </button>
+          );
+        })}
       </div>
       {isAdmin && (
         <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>

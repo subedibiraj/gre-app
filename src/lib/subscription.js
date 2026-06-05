@@ -54,7 +54,11 @@ export const FREE_LIMITS = {
 export function canAccessDay(dayNum) {
   if (isPro()) return true;
   if (hasOwnKey()) return true; // BYOK users get vocab access
-  return dayNum <= FREE_LIMITS.maxDay;
+  
+  if (dayNum === 0 || dayNum === -1) return true; // Roadmap and Mock Exam
+  if (dayNum === -2 || dayNum === -3) return false; // Premium features
+  
+  return dayNum > 0 && dayNum <= FREE_LIMITS.maxDay;
 }
 
 export function canGenerate() {
