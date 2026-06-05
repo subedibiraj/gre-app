@@ -11,6 +11,7 @@ export const FORMULAS = [
       {
         name: 'Percent Change',
         formula: '((New − Old) / Old) × 100',
+        latex: '\\frac{\\text{New} - \\text{Old}}{\\text{Old}} \\times 100',
         note: 'ALWAYS divide by the ORIGINAL (Old) value — never the new. A 50% increase then 50% decrease ≠ original (net −25%). Watch: "price is 30% more than Y" means X = 1.3Y, so Y = X/1.3, NOT Y = X − 0.3X.',
       },
       {
@@ -122,8 +123,9 @@ export const FORMULAS = [
       },
       {
         name: 'Quadratic Formula',
-        formula: 'x = (−b ± √(b²−4ac)) / 2a',
-        note: 'Discriminant Δ = b²−4ac: Δ>0 → 2 distinct real roots; Δ=0 → 1 repeated root (x=−b/2a); Δ<0 → no real roots. Always factor first — faster than formula. If roots are r,s then ax²+bx+c = a(x−r)(x−s).',
+        formula: 'x = (−b ± √(b² − 4ac)) / 2a',
+        latex: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}',
+        note: 'Rarely strictly required, but useful as a fallback when factoring fails. The discriminant (b² − 4ac) tells you how many real roots exist (positive = 2, zero = 1, negative = 0).',
       },
       {
         name: 'Vieta\'s Formulas (Sum & Product of Roots)',
@@ -134,6 +136,12 @@ export const FORMULAS = [
         name: 'Key Factoring Identities',
         formula: 'a²−b²=(a+b)(a−b)    (a±b)²=a²±2ab+b²    a³±b³=(a±b)(a∓ab+b²)',
         note: 'Difference of squares: spot whenever you see two perfect squares subtracted (997×1003 = 1000²−9 = 999,991). Perfect square: NEVER forget the middle term. Sum/diff of cubes: rare but appears at 168+ level.',
+      },
+      {
+        name: 'Difference of Squares',
+        formula: 'x² − y² = (x + y)(x − y)',
+        latex: 'x^2 - y^2 = (x + y)(x - y)',
+        note: 'The most tested algebra formula on the GRE. Look for hidden versions like 9a² − 16b² or x⁴ − y⁴ = (x² + y²)(x + y)(x − y). Can also be used for quick mental math (e.g., 51² − 49² = (100)(2) = 200).',
       },
       {
         name: 'Systems of Equations',
@@ -198,6 +206,12 @@ export const FORMULAS = [
         note: 'The two smaller sides must STRICTLY EXCEED the third (not equal). Acute: a²+b²>c². Right: a²+b²=c². Obtuse: a²+b²<c². If 3+7=10, this does NOT satisfy the strict inequality, so no triangle possible.',
       },
       {
+        name: 'Pythagorean Theorem',
+        formula: 'a² + b² = c²',
+        latex: 'a^2 + b^2 = c^2',
+        note: 'Only applies to RIGHT triangles. "c" is always the hypotenuse (the longest side opposite the 90° angle). If you only know a and b but don\'t know it\'s a right triangle, you CANNOT find c.',
+      },
+      {
         name: 'Pythagorean Theorem & Triples',
         formula: 'a²+b²=c²  (c=hypotenuse). Triples: 3-4-5  5-12-13  8-15-17  7-24-25',
         note: 'All multiples work: 6-8-10, 9-12-15, 10-24-26, 15-36-39, 20-48-52. Recognize triples immediately — saves 30 sec per problem. To generate new triples: (m²−n², 2mn, m²+n²) for m>n>0.',
@@ -221,6 +235,12 @@ export const FORMULAS = [
         name: 'Similar Triangles',
         formula: 'If ratio of corresponding sides = k, then area ratio = k², volume ratio = k³.',
         note: 'AA similarity: two matching angles → similar. SAS: two sides in proportion with included angle. SSS: all three sides in proportion. A line parallel to one side creates similar triangles — set up proportions. Shadow/height problems always use similar triangles.',
+      },
+      {
+        name: 'Area of a Circle',
+        formula: 'A = πr²',
+        latex: 'A = \\pi r^2',
+        note: 'Area scales with the SQUARE of the radius. If radius doubles, area quadruples. Don\'t confuse this with circumference.',
       },
       {
         name: 'Circle — Core',

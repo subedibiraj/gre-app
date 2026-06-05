@@ -29,6 +29,17 @@ export async function apiFetch(endpoint, body) {
   const headers = { 'Content-Type': 'application/json' };
   if (key) headers['x-gemini-key'] = key;
 
+  // Add Supabase auth token so backend can verify Pro status
+  const sessionString = localStorage.getItem('sb-' + import.meta.env.VITE_SUPABASE_URL.split('//')[1].split('.')[0] + '-auth-token');
+  if (sessionString) {
+    try {
+      const session = JSON.parse(sessionString);
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+    } catch(e){}
+  }
+
   const res = await fetch(endpoint, {
     method: 'POST',
     headers,

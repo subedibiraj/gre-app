@@ -1,5 +1,9 @@
 import { GoogleGenAI } from '@google/genai';
-import { getGeminiKey, GRE_VERBAL_REGISTER, getDifficultyRules, TC_RULES, SE_RULES, RC_RULES, EXPLANATION_FORMAT } from './_prompts.js';
+import {
+  getGeminiKey, GRE_VERBAL_REGISTER, getDifficultyRules,
+  TC_RULES, SE_RULES, RC_RULES, EXPLANATION_FORMAT
+} from './_prompts.js';
+import { verifyProStatus } from './_auth.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,7 +14,14 @@ export default async function handler(req, res) {
 
   try {
     const apiKey = getGeminiKey(req);
-    if (!apiKey) return res.status(400).json({ error: 'No Gemini API key. Add it in ⚙️ Settings.' });
+    if (!apiKey) {
+      return res.status(400).json({ error: 'No Gemini API key configured.' });
+    }
+
+    const isAuthorized = await verifyProStatus(req);
+    if (!isAuthorized) {
+      return res.status(402).json({ error: 'Payment Required: Mock Exams require a Pro subscription.' });
+    }
 
     const { profile = null } = req.body;
     const ai = new GoogleGenAI({ apiKey });

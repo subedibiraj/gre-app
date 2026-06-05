@@ -117,7 +117,10 @@ export default function App() {
       const k = e.key.toLowerCase();
       if (k === 'escape') { setShowSettings(false); setDrawerOpen(false); return; }
       if (k === 'v') { setSection('verbal'); setCurrentDay(1); setTab('vocab'); return; }
-      if (k === 'q') { setSection('quant'); setQuantPage(null); return; }
+      if (k === 'q') { 
+        if (!isPro()) { setShowPaywall('quant'); return; }
+        setSection('quant'); setQuantPage(null); return; 
+      }
       if (k === 'p' && section === 'verbal' && currentDay > 0) { setTab('practice'); return; }
       if (k >= '1' && k <= '9' && section === 'verbal') { setCurrentDay(parseInt(k)); setTab('vocab'); return; }
     };
@@ -129,6 +132,16 @@ export default function App() {
   const srStats = getSRStats();
   const totalWords = DAYS.flatMap(d => d.words).length;
   const day = currentDay > 0 ? DAYS[currentDay-1] : null;
+
+  const goQuant = useCallback((page = null, tab = null) => {
+    if (!isPro()) {
+      setShowPaywall('quant');
+      return;
+    }
+    setSection('quant');
+    if (page !== null) setQuantPage(page);
+    if (tab !== null) setQuantTab(tab);
+  }, []);
 
   // ─── Callbacks ────────────────────────────────────────────────────────────────
   const addWeakWords = useCallback((words) => {
@@ -176,9 +189,9 @@ export default function App() {
     if (nav.startsWith('verbal_vocab')) { const d = parseInt(nav.split('_')[2]) || 1; setSection('verbal'); setCurrentDay(d); setTab('vocab'); }
     else if (nav === 'verbal_practice') { setSection('verbal'); setCurrentDay(1); setTab('practice'); }
     else if (nav === 'verbal_mock') { setSection('verbal'); setCurrentDay(-1); }
-    else if (nav === 'quant_learn') { setSection('quant'); setQuantPage('arithmetic'); setQuantTab('learn'); }
-    else if (nav === 'quant_practice') { setSection('quant'); setQuantPage('arithmetic'); setQuantTab('practice'); }
-    else if (nav === 'quant_mock') { setSection('quant'); setQuantPage('mock'); }
+    else if (nav === 'quant_learn') { goQuant('arithmetic', 'learn'); }
+    else if (nav === 'quant_practice') { goQuant('arithmetic', 'practice'); }
+    else if (nav === 'quant_mock') { goQuant('mock'); }
     else if (nav === 'blitz') setShowWeakBlitz(true);
     else if (nav === 'drill') { sessionStorage.removeItem(`gre_drill_${new Date().toDateString()}`); setShowMorningDrill(true); }
   };
@@ -568,7 +581,7 @@ export default function App() {
         <button className={section === 'verbal' ? 'active' : ''} onClick={() => { setSection('verbal'); setCurrentDay(1); setTab('vocab'); }}>
           <span className="icon">📖</span>Verbal
         </button>
-        <button className={section === 'quant' ? 'active' : ''} onClick={() => { setSection('quant'); setQuantPage(null); }}>
+        <button className={section === 'quant' ? 'active' : ''} onClick={() => goQuant(null)}>
           <span className="icon">📐</span>Quant
         </button>
         <button onClick={() => setDrawerOpen(d => !d)} className={drawerOpen ? 'active' : ''}>

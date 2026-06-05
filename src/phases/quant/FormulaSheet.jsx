@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import C from '../../theme';
 import { FORMULAS } from '../../data/formulas';
+import { InlineMath, BlockMath } from 'react-katex';
 
 // ─── Formula Quick-Test Mode ───────────────────────────────────────────────────
 function shuffle(arr) {
@@ -238,7 +239,13 @@ export default function FormulaSheet() {
                     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                       <div style={{ flex:1 }}>
                         <p style={{ color:isMastered?C.green:C.text, fontSize:13, fontWeight:700, margin:'0 0 4px', textDecoration:isMastered?'line-through':'none' }}>{f.name}</p>
-                        <p style={{ fontFamily:'Courier New,monospace', fontSize:15, color, fontWeight:700, margin:0, lineHeight:1.4 }}>{f.formula}</p>
+                        {f.latex ? (
+                          <div style={{ color, padding: '8px 0' }}>
+                            <BlockMath math={f.latex} />
+                          </div>
+                        ) : (
+                          <p style={{ fontFamily:'Courier New,monospace', fontSize:15, color, fontWeight:700, margin:0, lineHeight:1.4 }}>{f.formula}</p>
+                        )}
                       </div>
                       <button onClick={(e)=>toggleMastered(f.name,e)} style={{
                         width:32, height:32, borderRadius:8, border:`1px solid ${isMastered?C.green:C.border}`,
