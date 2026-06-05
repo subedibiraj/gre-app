@@ -186,7 +186,7 @@ function SEQuestion({ q, answer, onAnswer, checked }) {
         {q.stem}
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 6 }}>
         {q.opts.map(opt => {
           const isSel      = sel.includes(opt.l);
           const isCorrect  = checked && q.answers.includes(opt.l);   // always highlight correct answers
@@ -571,7 +571,7 @@ export default function MockExam() {
 
           {/* Section breakdown */}
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
             gap: 10, marginBottom: 16,
           }}>
             {[

@@ -166,10 +166,10 @@ export default function SettingsPanel({ open, onClose }) {
               Manually toggle subscription states to test paywalls and premium features.
             </p>
             <div style={{ display: 'flex', gap: 10 }}>
-              <Btn small onClick={() => { setPlan('pro'); window.location.reload(); }}>
+              <Btn small onClick={() => { localStorage.setItem('gre_admin_override', 'pro'); setPlan('pro'); window.location.reload(); }}>
                 Unlock Pro Mode
               </Btn>
-              <Btn small variant="ghost" onClick={() => { setPlan('free'); window.location.reload(); }}>
+              <Btn small variant="ghost" onClick={() => { localStorage.setItem('gre_admin_override', 'free'); setPlan('free'); window.location.reload(); }}>
                 Reset to Free
               </Btn>
             </div>

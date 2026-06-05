@@ -419,7 +419,7 @@ export default function QuantMock() {
 
   // ─── EXAM IN PROGRESS ──────────────────────────────────────────────────────
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 20, alignItems: 'start' }}>
+    <div className="mock-exam-grid" style={{ gap: 20, alignItems: 'start' }}>
       {/* Main exam column */}
       <div>
         {/* Sticky header */}

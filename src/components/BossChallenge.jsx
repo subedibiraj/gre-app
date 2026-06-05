@@ -189,7 +189,7 @@ export default function BossChallenge({ boss, onClose }) {
     const prevResult = getBossResult(boss.id);
     return (
       <div style={overlay}>
-        <div style={{ ...panel, maxWidth: 440 }}>
+        <div className="modal-inner" style={{ ...panel, maxWidth: 440 }}>
           <div style={{ padding: '28px 24px', textAlign: 'center' }}>
             {/* Boss reveal */}
             <div style={{
@@ -260,7 +260,7 @@ export default function BossChallenge({ boss, onClose }) {
 
     return (
       <div style={overlay}>
-        <div style={{ ...panel, maxWidth: 520, transition: 'background 0.2s', background: bgFlash }}>
+        <div className="modal-inner" style={{ ...panel, maxWidth: 520, transition: 'background 0.2s', background: bgFlash }}>
           {/* HP bars */}
           <div style={{
             padding: '14px 20px', borderBottom: `1px solid ${C.border}`,
@@ -388,7 +388,7 @@ export default function BossChallenge({ boss, onClose }) {
     const pct = score / questions.length;
     return (
       <div style={overlay}>
-        <div style={{ ...panel, maxWidth: 440, textAlign: 'center' }}>
+        <div className="modal-inner" style={{ ...panel, maxWidth: 440, textAlign: 'center' }}>
           <div style={{ padding: '28px 24px' }}>
             <p style={{ fontSize: 56, margin: '0 0 8px', animation: 'fadeIn 0.4s' }}>
               {beaten ? '🏆' : '💀'}

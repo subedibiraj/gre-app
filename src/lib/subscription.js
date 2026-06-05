@@ -113,8 +113,12 @@ import { supabase } from './supabase.js';
 export async function syncPlanFromCloud(userId, userEmail) {
   if (!userId) return;
   try {
-    // 1. Hardcoded Admin Access
-    if (userEmail === 'biraj.077bct031@acem.edu.np') {
+    // 1. Check local override FIRST
+    const override = localStorage.getItem('gre_admin_override');
+    if (override === 'free') {
+      setPlan('free');
+      return;
+    } else if (override === 'pro') {
       setPlan('pro');
       return;
     }
