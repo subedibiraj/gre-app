@@ -88,6 +88,20 @@ export default function App() {
     window.showToast = (message, type = 'error') => setToast({ message, type });
   }, []);
 
+  // ─── Listen for cloud sync events ─────────────────────────────────────────────
+  useEffect(() => {
+    const handleSync = () => {
+      if (localStorage.getItem('gre_onboarded') === '1') {
+        setOnboarded(true);
+      }
+      setWeakWords(loadJSON('gre_weakWords', []));
+      setDayScores(loadJSON('gre_dayScores', {}));
+      setQuantScores(loadJSON('gre_quantScores', {}));
+    };
+    window.addEventListener('gre_progress_synced', handleSync);
+    return () => window.removeEventListener('gre_progress_synced', handleSync);
+  }, []);
+
   // ─── Test date countdown ──────────────────────────────────────────────────────
   const testDate = loadJSON('gre_testDate', null);
   const daysUntilTest = testDate ? Math.max(0, Math.ceil((new Date(testDate) - new Date()) / 86400000)) : null;
