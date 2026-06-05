@@ -40,6 +40,7 @@ const QuantPractice = lazy(() => import('./phases/quant/QuantPractice'));
 const QuantMock = lazy(() => import('./phases/quant/QuantMock'));
 const BossChallenge = lazy(() => import('./components/BossChallenge'));
 const DailySession = lazy(() => import('./components/DailySession'));
+const AwaView = lazy(() => import('./phases/AwaView'));
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -94,8 +95,10 @@ export default function App() {
       if (currentDay > 0) document.title = `${base} — Day ${currentDay}: ${DAYS[currentDay-1]?.theme}`;
       else if (currentDay === -1) document.title = `${base} — Verbal Mock`;
       else document.title = base;
-    } else {
+    } else if (section === 'quant') {
       document.title = quantPage ? `${base} — ${quantPage}` : `${base} — Quant`;
+    } else if (section === 'awa') {
+      document.title = `${base} — AWA Writing`;
     }
   }, [section, currentDay, quantPage]);
 
@@ -357,12 +360,25 @@ export default function App() {
         ))}
       </div>
     </div>
-  );
+  ) : (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <p style={{ fontSize: 10, color: C.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, paddingLeft: 4, fontWeight: 700 }}>AWA Writing</p>
+      <button style={{
+        width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+        border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+        background: C.gold, color: '#07090F', fontSize: 13, fontWeight: 600,
+      }}>
+        ✍️ Issue Task
+      </button>
+    </div>
+  ) : sidebarContent;
 
   // ─── MOBILE CONTEXT LABEL ─────────────────────────────────────────────────────
   const mobileContextLabel = section === 'verbal'
     ? (currentDay > 0 ? `Day ${currentDay}: ${day?.theme}` : currentDay === -1 ? 'Mock Exam' : currentDay === -2 ? 'Word Map' : currentDay === -3 ? 'Roots' : "Today's Plan")
-    : (quantPage ? QUANT_TOPICS.find(t => t.id === quantPage)?.label || quantPage : 'Quant Overview');
+    : section === 'quant' 
+      ? (quantPage ? QUANT_TOPICS.find(t => t.id === quantPage)?.label || quantPage : 'Quant Overview')
+      : 'Analytical Writing';
 
   // ─── ONBOARDING GATE ─────────────────────────────────────────────────────────
   if (!onboarded) {
@@ -416,8 +432,13 @@ export default function App() {
 
         {/* Section switcher */}
         <div style={{ display: 'flex', background: C.bg, borderRadius: 6, border: `1px solid ${C.border}`, overflow: 'hidden', flexShrink: 0 }}>
-          {[{ id: 'verbal', label: 'Verbal' }, { id: 'quant', label: 'Quant' }].map(s => (
-            <button key={s.id} onClick={() => { setSection(s.id); if (s.id === 'quant') setQuantPage(null); if (s.id === 'verbal') { setCurrentDay(1); setTab('vocab'); } }} style={{
+          {[{ id: 'verbal', label: 'Verbal' }, { id: 'quant', label: 'Quant' }, { id: 'awa', label: 'Writing' }].map(s => (
+            <button key={s.id} onClick={() => { 
+              if (s.id === 'awa' && !isPro()) { setShowPaywall('awa'); return; }
+              setSection(s.id); 
+              if (s.id === 'quant') setQuantPage(null); 
+              if (s.id === 'verbal') { setCurrentDay(1); setTab('vocab'); } 
+            }} style={{
               padding: '5px 12px', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700,
               background: section === s.id ? C.gold : 'transparent',
               color: section === s.id ? '#07090F' : C.textMid,
@@ -501,7 +522,7 @@ export default function App() {
           borderRight: `1px solid ${C.border}`, padding: '16px 10px',
           overflowY: 'auto', display: 'flex', flexDirection: 'column',
         }}>
-          {sidebarContent}
+          {sidebarContentRender}
         </aside>
 
         {/* MOBILE DRAWER BACKDROP */}
@@ -523,11 +544,11 @@ export default function App() {
         }} className="mobile-drawer">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <p style={{ fontFamily: 'Georgia,serif', color: C.gold, fontSize: 14, fontWeight: 700, margin: 0 }}>
-              {section === 'verbal' ? '30 Days' : 'Topics'}
+              {section === 'verbal' ? '30 Days' : section === 'quant' ? 'Topics' : 'Writing'}
             </p>
             <button onClick={() => setDrawerOpen(false)} style={{ background: 'none', border: 'none', color: C.textMid, cursor: 'pointer', fontSize: 20, padding: 4, minHeight: 36 }}>✕</button>
           </div>
-          {sidebarContent}
+          {sidebarContentRender}
         </aside>
 
         {/* MAIN CONTENT */}
@@ -574,7 +595,7 @@ export default function App() {
                 transition={{ duration: 0.2 }}
               >
                 <Suspense fallback={<div style={{height:'400px', display:'flex', alignItems:'center', justifyContent:'center', color:C.gold}}>Loading...</div>}>
-                  {section === 'verbal' ? verbalContent : quantContent}
+                  {section === 'verbal' ? verbalContent : section === 'quant' ? quantContent : awaContent}
                 </Suspense>
               </motion.div>
             </AnimatePresence>
@@ -582,7 +603,6 @@ export default function App() {
         </main>
       </div>
 
-      {/* ── BOTTOM NAV (mobile only) ── */}
       <nav className="mobile-bottom-nav">
         <button className={section === 'verbal' ? 'active' : ''} onClick={() => { setSection('verbal'); setCurrentDay(1); setTab('vocab'); }}>
           <span className="icon">📖</span>Verbal
@@ -590,11 +610,14 @@ export default function App() {
         <button className={section === 'quant' ? 'active' : ''} onClick={() => goQuant(null)}>
           <span className="icon">📐</span>Quant
         </button>
-        <button onClick={() => setDrawerOpen(d => !d)} className={drawerOpen ? 'active' : ''}>
-          <span className="icon">☰</span>Navigate
+        <button className={section === 'awa' ? 'active' : ''} onClick={() => {
+          if (!isPro()) { setShowPaywall('awa'); return; }
+          setSection('awa');
+        }}>
+          <span className="icon">✍️</span>Writing
         </button>
-        <button onClick={() => setShowDailySession(true)}>
-          <span className="icon">📅</span>Plan
+        <button onClick={() => setDrawerOpen(d => !d)} className={drawerOpen ? 'active' : ''}>
+          <span className="icon">☰</span>Menu
         </button>
         <button onClick={() => setShowSettings(true)}>
           <span className="icon">⚙️</span>Settings
