@@ -2,9 +2,12 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import C from './theme';
 import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
-import { getStreak } from './engine/streak';
+import { getStreak, getShieldStatus } from './engine/streak';
 import { getSRStats } from './engine/spaced';
 import Onboarding from './phases/Onboarding';
+import SessionComplete from './components/SessionComplete';
+import PaywallModal from './components/PaywallModal';
+import { canAccessDay, canGenerate, isPro } from './lib/subscription';
 import Tag from './components/Tag';
 import AiTutor from './components/AiTutor';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -62,7 +65,14 @@ export default function App() {
   const [drawerOpen, setDrawerOpen]       = useState(false); // mobile day/topic drawer
   const [offline, setOffline]             = useState(!navigator.onLine);
   const [onboarded, setOnboarded]         = useState(() => localStorage.getItem('gre_onboarded') === '1');
+  const [showPaywall, setShowPaywall]     = useState(null); // null or reason string
+  const [sessionComplete, setSessionComplete] = useState(null); // null or { correct, total, ... }
   const mainRef = useRef(null);
+
+  // ─── Test date countdown ──────────────────────────────────────────────────────
+  const testDate = loadJSON('gre_testDate', null);
+  const daysUntilTest = testDate ? Math.max(0, Math.ceil((new Date(testDate) - new Date()) / 86400000)) : null;
+  const shield = getShieldStatus();
 
   // ─── Document title ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -192,6 +202,7 @@ export default function App() {
           dayScores={dayScores[currentDay]}
           cachedQuestions={cachedQs[currentDay] || null}
           onCacheQuestions={(qs) => cacheQuestionsForDay(currentDay, qs)}
+          onSessionComplete={(data) => setSessionComplete(data)}
         />
       )}
     </>;
@@ -235,15 +246,19 @@ export default function App() {
           const bossAvailable = bossId && currentDay >= d.day && !bossResult?.beaten;
           const bossBeaten = bossResult?.beaten;
           return (
-            <button key={d.day} onClick={() => { setCurrentDay(d.day); setTab('vocab'); }} style={{
+            <button key={d.day} onClick={() => {
+              if (!canAccessDay(d.day)) { setShowPaywall('days'); return; }
+              setCurrentDay(d.day); setTab('vocab');
+            }} style={{
               width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
               background: isCurrent ? C.gold : 'transparent',
-              color: isCurrent ? '#07090F' : hasSc ? C.greenBr : C.textMid,
+              color: isCurrent ? '#07090F' : hasSc ? C.greenBr : !canAccessDay(d.day) ? C.textDim + '88' : C.textMid,
+              opacity: canAccessDay(d.day) ? 1 : 0.6,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, width: 22, flexShrink: 0, fontFamily: 'Courier New,monospace' }}>
-                  {hasSc ? '✓' : `D${d.day}`}
+                  {!canAccessDay(d.day) ? '🔒' : hasSc ? '✓' : `D${d.day}`}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: 12, fontWeight: isCurrent ? 700 : 500, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.theme}</p>
@@ -371,11 +386,28 @@ export default function App() {
           ))}
         </div>
 
-        {/* Streak — desktop only */}
+        {/* Streak + Shield — desktop only */}
         {streak.current > 0 && (
           <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: 5, background: C.goldDim + '33', border: `1px solid ${C.goldDim}`, borderRadius: 20, padding: '3px 10px' }}>
             <span style={{ fontSize: 14 }}>🔥</span>
             <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 13, color: C.gold }}>{streak.current}</span>
+            {shield.available && <span title="Streak Shield ready" style={{ fontSize: 12, marginLeft: 2, opacity: 0.8 }}>🛡️</span>}
+          </div>
+        )}
+
+        {/* Test countdown — desktop only */}
+        {daysUntilTest !== null && (
+          <div className="hide-mobile" style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            padding: '3px 10px', borderRadius: 20,
+            background: daysUntilTest <= 14 ? `${C.red}18` : daysUntilTest <= 30 ? `${C.gold}18` : `${C.green}18`,
+            border: `1px solid ${daysUntilTest <= 14 ? C.red : daysUntilTest <= 30 ? C.gold : C.green}44`,
+          }}>
+            <span style={{ fontSize: 12 }}>📅</span>
+            <span style={{
+              fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 12,
+              color: daysUntilTest <= 14 ? C.red : daysUntilTest <= 30 ? C.gold : C.greenBr,
+            }}>{daysUntilTest}d</span>
           </div>
         )}
 
@@ -515,6 +547,20 @@ export default function App() {
       <SettingsPanel open={showSettings} onClose={() => setShowSettings(false)} />
       <AchievementToast achievement={achToast} onDone={() => setAchToast(null)} />
       <AiTutor />
+      {showPaywall && <PaywallModal reason={showPaywall} onClose={() => setShowPaywall(null)} />}
+      {sessionComplete && (
+        <SessionComplete
+          {...sessionComplete}
+          onClose={() => setSessionComplete(null)}
+          onReview={() => setSessionComplete(null)}
+          onNext={() => {
+            setSessionComplete(null);
+            if (section === 'verbal' && currentDay > 0 && currentDay < 30) {
+              setCurrentDay(currentDay + 1); setTab('vocab');
+            }
+          }}
+        />
+      )}
 
       {offline && (
         <div style={{

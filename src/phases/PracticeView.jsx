@@ -14,11 +14,13 @@ import TCSection from './TCSection';
 import SESection from './SESection';
 import RCSection from './RCSection';
 
-export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpdate, dayScores, cachedQuestions, onCacheQuestions }) {
+export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpdate, dayScores, cachedQuestions, onCacheQuestions, onSessionComplete }) {
   const [qs, setQs]           = useState(cachedQuestions);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState(null);
   const [sectionScores, setSectionScores] = useState({contrast:null, vic:null, tc:null, se:null, rc:null});
+  const [sectionTotals, setSectionTotals] = useState({contrast:null, vic:null, tc:null, se:null, rc:null});
+  const [sessionWeakWords, setSessionWeakWords] = useState([]);
   const [timed, setTimed]     = useState(false);
 
   useEffect(() => {
@@ -57,33 +59,55 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
 
   const handleContrastComplete = (correct, total) => {
     setSectionScores(s=>({...s, contrast:correct}));
+    setSectionTotals(s=>({...s, contrast:total}));
     onScoreUpdate(day, 'contrast', correct, total);
     recordPractice();
   };
 
   const handleVICComplete = (correct, total, wrongWords) => {
     setSectionScores(s=>({...s, vic:correct}));
-    if (wrongWords?.length) onWeakUpdate(wrongWords);
+    setSectionTotals(s=>({...s, vic:total}));
+    if (wrongWords?.length) { onWeakUpdate(wrongWords); setSessionWeakWords(w => [...w, ...wrongWords]); }
     onScoreUpdate(day, 'vic', correct, total);
     recordPractice();
   };
 
   const handleTCComplete = (correct, total) => {
     setSectionScores(s=>({...s, tc:correct}));
+    setSectionTotals(s=>({...s, tc:total}));
     onScoreUpdate(day, 'tc', correct, total);
     recordPractice();
   };
 
   const handleSEComplete = (correct, total) => {
     setSectionScores(s=>({...s, se:correct}));
+    setSectionTotals(s=>({...s, se:total}));
     onScoreUpdate(day, 'se', correct, total);
     recordPractice();
   };
 
   const handleRCComplete = (correct, total) => {
     setSectionScores(s=>({...s, rc:correct}));
+    setSectionTotals(s=>({...s, rc:total}));
     onScoreUpdate(day, 'rc', correct, total);
     recordPractice();
+    // RC is the last section — trigger session complete
+    setTimeout(() => {
+      const allScores = { contrast: sectionScores.contrast, vic: sectionScores.vic, tc: sectionScores.tc, se: sectionScores.se, rc: correct };
+      const allTotals = { contrast: sectionTotals.contrast, vic: sectionTotals.vic, tc: sectionTotals.tc, se: sectionTotals.se, rc: total };
+      const totalCorrect = Object.values(allScores).filter(v => v !== null).reduce((a, b) => a + b, 0);
+      const totalTotal = Object.values(allTotals).filter(v => v !== null).reduce((a, b) => a + b, 0);
+      const breakdown = {};
+      Object.keys(allScores).forEach(k => {
+        if (allScores[k] !== null) breakdown[k] = { correct: allScores[k], total: allTotals[k] };
+      });
+      onSessionComplete?.({
+        section: 'verbal', correct: totalCorrect, total: totalTotal,
+        xpGained: totalCorrect * 10 + 25,
+        weakWordsAdded: sessionWeakWords,
+        sectionBreakdown: breakdown,
+      });
+    }, 500);
   };
 
   const renderAISections = () => {
