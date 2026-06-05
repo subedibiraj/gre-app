@@ -40,7 +40,7 @@ const QuantPractice = lazy(() => import('./phases/quant/QuantPractice'));
 const QuantMock = lazy(() => import('./phases/quant/QuantMock'));
 const BossChallenge = lazy(() => import('./components/BossChallenge'));
 const DailySession = lazy(() => import('./components/DailySession'));
-const AwaView = lazy(() => import('./phases/AwaView'));
+import AwaView from './phases/AwaView';
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -365,11 +365,13 @@ export default function App() {
   const sidebarContentRender = section === 'awa' ? (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <p style={{ fontSize: 10, color: C.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, paddingLeft: 4, fontWeight: 700 }}>AWA Writing</p>
-      <button style={{
-        width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
-        border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
-        background: C.gold, color: '#07090F', fontSize: 13, fontWeight: 600,
-      }}>
+      <button 
+        onClick={() => {}}
+        style={{
+          width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+          border: `1px solid ${C.gold}`, cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
+          background: C.gold + '22', color: C.gold, fontSize: 13, fontWeight: 600,
+        }}>
         ✍️ Issue Task
       </button>
     </div>

@@ -56,7 +56,7 @@ export default function AwaView({ onSessionComplete }) {
     try {
       const data = await apiFetch('/api/awa-grade', { prompt, essay });
       setResult(data);
-      addScoreEntry('awa', { score: data.score, total: 6.0, timestamp: Date.now() });
+      addScoreEntry({ type: 'awa', score: data.score, total: 6.0 });
       if (onSessionComplete) onSessionComplete({ score: data.score, total: 6.0, type: 'awa' });
     } catch (err) {
       if (window.showToast) window.showToast(err.message || 'Failed to grade essay');
