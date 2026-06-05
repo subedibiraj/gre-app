@@ -13,6 +13,8 @@ import AiTutor from './components/AiTutor';
 import ErrorBoundary from './components/ErrorBoundary';
 import SettingsPanel from './components/SettingsPanel';
 import { AuthButton } from './lib/auth.jsx';
+import ExamWeekBanner from './components/ExamWeekBanner';
+import ExamWeekDashboard from './components/ExamWeekDashboard';
 import XPBar from './components/XPBar';
 import AchievementToast from './components/AchievementToast';
 import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
@@ -62,6 +64,7 @@ export default function App() {
   });
   const [showBoss, setShowBoss]           = useState(null);
   const [showWeakBlitz, setShowWeakBlitz] = useState(false);
+  const [showExamDashboard, setShowExamDashboard] = useState(false);
   const [drawerOpen, setDrawerOpen]       = useState(false); // mobile day/topic drawer
   const [offline, setOffline]             = useState(!navigator.onLine);
   const [onboarded, setOnboarded]         = useState(() => localStorage.getItem('gre_onboarded') === '1');
@@ -362,6 +365,13 @@ export default function App() {
             setWeakWords(prev => { const next = prev.filter(w => w !== word); saveJSON('gre_weakWords', next); return next; });
           }} />
       )}
+      {showExamDashboard && (
+        <ExamWeekDashboard 
+          weakWords={weakWords} 
+          onClose={() => setShowExamDashboard(false)} 
+          onNavigate={navigate} 
+        />
+      )}
 
       {/* ── HEADER ── */}
       <header style={{
@@ -445,6 +455,12 @@ export default function App() {
         {/* Auth — desktop only */}
         <div className="hide-mobile"><AuthButton compact /></div>
       </header>
+
+      {/* ── EXAM WEEK BANNER ── */}
+      <ExamWeekBanner 
+        daysUntilTest={daysUntilTest} 
+        onActivate={() => setShowExamDashboard(true)} 
+      />
 
       {/* ── BODY: sidebar + content ── */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>

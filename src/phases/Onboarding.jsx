@@ -476,13 +476,12 @@ export default function Onboarding({ onComplete }) {
   const containerStyle = {
     position: 'fixed', inset: 0, zIndex: 1000,
     background: C.bg,
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
     padding: '16px',
     overflowY: 'auto',
   };
 
   const panelStyle = {
-    width: '100%', maxWidth: 520,
+    width: '100%', maxWidth: 520, margin: '40px auto',
     background: C.surface, border: `1px solid ${C.border}`,
     borderRadius: 18, padding: '28px 24px',
     boxShadow: '0 20px 60px rgba(0,0,0,0.5)',

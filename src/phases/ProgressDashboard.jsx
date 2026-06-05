@@ -8,6 +8,7 @@ import { DAYS } from '../data/days';
 import { QUANT_TOPICS } from '../data/quant-topics';
 import { getQuantWeakAreas, getQuantStats } from '../engine/QuantErrorEngine';
 import { getBossResult, BOSSES } from '../components/BossChallenge';
+import ShareModal from '../components/ShareCard';
 
 const loadJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
 
@@ -54,42 +55,78 @@ function scalePct(pct) {
 function estimateScores(dayScores, quantScores) {
   const vEntries = Object.values(dayScores).filter(s => s.total > 0);
   const qEntries = Object.values(quantScores).filter(s => s.total > 0);
+  
+  const vTotalQs = vEntries.reduce((a, s) => a + s.total, 0);
+  const qTotalQs = qEntries.reduce((a, s) => a + s.total, 0);
+
+  // For real GRE prediction, more recent scores should be weighted heavier,
+  // but for now we'll do an average and calculate Standard Error of Measurement (SEM).
   const avgVPct = vEntries.length ? vEntries.reduce((a, s) => a + s.correct / s.total, 0) / vEntries.length : 0;
   const avgQPct = qEntries.length ? qEntries.reduce((a, s) => a + s.correct / s.total, 0) / qEntries.length : 0;
-  const estV = avgVPct > 0 ? scalePct(avgVPct) : null;
-  const estQ = avgQPct > 0 ? scalePct(avgQPct) : null;
-  return { estV, estQ, estTotal: estV && estQ ? estV + estQ : null, avgV: Math.round(avgVPct * 100), avgQ: Math.round(avgQPct * 100) };
+  
+  const vPoint = avgVPct > 0 ? scalePct(avgVPct) : null;
+  const qPoint = avgQPct > 0 ? scalePct(avgQPct) : null;
+
+  // SEM starts at +/- 4 points and shrinks as N questions increases (min +/- 1 point)
+  const semV = vTotalQs > 0 ? Math.max(1, 4 - Math.floor(vTotalQs / 40)) : null;
+  const semQ = qTotalQs > 0 ? Math.max(1, 4 - Math.floor(qTotalQs / 40)) : null;
+
+  const estV = vPoint ? [Math.max(130, vPoint - semV), Math.min(170, vPoint + semV)] : null;
+  const estQ = qPoint ? [Math.max(130, qPoint - semQ), Math.min(170, qPoint + semQ)] : null;
+  const estTotal = estV && estQ ? [estV[0] + estQ[0], estV[1] + estQ[1]] : null;
+
+  return { estV, estQ, estTotal, avgV: Math.round(avgVPct * 100), avgQ: Math.round(avgQPct * 100) };
 }
 
 // ─── Score Gauge ──────────────────────────────────────────────────────────────
-function ScoreGauge({ score, max = 170, label, color }) {
-  const pct   = score ? (score - 130) / 40 : 0;
-  const angle = -90 + pct * 180;
-  const r     = 44;
-  const cx    = 56, cy = 56;
-  const arcX  = cx + r * Math.cos((angle * Math.PI) / 180);
-  const arcY  = cy + r * Math.sin((angle * Math.PI) / 180);
-  const path  = `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`;
+function ScoreGauge({ range, label, color }) {
+  const r = 44;
+  const cx = 56, cy = 56;
+  const pathBG = `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`;
+
+  let pathArc = null, arcX = cx, arcY = cy;
+  if (range) {
+    const [low, high] = range;
+    const pctLow = (low - 130) / 40;
+    const pctHigh = (high - 130) / 40;
+    const a1 = -90 + pctLow * 180;
+    const a2 = -90 + pctHigh * 180;
+    
+    const x1 = cx + r * Math.cos((a1 * Math.PI) / 180);
+    const y1 = cy + r * Math.sin((a1 * Math.PI) / 180);
+    const x2 = cx + r * Math.cos((a2 * Math.PI) / 180);
+    const y2 = cy + r * Math.sin((a2 * Math.PI) / 180);
+    
+    // SVG arc drawing (large-arc-flag is 0 since difference < 180deg)
+    pathArc = `M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`;
+    
+    // For the dot (midpoint)
+    const midPct = ((low + high) / 2 - 130) / 40;
+    const aMid = -90 + midPct * 180;
+    arcX = cx + r * Math.cos((aMid * Math.PI) / 180);
+    arcY = cy + r * Math.sin((aMid * Math.PI) / 180);
+  }
 
   return (
     <div style={{ textAlign: 'center', flex: 1 }}>
       <svg width="112" height="64" viewBox="0 0 112 64">
         {/* Track */}
-        <path d={path} fill="none" stroke={C.border} strokeWidth="8" strokeLinecap="round" />
-        {/* Fill */}
-        {score && (
-          <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${arcX} ${arcY}`}
-            fill="none" stroke={color} strokeWidth="8" strokeLinecap="round" />
+        <path d={pathBG} fill="none" stroke={C.border} strokeWidth="8" strokeLinecap="round" />
+        
+        {/* Confidence Interval Fill */}
+        {range && pathArc && (
+          <path d={pathArc} fill="none" stroke={`${color}66`} strokeWidth="8" strokeLinecap="round" />
         )}
-        {/* Needle dot */}
-        {score && (
-          <circle cx={arcX} cy={arcY} r="5" fill={color}
-            style={{ filter: `drop-shadow(0 0 4px ${color})` }} />
+        
+        {/* Point estimate dot */}
+        {range && (
+          <circle cx={arcX} cy={arcY} r="4" fill={color} style={{ filter: `drop-shadow(0 0 4px ${color})` }} />
         )}
+        
         {/* Score text */}
-        <text x="56" y="52" textAnchor="middle" fill={score ? color : C.textDim}
-          fontFamily="Courier New,monospace" fontSize="20" fontWeight="700">
-          {score || '—'}
+        <text x="56" y="52" textAnchor="middle" fill={range ? color : C.textDim}
+          fontFamily="Courier New,monospace" fontSize="18" fontWeight="700">
+          {range ? `${range[0]}-${range[1]}` : '—'}
         </text>
       </svg>
       <p style={{ color: C.textDim, fontSize: 10, margin: '-4px 0 0', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</p>
@@ -330,6 +367,7 @@ function Section({ title, children, defaultOpen = true }) {
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function ProgressDashboard({ dayScores, quantScores, weakWords, currentDay }) {
+  const [showShare, setShowShare] = useState(false);
   const adaptiveProfile = getDifficultyProfile();
   const xp         = getXP();
   const level      = getLevel(xp.total);
@@ -349,12 +387,31 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
     + Object.values(quantScores).reduce((a, s) => a + (s.total || 0), 0);
 
   return (
-    <div style={{ maxWidth: 820, margin: '0 auto', paddingBottom: 40 }}>
-      {/* Page title */}
-      <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 22, color: C.gold, margin: '0 0 4px' }}>📊 Progress Dashboard</h2>
-        <p style={{ color: C.textDim, fontSize: 12 }}>Full picture of your GRE preparation</p>
+    <div style={{ maxWidth: 820, margin: '0 auto', paddingBottom: 40, position: 'relative' }}>
+      
+      {/* Page title & Share Button */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div style={{ textAlign: 'left' }}>
+          <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 22, color: C.gold, margin: '0 0 4px' }}>📊 Progress Dashboard</h2>
+          <p style={{ color: C.textDim, fontSize: 12, margin: 0 }}>Full picture of your GRE preparation</p>
+        </div>
+        <button onClick={() => setShowShare(true)} style={{
+          padding: '8px 16px', borderRadius: 8, border: `1px solid ${C.blue}44`,
+          background: `${C.blue}11`, color: C.blue, cursor: 'pointer', fontWeight: 600,
+          fontSize: 12, display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.15s'
+        }}>
+          <span>↗</span> Share Progress
+        </button>
       </div>
+
+      {showShare && (
+        <ShareModal 
+          level={level} 
+          streak={streak.current} 
+          estTotal={estTotal} 
+          onClose={() => setShowShare(false)} 
+        />
+      )}
 
       {/* Top stat pills */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
@@ -375,20 +432,20 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
           ) : (
             <>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 16, flexWrap: 'wrap' }}>
-                <ScoreGauge score={estV} label="Verbal" color={C.blue} />
+                <ScoreGauge range={estV} label="Verbal" color={C.blue} />
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 20 }}>
                   <span style={{ color: C.textDim, fontSize: 24, fontWeight: 300 }}>+</span>
                 </div>
-                <ScoreGauge score={estQ} label="Quant" color={C.greenBr} />
+                <ScoreGauge range={estQ} label="Quant" color={C.greenBr} />
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 20 }}>
                   <span style={{ color: C.textDim, fontSize: 24, fontWeight: 300 }}>=</span>
                 </div>
                 <div style={{ textAlign: 'center', flex: 1, minWidth: 100 }}>
-                  <p style={{ color: C.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>Total</p>
-                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 48, fontWeight: 700, color: estTotal >= 330 ? C.greenBr : estTotal >= 310 ? C.gold : C.red, margin: 0, lineHeight: 1 }}>
-                    {estTotal || '—'}
+                  <p style={{ color: C.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>Total (est)</p>
+                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 36, fontWeight: 700, color: estTotal && estTotal[1] >= 330 ? C.greenBr : estTotal && estTotal[1] >= 310 ? C.gold : C.red, margin: 0, lineHeight: 1.2 }}>
+                    {estTotal ? `${estTotal[0]}-${estTotal[1]}` : '—'}
                   </p>
-                  <p style={{ color: C.textDim, fontSize: 11, margin: '4px 0 0' }}>/ 340</p>
+                  <p style={{ color: C.textDim, fontSize: 11, margin: '0' }}>/ 340</p>
                 </div>
               </div>
 
@@ -396,9 +453,9 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
               <div style={{ marginBottom: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ color: C.textDim, fontSize: 11 }}>Progress to 330</span>
-                  <span style={{ color: C.textDim, fontSize: 11 }}>{estTotal ? `${330 - estTotal > 0 ? 330 - estTotal + ' pts to go' : '🎯 Target reached!'}` : '—'}</span>
+                  <span style={{ color: C.textDim, fontSize: 11 }}>{estTotal ? `${330 - estTotal[1] > 0 ? 330 - estTotal[1] + ' pts to go (high end)' : '🎯 Target reachable!'}` : '—'}</span>
                 </div>
-                <Bar value={estTotal ? estTotal - 260 : 0} max={80} color={estTotal >= 330 ? C.greenBr : C.gold} height={8} />
+                <Bar value={estTotal ? estTotal[1] - 260 : 0} max={80} color={estTotal && estTotal[1] >= 330 ? C.greenBr : C.gold} height={8} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                   <span style={{ color: C.textDim, fontSize: 9 }}>260</span>
                   <span style={{ color: C.gold, fontSize: 9 }}>330 target</span>
