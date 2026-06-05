@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
         }
         
         // Sync subscription plan from cloud (pro / free)
-        await syncPlanFromCloud(newUser.id);
+        await syncPlanFromCloud(newUser.id, newUser.email);
         setSyncing(false);
         
         const isStuckOnOnboarding = localStorage.getItem('gre_onboarded') !== '1';

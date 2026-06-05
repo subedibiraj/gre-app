@@ -6,6 +6,7 @@ import Tag from './Tag';
 import { getGeminiKey, setGeminiKey } from '../lib/gemini';
 import { useAuth } from '../lib/auth';
 import { pushProgressToCloud } from '../lib/supabase';
+import { setPlan } from '../lib/subscription';
 
 const loadJSON = (key, fb) => { try { return JSON.parse(localStorage.getItem(key)) || fb; } catch { return fb; } };
 const saveJSON = (key, v) => localStorage.setItem(key, JSON.stringify(v));
@@ -154,6 +155,26 @@ export default function SettingsPanel({ open, onClose }) {
             </div>
           )}
         </Card>
+
+        {/* ── Admin / Developer Tools ── */}
+        {user?.email === 'biraj.077bct031@acem.edu.np' && (
+          <Card style={{ marginBottom: 14, border: `1px solid ${C.gold}`, background: `${C.gold}0A` }}>
+            <p style={{ color: C.gold, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, fontWeight: 700 }}>
+              🛠️ Developer Tools (Admin Only)
+            </p>
+            <p style={{ color: C.textMid, fontSize: 12, marginBottom: 12 }}>
+              Manually toggle subscription states to test paywalls and premium features.
+            </p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Btn small onClick={() => { setPlan('pro'); window.location.reload(); }}>
+                Unlock Pro Mode
+              </Btn>
+              <Btn small variant="ghost" onClick={() => { setPlan('free'); window.location.reload(); }}>
+                Reset to Free
+              </Btn>
+            </div>
+          </Card>
+        )}
 
         {/* ── Gemini API Key ── */}
         <Card style={{ marginBottom: 14 }}>

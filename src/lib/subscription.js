@@ -110,9 +110,15 @@ import { supabase } from './supabase.js';
  * Fetch plan status from Supabase user_progress and update localStorage
  * if the cloud plan is 'pro' and not expired.
  */
-export async function syncPlanFromCloud(userId) {
+export async function syncPlanFromCloud(userId, userEmail) {
   if (!userId) return;
   try {
+    // 1. Hardcoded Admin Access
+    if (userEmail === 'biraj.077bct031@acem.edu.np') {
+      setPlan('pro');
+      return;
+    }
+
     const { data, error } = await supabase
       .from('user_progress')
       .select('plan, plan_expires')
