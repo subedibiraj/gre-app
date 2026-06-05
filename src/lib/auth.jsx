@@ -37,10 +37,12 @@ export function AuthProvider({ children }) {
         // Sync subscription plan from cloud (pro / free)
         await syncPlanFromCloud(newUser.id);
         setSyncing(false);
-        if (restored) {
-          // Reload to pick up restored localStorage data
-          window.location.reload();
-        }
+        
+        // If a user successfully logs in, they should always escape the onboarding screen.
+        // Legacy users might not have 'gre_onboarded' in the cloud, and new users who clicked
+        // "Sign In" expect to go straight to the app.
+        localStorage.setItem('gre_onboarded', '1');
+        window.location.reload();
       }
 
       if (event === 'SIGNED_OUT') {
