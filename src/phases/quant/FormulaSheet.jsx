@@ -88,9 +88,15 @@ function QuickTest({ formulas, onExit }) {
         ) : (
           <>
             <p style={{ color:C.textDim, fontSize:12, marginBottom:6 }}>{f.name}</p>
-            <p style={{ fontFamily:'Courier New,monospace', fontSize:18, fontWeight:700, color:fc, lineHeight:1.6, margin:'0 0 12px' }}>
-              {f.formula}
-            </p>
+            {f.latex ? (
+              <div style={{ padding: '12px 0' }}>
+                <BlockMath math={f.latex} />
+              </div>
+            ) : (
+              <p style={{ fontFamily:'Courier New,monospace', fontSize:18, fontWeight:700, color:fc, lineHeight:1.6, margin:'0 0 12px' }}>
+                {f.formula}
+              </p>
+            )}
             {f.note && (
               <p style={{ color:C.gold, fontSize:12, fontStyle:'italic', margin:'0 0 20px', lineHeight:1.6 }}>
                 💡 {f.note}
