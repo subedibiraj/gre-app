@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import C from '../theme';
+import { Sound } from '../engine/audio';
 import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';
 import StemRenderer from '../components/StemRenderer';
@@ -17,11 +18,13 @@ export default function TCSection({ questions, onComplete, timed = false }) {
 
   const select = (bIdx, l) => {
     if (isChecked || timedOut[qIdx]) return;
+    if (sel[bIdx] !== l) Sound.tap();
     setSel(s=>{const n=s.map(x=>[...x]);n[qIdx][bIdx]=l;return n;});
   };
 
   const checkQ = () => {
     const score = q.blanks.filter((b,i)=>sel[i]===b.answer).length;
+    if (score === q.blanks.length) Sound.success(); else Sound.error();
     setChecked(c=>{const n=[...c];n[qIdx]=true;return n;});
     setPart(p=>{const n=[...p];n[qIdx]=score;return n;});
     const newChecked = checked.map((c,i)=>i===qIdx?true:c);

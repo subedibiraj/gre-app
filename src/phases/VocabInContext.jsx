@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import C from '../theme';
 import { updateWordSR } from '../engine/spaced';
+import { Sound } from '../engine/audio';
 import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';
 import Btn from '../components/Btn';
@@ -16,12 +17,14 @@ export default function VocabInContext({ questions, onComplete, timed = false })
 
   const select = (letter) => {
     if (isChecked || timedOut[qIdx]) return;
+    if (sel !== letter) Sound.tap();
     setSelected(s=>{const n=[...s];n[qIdx]=letter;return n;});
   };
 
   const checkQ = () => {
     const isCorrect = sel === q.answer;
     updateWordSR(q.word, isCorrect);
+    if (isCorrect) Sound.success(); else Sound.error();
     const newChecked = checked.map((c,i)=>i===qIdx?true:c);
     setChecked(newChecked);
     if (newChecked.every(Boolean)) {

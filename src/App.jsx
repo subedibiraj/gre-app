@@ -1,10 +1,10 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import C from './theme';
 import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
 import { getStreak, getShieldStatus } from './engine/streak';
 import { getSRStats } from './engine/spaced';
-import Onboarding from './phases/Onboarding';
 import SessionComplete from './components/SessionComplete';
 import PaywallModal from './components/PaywallModal';
 import { canAccessDay, canGenerate, isPro } from './lib/subscription';
@@ -20,21 +20,25 @@ import AchievementToast from './components/AchievementToast';
 import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
 import { apiFetch } from './lib/gemini';
 import VocabView from './phases/VocabView';
-import PracticeView from './phases/PracticeView';
 import ScoreOverview from './phases/ScoreOverview';
 import ProgressDashboard from './phases/ProgressDashboard';
 import DailyRoadmap from './phases/DailyRoadmap';
-import MockExam from './phases/MockExam';
 import WordRelations from './phases/WordRelations';
 import RootsModule from './phases/RootsModule';
-import QuantPractice from './phases/quant/QuantPractice';
-import QuantMock from './phases/quant/QuantMock';
 import FormulaSheet from './phases/quant/FormulaSheet';
 import ConceptLearn from './phases/quant/ConceptLearn';
-import DailySession from './components/DailySession';
 import MorningDrill from './components/MorningDrill';
-import BossChallenge, { getBossStatus, getBossResult, BOSSES } from './components/BossChallenge';
+import { getBossStatus, getBossResult, BOSSES } from './components/BossChallenge';
 import WeakWordBlitz from './components/WeakWordBlitz';
+
+// ─── LAZY LOADED COMPONENTS (Code Splitting) ──────────────────────────────────
+const Onboarding = lazy(() => import('./phases/Onboarding'));
+const PracticeView = lazy(() => import('./phases/PracticeView'));
+const MockExam = lazy(() => import('./phases/MockExam'));
+const QuantPractice = lazy(() => import('./phases/quant/QuantPractice'));
+const QuantMock = lazy(() => import('./phases/quant/QuantMock'));
+const BossChallenge = lazy(() => import('./components/BossChallenge'));
+const DailySession = lazy(() => import('./components/DailySession'));
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -343,7 +347,14 @@ export default function App() {
 
   // ─── ONBOARDING GATE ─────────────────────────────────────────────────────────
   if (!onboarded) {
-    return <Onboarding onComplete={() => setOnboarded(true)} />;
+    return (
+      <Suspense fallback={<div style={{height:'100vh', display:'flex', alignItems:'center', justifyContent:'center', color:C.gold}}>Loading...</div>}>
+        <Onboarding onComplete={() => {
+          setOnboarded(true);
+          window.location.reload();
+        }} />
+      </Suspense>
+    );
   }
 
   return (
@@ -535,7 +546,19 @@ export default function App() {
           </div>
 
           <ErrorBoundary>
-            {section === 'verbal' ? verbalContent : quantContent}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${section}-${section === 'verbal' ? tab : quantTab}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Suspense fallback={<div style={{height:'400px', display:'flex', alignItems:'center', justifyContent:'center', color:C.gold}}>Loading...</div>}>
+                  {section === 'verbal' ? verbalContent : quantContent}
+                </Suspense>
+              </motion.div>
+            </AnimatePresence>
           </ErrorBoundary>
         </main>
       </div>

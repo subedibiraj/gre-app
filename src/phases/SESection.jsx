@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import C from '../theme';
+import { Sound } from '../engine/audio';
 import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';
 import Btn from '../components/Btn';
@@ -15,6 +16,7 @@ export default function SESection({ questions, onComplete, timed = false }) {
 
   const toggle = l => {
     if (isChecked || timedOut[qIdx]) return;
+    Sound.tap();
     setSelected(s=>{
       const n=s.map(x=>[...x]);
       n[qIdx]=n[qIdx].includes(l)?n[qIdx].filter(x=>x!==l):n[qIdx].length<2?[...n[qIdx],l]:n[qIdx];
@@ -23,6 +25,8 @@ export default function SESection({ questions, onComplete, timed = false }) {
   };
 
   const checkQ = () => {
+    const isCorrect = sel.length===2 && q.answers.every(a=>sel.includes(a));
+    if (isCorrect) Sound.success(); else Sound.error();
     const newChecked = checked.map((c,i)=>i===qIdx?true:c);
     setChecked(newChecked);
     if (newChecked.every(Boolean)) {

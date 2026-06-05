@@ -4,39 +4,7 @@ import { getStreak } from '../engine/streak';
 import { getXP, getLevel } from '../engine/xp';
 import { getShieldStatus } from '../engine/streak';
 
-// ─── CONFETTI ─────────────────────────────────────────────────────────────────
-function Confetti() {
-  const particles = Array.from({ length: 40 }, (_, i) => ({
-    id: i,
-    left: Math.random() * 100,
-    delay: Math.random() * 0.8,
-    duration: 1.5 + Math.random() * 1.5,
-    color: [C.gold, C.greenBr, C.blue, '#9B6BDB', '#FF6B6B', C.goldBr][i % 6],
-    size: 4 + Math.random() * 6,
-    rotation: Math.random() * 360,
-  }));
-
-  return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 10 }}>
-      {particles.map(p => (
-        <div key={p.id} style={{
-          position: 'absolute', left: `${p.left}%`, top: -20,
-          width: p.size, height: p.size * 1.5,
-          background: p.color, borderRadius: 2,
-          transform: `rotate(${p.rotation}deg)`,
-          animation: `confetti-fall ${p.duration}s ease-in ${p.delay}s forwards`,
-          opacity: 0,
-        }} />
-      ))}
-      <style>{`
-        @keyframes confetti-fall {
-          0% { opacity: 1; transform: translateY(0) rotate(0deg); }
-          100% { opacity: 0; transform: translateY(85vh) rotate(720deg); }
-        }
-      `}</style>
-    </div>
-  );
-}
+import { fireConfetti, fireSmallConfetti } from '../engine/confetti';
 
 // ─── ANIMATED SCORE RING ──────────────────────────────────────────────────────
 function ScoreRing({ correct, total }) {
@@ -84,7 +52,17 @@ export default function SessionComplete({
   onClose,
 }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { requestAnimationFrame(() => setVisible(true)); }, []);
+  useEffect(() => { 
+    requestAnimationFrame(() => setVisible(true)); 
+    if (total > 0) {
+      const pct = correct / total;
+      if (pct >= 1) {
+        setTimeout(fireConfetti, 300);
+      } else if (pct >= 0.8) {
+        setTimeout(fireSmallConfetti, 300);
+      }
+    }
+  }, [correct, total]);
 
   const pct = total > 0 ? correct / total : 0;
   const streak = getStreak();
@@ -110,7 +88,6 @@ export default function SessionComplete({
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: 16, opacity: visible ? 1 : 0, transition: 'opacity 0.3s',
     }}>
-      {isGreat && <Confetti />}
 
       <div style={{
         width: '100%', maxWidth: 440,

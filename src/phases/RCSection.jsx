@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import C from '../theme';
+import { Sound } from '../engine/audio';
 import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';
 import Btn from '../components/Btn';
@@ -17,6 +18,7 @@ export default function RCSection({ passages, onComplete, timed = false }) {
 
   const select = (qIdx, letter) => {
     if (isChecked) return;
+    if (answers[pIdx][qIdx] !== letter) Sound.tap();
     setAnswers(prev => {
       const n = prev.map(a => [...a]);
       n[pIdx][qIdx] = letter;
@@ -35,6 +37,7 @@ export default function RCSection({ passages, onComplete, timed = false }) {
           if (answers[pi][qi] === q.answer) correct++;
         });
       });
+      if (correct === total) Sound.success(); else Sound.error();
       setTimeout(() => onComplete(correct, total), 400);
     }
   };
