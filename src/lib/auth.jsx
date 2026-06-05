@@ -24,25 +24,31 @@ export function AuthProvider({ children }) {
       const newUser = session?.user ?? null;
       setUser(newUser);
 
-      if (event === 'SIGNED_IN' && newUser) {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && newUser) {
         setSyncing(true);
         const restored = await pullProgressFromCloud(newUser.id);
         if (restored) {
           setSynced(true);
           setTimeout(() => setSynced(false), 3000);
-        } else {
-          // Push local progress to cloud
+        } else if (event === 'SIGNED_IN') {
+          // Push local progress to cloud only on active sign in, not on every page load
           await pushProgressToCloud(newUser.id);
         }
+        
         // Sync subscription plan from cloud (pro / free)
         await syncPlanFromCloud(newUser.id);
         setSyncing(false);
         
-        // If a user successfully logs in, they should always escape the onboarding screen.
-        // Legacy users might not have 'gre_onboarded' in the cloud, and new users who clicked
-        // "Sign In" expect to go straight to the app.
-        localStorage.setItem('gre_onboarded', '1');
-        window.location.reload();
+        const isStuckOnOnboarding = localStorage.getItem('gre_onboarded') !== '1';
+        
+        if (event === 'SIGNED_IN' || restored || isStuckOnOnboarding) {
+          localStorage.setItem('gre_onboarded', '1');
+          
+          // Small delay to ensure localStorage is flushed before reload
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+        }
       }
 
       if (event === 'SIGNED_OUT') {
