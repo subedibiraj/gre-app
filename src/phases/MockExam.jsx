@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { apiFetch, hasGeminiKey } from '../lib/gemini';
+import { getDifficultyProfile } from '../engine/adaptive';
+import { addScoreEntry } from '../engine/history';
 import C from '../theme';
 import Card from '../components/Card';
 import SectionHead from '../components/SectionHead';
@@ -430,7 +432,8 @@ export default function MockExam() {
     setRCAnswers({});
 
     try {
-      const data = await apiFetch('/api/mock-exam', {});
+      const profile = getDifficultyProfile();
+      const data = await apiFetch('/api/mock-exam', { profile });
       setExam(data);
       setTimerActive(true);
     } catch (e) {

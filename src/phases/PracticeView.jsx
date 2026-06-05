@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { apiFetch, hasGeminiKey } from '../lib/gemini';
+import { getDifficultyProfile, recordSectionResult } from '../engine/adaptive';
+import { addScoreEntry } from '../engine/history';
 import C from '../theme';
 import { DAYS } from '../data/days';
 import { recordPractice } from '../engine/streak';
@@ -29,13 +31,14 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
       const allWords = DAYS.slice(0, day).flatMap(d => d.words);
       const currentWords = DAYS[day-1].words;
 
+      const profile = getDifficultyProfile();
       const result = await apiFetch('/api/generate', {
           dayNum: day,
           theme: DAYS[day-1].theme,
           currentWords,
           allWords,
           weakWords,
-          scores: dayScores,
+          profile,
       });
       setQs(result);
       onCacheQuestions?.(result);
@@ -127,7 +130,23 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
             <p style={{color:C.textMid, fontSize:11, fontFamily:'Courier New,monospace'}}>{weakWords.slice(0,10).join(' · ')}</p>
           </div>
         )}
-        <div><Btn onClick={load}>Generate AI Questions</Btn></div>
+        <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
+          <Btn onClick={load}>Generate AI Questions ⚡</Btn>
+          {(() => {
+            const p = getDifficultyProfile();
+            const lvl = p.verbal.overall.level;
+            const status = p.verbal.overall.status;
+            if (status === 'calibrating') return (
+              <p style={{ color:C.textDim, fontSize:11 }}>First session — calibrating difficulty</p>
+            );
+            const colors = { struggling:'#B53028', developing:'#E4A060', competent:C.gold, proficient:C.green, advanced:'#2EBB80' };
+            return (
+              <p style={{ color:colors[status]||C.textDim, fontSize:11 }}>
+                Difficulty: Level {lvl}/5 — {status}
+              </p>
+            );
+          })()}
+        </div>
       </div>
     );
 

@@ -4,7 +4,7 @@ import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
 import { getStreak } from './engine/streak';
 import { getSRStats } from './engine/spaced';
-import { getOverallStats } from './engine/history';
+import Onboarding from './phases/Onboarding';
 import Tag from './components/Tag';
 import AiTutor from './components/AiTutor';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -61,6 +61,7 @@ export default function App() {
   const [showWeakBlitz, setShowWeakBlitz] = useState(false);
   const [drawerOpen, setDrawerOpen]       = useState(false); // mobile day/topic drawer
   const [offline, setOffline]             = useState(!navigator.onLine);
+  const [onboarded, setOnboarded]         = useState(() => localStorage.getItem('gre_onboarded') === '1');
   const mainRef = useRef(null);
 
   // ─── Document title ──────────────────────────────────────────────────────────
@@ -321,6 +322,11 @@ export default function App() {
   const mobileContextLabel = section === 'verbal'
     ? (currentDay > 0 ? `Day ${currentDay}: ${day?.theme}` : currentDay === -1 ? 'Mock Exam' : currentDay === -2 ? 'Word Map' : currentDay === -3 ? 'Roots' : "Today's Plan")
     : (quantPage ? QUANT_TOPICS.find(t => t.id === quantPage)?.label || quantPage : 'Quant Overview');
+
+  // ─── ONBOARDING GATE ─────────────────────────────────────────────────────────
+  if (!onboarded) {
+    return <Onboarding onComplete={() => setOnboarded(true)} />;
+  }
 
   return (
     <div style={{ background: C.bg, minHeight: '100dvh', color: C.text, display: 'flex', flexDirection: 'column', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { apiFetch } from '../lib/gemini';
+import { getDifficultyProfile } from '../engine/adaptive';
 import C from '../theme';
 import { DAYS } from '../data/days';
 
@@ -48,21 +49,12 @@ export default function AiTutor() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const profile = getDifficultyProfile();
+      const data = await apiFetch('/api/chat', {
           messages: newMessages.map(m => ({ role: m.role, content: m.content })),
-          systemPrompt: SYSTEM_PROMPT,
-        }),
+          profile,
+          context: { section: 'practice' },
       });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Server error: ${res.status}`);
-      }
-
-      const data = await res.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${err.message}. Make sure the server is running (\`node server/index.js\`) and your GEMINI_API_KEY is set in .env` }]);

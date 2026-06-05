@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { getGeminiKey } from './_prompts.js';
+import { getGeminiKey, QUANT_RULES, getDifficultyRules, EXPLANATION_FORMAT } from './_prompts.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,30 +10,46 @@ export default async function handler(req, res) {
 
   try {
     const apiKey = getGeminiKey(req);
-    if (!apiKey) return res.status(400).json({ error: 'No Gemini API key found. Go to Settings (⚙️) and paste your key from aistudio.google.com/apikey' });
+    if (!apiKey) return res.status(400).json({ error: 'No Gemini API key. Add it in ⚙️ Settings.' });
 
+    const { profile = null } = req.body;
     const ai = new GoogleGenAI({ apiKey });
 
-    const systemPrompt = `You are a senior ETS psychometrician creating a complete GRE Quant section.
-- 20 questions, bell-curve difficulty (6 easy, 8 medium, 6 hard)
-- Topics balanced: Arithmetic 25%, Algebra 25%, Geometry 25%, Data Analysis 25%
-- QC choices ALWAYS: A/B/C/D = Qty A greater/Qty B greater/Equal/Cannot determine
-- Include full range of GRE traps
-- Return ONLY valid JSON`;
+    const qcLevel      = profile?.quant?.qc?.level || 3;
+    const mcLevel      = profile?.quant?.mc?.level || 3;
+    const neLevel      = profile?.quant?.ne?.level || 3;
+    const overallLevel = profile?.quant?.overall?.level || 3;
 
-    const userPrompt = `Generate a complete GRE Quant section — 20 questions.
+    const profileNote = profile
+      ? `Student quant level: ${overallLevel}/5 (QC:${qcLevel} MC:${mcLevel} NE:${neLevel})`
+      : 'Student level: unknown — use standard GRE difficulty (Level 3)';
 
-QC (8 questions, ids 1-8):
-{"id":N,"qtyA":"...","qtyB":"...","info":"...","answer":"A","topic":"Arithmetic","explain":"..."}
+    const systemPrompt = `You are a senior ETS psychometrician creating a full GRE Quantitative Reasoning mock section.
+${QUANT_RULES}
+${EXPLANATION_FORMAT}
+ABSOLUTE RULES:
+1. Return ONLY valid JSON. No markdown. No text outside JSON.
+2. All mathematics must be 100% correct — verify every calculation.
+3. 20 questions, 35-minute simulation. Topics balanced across all 4 GRE areas.
+4. QC answer distribution: approximately 5A, 5B, 5C, 5D across the section.`;
 
-MC single (7 questions, ids 9-15):
-{"id":N,"q":"...","opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."},{"l":"D","t":"..."},{"l":"E","t":"..."}],"answer":"C","topic":"Algebra","explain":"..."}
+    const userPrompt = `Generate a complete GRE Quantitative mock exam — 20 questions.
+${profileNote}
 
-MC multiple (2 questions, ids 16-17):
-{"id":N,"q":"...Select ALL that apply...","opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."}],"answers":["A","C"],"topic":"Data","explain":"..."}
+Topic distribution: Arithmetic 25%, Algebra 25%, Geometry 25%, Data Analysis 25%
+Difficulty: 30% easy, 40% medium, 30% hard
 
-NE (3 questions, ids 18-20):
-{"id":N,"q":"...","answer":"15","topic":"Geometry","explain":"..."}
+QC format (8 questions, ids 1-8):
+{"id":1,"qtyA":"...","qtyB":"...","info":"constraint or empty string","answer":"A","topic":"Arithmetic","trap":"specific trap","explain":"APPROACH:...\\nSOLUTION:...\\nWHY CORRECT:...\\nWRONG ANSWERS:...\\nTRAP:..."}
+
+MC format (7 questions, ids 9-15):
+{"id":9,"q":"...","opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."},{"l":"D","t":"..."},{"l":"E","t":"..."}],"answer":"C","topic":"Algebra","explain":"APPROACH:...\\nSOLUTION:...\\nWHY CORRECT:...\\nWRONG ANSWERS: A-wrong because..., B-wrong because..., D-wrong because..., E-wrong because...\\nTRAP:..."}
+
+MCM format (2 questions, ids 16-17, select all that apply):
+{"id":16,"q":"...Select ALL that apply...","opts":[{"l":"A","t":"..."},{"l":"B","t":"..."},{"l":"C","t":"..."},{"l":"D","t":"..."}],"answers":["A","C"],"topic":"Data Analysis","explain":"..."}
+
+NE format (3 questions, ids 18-20):
+{"id":18,"q":"...","answer":"42","unit":"","topic":"Geometry","explain":"APPROACH:...\\nSOLUTION:...\\nWHY CORRECT:...\\nCOMMON ERRORS:...\\nTRAP:..."}
 
 RETURN EXACTLY: {"qc":[8],"mc":[7],"mcm":[2],"ne":[3]}`;
 
@@ -46,17 +62,16 @@ RETURN EXACTLY: {"qc":[8],"mc":[7],"mcm":[2],"ne":[3]}`;
     const clean = (response.text || '').replace(/```json|```/g, '').trim();
     let parsed;
     try { parsed = JSON.parse(clean); }
-    catch { return res.status(500).json({ error: 'AI returned incomplete response. Try again.' }); }
+    catch { return res.status(500).json({ error: 'AI returned malformed JSON. Try again.' }); }
 
     if (!parsed.qc || !parsed.mc || !parsed.ne) {
-      return res.status(500).json({ error: 'Quant mock missing required sections.' });
+      return res.status(500).json({ error: 'Quant mock missing sections. Try again.' });
     }
     res.json(parsed);
-  } catch (error) {
-    const msg = error.message || 'Generation failed';
-    if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
-      return res.status(429).json({ error: 'API rate limit. Wait 30 seconds.' });
-    }
+  } catch (err) {
+    const msg = err.message || 'Generation failed';
+    if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) return res.status(429).json({ error: 'Rate limit. Wait 30 seconds.' });
+    if (msg.includes('API_KEY_INVALID') || msg.includes('PERMISSION_DENIED')) return res.status(401).json({ error: 'Invalid API key. Check Settings.' });
     res.status(500).json({ error: msg });
   }
 }

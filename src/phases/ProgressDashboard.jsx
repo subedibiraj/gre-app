@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { getDifficultyProfile } from '../engine/adaptive';
 import C from '../theme';
 import { getXP, getLevel, getUnlockedAchievements, ACHIEVEMENTS } from '../engine/xp';
 import { getStreak } from '../engine/streak';
@@ -329,6 +330,7 @@ function Section({ title, children, defaultOpen = true }) {
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function ProgressDashboard({ dayScores, quantScores, weakWords, currentDay }) {
+  const adaptiveProfile = getDifficultyProfile();
   const xp         = getXP();
   const level      = getLevel(xp.total);
   const streak     = getStreak();
@@ -494,6 +496,50 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
         </div>
       </Section>
 
+      {/* Adaptive Performance Breakdown */}
+      <Section title="🧠 Performance by Question Type" defaultOpen={true}>
+        <div style={{ paddingTop: 14 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))', gap:10 }}>
+            {[
+              { sec:'vic',  label:'VIC',      icon:'📝', cat:'verbal' },
+              { sec:'tc',   label:'TC',       icon:'🔤', cat:'verbal' },
+              { sec:'se',   label:'SE',       icon:'⚡', cat:'verbal' },
+              { sec:'rc',   label:'RC',       icon:'📖', cat:'verbal' },
+              { sec:'qc',   label:'QC',       icon:'⚖️', cat:'quant' },
+              { sec:'mc',   label:'MC',       icon:'🔢', cat:'quant' },
+              { sec:'ne',   label:'NE',       icon:'✏️', cat:'quant' },
+            ].map(({ sec, label, icon, cat }) => {
+              const p = cat === 'verbal' ? adaptiveProfile.verbal[sec] : adaptiveProfile.quant[sec];
+              const lvl = p?.level || null;
+              const acc = p?.acc;
+              const status = p?.status || 'calibrating';
+              const color = status === 'advanced' ? C.greenBr : status === 'proficient' ? C.green : status === 'competent' ? C.gold : status === 'developing' ? '#E4A060' : status === 'struggling' ? C.red : C.textDim;
+              const barWidth = acc !== null ? `${acc}%` : '0%';
+              return (
+                <div key={sec} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:10, padding:'14px 12px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:8 }}>
+                    <span style={{ fontSize:14 }}>{icon}</span>
+                    <span style={{ fontSize:12, fontWeight:700, color:C.text }}>{label}</span>
+                    {lvl && <span style={{ fontSize:10, color, background:color+'22', padding:'1px 6px', borderRadius:4, marginLeft:'auto', fontWeight:700 }}>L{lvl}</span>}
+                  </div>
+                  {acc !== null ? (
+                    <>
+                      <div style={{ height:4, background:C.surface, borderRadius:2, marginBottom:6, overflow:'hidden' }}>
+                        <div style={{ height:'100%', width:barWidth, background:color, borderRadius:2, transition:'width 0.6s ease' }} />
+                      </div>
+                      <p style={{ fontSize:12, color, fontFamily:'Courier New,monospace', fontWeight:700, margin:0 }}>{acc}%</p>
+                      <p style={{ fontSize:10, color:C.textDim, margin:'2px 0 0', textTransform:'capitalize' }}>{status}</p>
+                    </>
+                  ) : (
+                    <p style={{ fontSize:11, color:C.textDim, margin:0 }}>Not yet practiced</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </Section>
+
       {/* Recommendations */}
       <Section title="💡 Personalised Recommendations" defaultOpen={true}>
         <div style={{ paddingTop: 14 }}>
@@ -507,3 +553,4 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
     </div>
   );
 }
+

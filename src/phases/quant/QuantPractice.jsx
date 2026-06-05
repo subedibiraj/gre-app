@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { apiFetch, hasGeminiKey } from '../../lib/gemini';
+import { getDifficultyProfile, recordSectionResult } from '../../engine/adaptive';
 import { QuantLoadingSkeleton } from '../../components/LoadingSkeleton';
 import C from '../../theme';
 import { QUANT_TOPICS } from '../../data/quant-topics';
@@ -360,9 +361,10 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
     setShowReview(false);
     try {
       const weakAreas = getWeakSubtopics(4);
+      const profile = getDifficultyProfile();
       const _qs = await apiFetch('/api/quant-generate', {
           topicId: topicData.id, topicLabel: topicData.label,
-          subtopics: topicData.subtopics, weakAreas,
+          subtopics: topicData.subtopics, weakAreas, profile,
       });
       setQs(_qs.json());
     } catch (e) { setError(e.message); }
@@ -488,6 +490,20 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
           </div>
         </div>
       )}
+      {/* Difficulty level indicator */}
+      {(() => {
+        const p = getDifficultyProfile();
+        const lvl = p.quant.overall.level;
+        const status = p.quant.overall.status;
+        if (status === 'calibrating') return null;
+        const colors = { struggling:'#B53028', developing:'#E4A060', competent:'#C8A535', proficient:'#24976A', advanced:'#2EBB80' };
+        return (
+          <div style={{ marginBottom:12, padding:'8px 14px', background:'#111928', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+            <span style={{ fontSize:12, color:'#7A8CA0' }}>Adaptive difficulty</span>
+            <span style={{ fontSize:12, fontWeight:700, color:colors[status]||'#C8A535' }}>Level {lvl}/5 — {status}</span>
+          </div>
+        );
+      })()}
       <div style={{ textAlign: 'center', marginTop: 16 }}>
         <button onClick={generate} disabled={!hasGeminiKey()} style={{
           padding: '13px 36px', borderRadius: 10, border: 'none', cursor: 'pointer',
