@@ -81,8 +81,14 @@ export function AuthProvider({ children }) {
   };
 
   const handleSignOut = async () => {
-    if (user) await pushProgressToCloud(user.id); // final push
-    await signOut();
+    try {
+      if (user) await pushProgressToCloud(user.id);
+      await signOut();
+      window.location.reload();
+    } catch (e) {
+      console.error('Sign out error:', e);
+      alert('Sign out error: ' + (e.message || 'Unknown error'));
+    }
   };
 
   return (

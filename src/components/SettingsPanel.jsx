@@ -101,21 +101,7 @@ export default function SettingsPanel({ open, onClose }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: C.text }}>Settings</h2>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => {
-              let dbg = '';
-              for(let i=0; i<localStorage.length; i++){
-                const k = localStorage.key(i);
-                if(k.startsWith('gre_') || k.startsWith('sb-')) {
-                  dbg += k + ':\n' + localStorage.getItem(k) + '\n\n';
-                }
-              }
-              alert(dbg || 'No data found');
-            }} style={{ background: 'transparent', border: `1px solid ${C.red}44`, color: C.red, fontSize: 10, padding: '4px 8px', borderRadius: 4, cursor: 'pointer' }}>
-              DEBUG STATE
-            </button>
-            <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: C.textDim, cursor: 'pointer', fontSize: 16 }}>✕</button>
-          </div>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: C.textDim, cursor: 'pointer', fontSize: 16 }}>✕</button>
         </div>
 
         {/* ── Google Account ── */}
