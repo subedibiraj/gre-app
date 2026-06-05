@@ -68,7 +68,7 @@ export default function RootsModule() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
         <SectionHead label="Root / Prefix Decoder" count={`${ROOTS.length} roots`} color={C.goldBr} />
         <div style={{ display: 'flex', gap: 6 }}>
           <Btn small variant={mode === 'learn' ? 'primary' : 'ghost'} onClick={() => setMode('learn')}>📖 Learn</Btn>

@@ -92,7 +92,7 @@ export default function WordRelations({ day }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
         <SectionHead label="Word Relationships" count={`${allWords.length} words · ${synonymGroups.length} clusters`} color={C.goldBr} />
         <button onClick={() => setQuizMode(!quizMode)} style={{
           padding: '6px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',

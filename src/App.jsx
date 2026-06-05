@@ -43,6 +43,7 @@ const DailySession = lazy(() => import('./components/DailySession'));
 const AdminDashboard = lazy(() => import('./phases/AdminDashboard'));
 import AwaView from './phases/AwaView';
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
+import Icon from './components/Icon';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 const loadJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
@@ -189,9 +190,10 @@ export default function App() {
     addXP(correct * XP_VALUES.practice_correct + (total - correct) * XP_VALUES.practice_wrong, 'Verbal practice');
     addXP(XP_VALUES.complete_practice, 'Practice completed');
     recordActivity(total);
-    const achs = checkAchievements({ practiceCompleted: true, streak: streak.current, wordsStudied: totalWords, perfectScore: correct === total });
+    const studiedCount = Object.keys(loadJSON('gre_spacedRep', {})).length;
+    const achs = checkAchievements({ practiceCompleted: true, streak: streak.current, wordsStudied: studiedCount, perfectScore: correct === total });
     if (achs.length) setAchToast(achs[0]);
-  }, [streak, totalWords]);
+  }, [streak]);
 
   const updateQuantScore = useCallback((topicId, correct, total) => {
     setQuantScores(prev => {
@@ -232,14 +234,20 @@ export default function App() {
     <>
       {/* Tab bar */}
       <div style={{ display: 'flex', borderBottom: `1px solid ${C.border}`, marginBottom: 20, gap: 0 }}>
-        {[{ id: 'vocab', label: '📖 Words' }, { id: 'practice', label: '⚔️ Practice' }].map(t => (
+        {[
+          { id: 'vocab', label: 'Words', icon: 'BookOpen' },
+          { id: 'practice', label: 'Practice', icon: 'PenTool' }
+        ].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
             padding: '12px 20px', border: 'none', cursor: 'pointer',
             fontWeight: 700, fontSize: 13, background: 'transparent',
             borderBottom: tab === t.id ? `2px solid ${C.gold}` : '2px solid transparent',
             color: tab === t.id ? C.gold : C.textMid,
             transition: 'all 0.15s', marginBottom: -1, minHeight: 44,
-          }}>{t.label}</button>
+            display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            <Icon name={t.icon} size={16} color={tab === t.id ? C.gold : C.textDim} /> {t.label}
+          </button>
         ))}
       </div>
       {tab === 'vocab' && <VocabView day={currentDay} />}
@@ -264,14 +272,20 @@ export default function App() {
     quantPage && QUANT_TOPICS.find(t => t.id === quantPage) ? (
       <>
         <div style={{ display: 'flex', borderBottom: `1px solid ${C.border}`, marginBottom: 20, gap: 0 }}>
-          {[{ id: 'learn', label: '📚 Learn' }, { id: 'practice', label: '⚔️ Practice' }].map(t => (
+          {[
+            { id: 'learn', label: 'Learn', icon: 'BookOpen' },
+            { id: 'practice', label: 'Practice', icon: 'PenTool' }
+          ].map(t => (
             <button key={t.id} onClick={() => setQuantTab(t.id)} style={{
               padding: '12px 20px', border: 'none', cursor: 'pointer',
               fontWeight: 700, fontSize: 13, background: 'transparent',
               borderBottom: quantTab === t.id ? `2px solid ${C.gold}` : '2px solid transparent',
               color: quantTab === t.id ? C.gold : C.textMid,
               transition: 'all 0.15s', marginBottom: -1, minHeight: 44,
-            }}>{t.label}</button>
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <Icon name={t.icon} size={16} color={quantTab === t.id ? C.gold : C.textDim} /> {t.label}
+            </button>
           ))}
         </div>
         {quantTab === 'learn' ? <ConceptLearn topicId={quantPage} /> : <QuantPractice topic={quantPage} onScoreUpdate={updateQuantScore} />}

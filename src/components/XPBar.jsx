@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import C from '../theme';
 import { getXP, getLevel, getUnlockedAchievements, ACHIEVEMENTS } from '../engine/xp';
+import Icon from './Icon';
 
 export default function XPBar() {
   const [xp, setXp] = useState(() => getXP());
@@ -25,7 +26,7 @@ export default function XPBar() {
         border: `1px solid ${C.gold}33`, borderRadius: 20, cursor: 'pointer',
         transition: 'all 0.2s',
       }}>
-        <span style={{ fontSize: 14 }}>{level.icon}</span>
+        <Icon name={level.icon} size={16} color={C.gold} />
         <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 12, color: C.gold }}>{xp.total}</span>
         <span style={{ color: C.textDim, fontSize: 9 }}>XP</span>
         {/* Mini progress bar */}
@@ -47,8 +48,8 @@ export default function XPBar() {
           }} onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h3 style={{ fontFamily: 'Georgia,serif', color: C.gold, fontSize: 18, margin: 0 }}>
-                {level.icon} Level: {level.name}
+              <h3 style={{ fontFamily: 'Georgia,serif', color: C.gold, fontSize: 18, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Icon name={level.icon} size={20} color={C.gold} /> Level: {level.name}
               </h3>
               <button onClick={() => setShowPanel(false)} style={{ background: 'none', border: 'none', color: C.textDim, cursor: 'pointer', fontSize: 18 }}>✕</button>
             </div>
@@ -63,7 +64,9 @@ export default function XPBar() {
                 <div style={{ textAlign: 'right' }}>
                   <p style={{ color: C.textMid, fontSize: 11, margin: 0 }}>Today: +{xp.today} XP</p>
                   {level.nextLevel && (
-                    <p style={{ color: C.textDim, fontSize: 10, margin: 0 }}>{level.nextLevel.min - xp.total} XP to {level.nextLevel.icon} {level.nextLevel.name}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end', color: C.textDim, fontSize: 10 }}>
+                      {level.nextLevel.min - xp.total} XP to <Icon name={level.nextLevel.icon} size={12} /> {level.nextLevel.name}
+                    </div>
                   )}
                 </div>
               </div>
@@ -90,8 +93,8 @@ export default function XPBar() {
                     borderRadius: 10, padding: '10px 12px', opacity: isUnlocked ? 1 : 0.5,
                     transition: 'all 0.2s',
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                      <span style={{ fontSize: 16 }}>{a.icon}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <Icon name={a.icon} size={18} color={isUnlocked ? C.gold : C.textDim} />
                       <span style={{ color: isUnlocked ? C.gold : C.textDim, fontSize: 11, fontWeight: 700 }}>{a.name}</span>
                     </div>
                     <p style={{ color: C.textDim, fontSize: 10, margin: 0, lineHeight: 1.4 }}>{a.desc}</p>

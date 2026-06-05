@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import C from '../theme';
 import { addXP, getXP, getLevel, checkAchievements, XP_VALUES } from '../engine/xp';
 import { getStreak } from '../engine/streak';
+import Icon from './Icon';
 
 const PHASES = [
-  { id: 'vocab', label: 'Vocabulary', icon: '📚', minutes: 15, desc: 'Study new words & review weak ones' },
-  { id: 'verbal_practice', label: 'Verbal Practice', icon: '✍️', minutes: 10, desc: 'TC, SE, and RC drills' },
-  { id: 'quant_learn', label: 'Quant Concepts', icon: '🧠', minutes: 10, desc: 'Learn rules, examples & tricks' },
-  { id: 'quant_practice', label: 'Quant Practice', icon: '📐', minutes: 10, desc: 'Solve problems & build speed' },
+  { id: 'vocab', label: 'Vocabulary', icon: 'BookOpen', minutes: 15, desc: 'Study new words & review weak ones' },
+  { id: 'verbal_practice', label: 'Verbal Practice', icon: 'PenTool', minutes: 10, desc: 'TC, SE, and RC drills' },
+  { id: 'quant_learn', label: 'Quant Concepts', icon: 'Brain', minutes: 10, desc: 'Learn rules, examples & tricks' },
+  { id: 'quant_practice', label: 'Quant Practice', icon: 'Calculator', minutes: 10, desc: 'Solve problems & build speed' },
 ];
 
 function formatTime(seconds) {
@@ -114,14 +115,18 @@ export default function DailySession({ onNavigate, onClose }) {
             borderRadius: 10, padding: '10px 14px', border: `1px solid ${C.gold}22`,
           }}>
             <p style={{ color: C.gold, fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Level</p>
-            <p style={{ color: C.text, fontSize: 16, fontWeight: 700, margin: '2px 0 0' }}>{level.icon} {level.name}</p>
+            <p style={{ color: C.text, fontSize: 16, fontWeight: 700, margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Icon name={level.icon} size={16} color={C.gold} /> {level.name}
+            </p>
           </div>
           <div style={{
             flex: 1, background: `linear-gradient(135deg, ${C.greenBr}15, transparent)`,
             borderRadius: 10, padding: '10px 14px', border: `1px solid ${C.greenBr}22`,
           }}>
             <p style={{ color: C.greenBr, fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Streak</p>
-            <p style={{ color: C.text, fontSize: 16, fontWeight: 700, margin: '2px 0 0' }}>🔥 {streak.current} day{streak.current !== 1 ? 's' : ''}</p>
+            <p style={{ color: C.text, fontSize: 16, fontWeight: 700, margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Icon name="Flame" size={16} color={C.greenBr} /> {streak.current} day{streak.current !== 1 ? 's' : ''}
+            </p>
           </div>
           <div style={{
             flex: 1, background: `linear-gradient(135deg, ${C.blue}15, transparent)`,
@@ -165,7 +170,7 @@ export default function DailySession({ onNavigate, onClose }) {
                   fontSize: isDone ? 14 : 18,
                   color: isDone ? C.greenBr : C.text,
                 }}>
-                  {isDone ? '✓' : p.icon}
+                  {isDone ? <Icon name="CheckCircle" size={16} color={C.greenBr} /> : <Icon name={p.icon} size={16} color={isActive ? C.gold : C.text} />}
                 </div>
                 <div style={{ flex: 1 }}>
                   <p style={{ color: isDone ? C.greenBr : C.text, fontSize: 13, fontWeight: 700, margin: 0, textDecoration: isDone ? 'line-through' : 'none' }}>{p.label}</p>
