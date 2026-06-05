@@ -3,6 +3,7 @@ import C from '../theme';
 import { DAYS } from '../data/days';
 import { clusterColor } from '../utils';
 import { getSRLevel } from '../engine/spaced';
+import { Sound } from '../engine/audio';
 import Card from '../components/Card';
 import Tag from '../components/Tag';
 import SectionHead from '../components/SectionHead';
@@ -195,6 +196,16 @@ function WordCard({ v, displayDay, isOpen, onToggle }) {
                 fontFamily: 'Courier New,monospace', fontSize: 15, fontWeight: 700,
                 color: cc, letterSpacing: '0.08em',
               }}>{v.w}</span>
+              <button 
+                onClick={(e) => { e.stopPropagation(); Sound.speak(v.w); }}
+                style={{ 
+                  background: 'none', border: 'none', padding: '0 4px', cursor: 'pointer',
+                  fontSize: 16, opacity: 0.8, transition: 'opacity 0.2s', color: C.textMid
+                }}
+                title="Pronounce word"
+                onMouseEnter={e => e.target.style.opacity = 1}
+                onMouseLeave={e => e.target.style.opacity = 0.8}
+              >🔊</button>
               <Tag color={cc}>{v.pos}</Tag>
               <Tag color={cc}>{v.cluster}</Tag>
               {!isToday && (
