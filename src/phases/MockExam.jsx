@@ -436,12 +436,14 @@ export default function MockExam() {
       const data = await apiFetch('/api/mock-exam', { profile });
       setExam(data);
       setTimerActive(true);
+      setStarted(true);
+      setStartTime(Date.now());
     } catch (e) {
-      let msg = e.message;
-      if (msg.includes('429')) msg = 'API rate limit. Wait 30 seconds and try again.';
-      setError(msg);
+      if (window.showToast) window.showToast(e.message || 'Failed to generate mock exam.');
+      else setError(e.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   // ─── SUBMIT ─────────────────────────────────────────────────────────────────

@@ -17,6 +17,7 @@ import ExamWeekBanner from './components/ExamWeekBanner';
 import ExamWeekDashboard from './components/ExamWeekDashboard';
 import XPBar from './components/XPBar';
 import AchievementToast from './components/AchievementToast';
+import Toast from './components/Toast';
 import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
 import { apiFetch } from './lib/gemini';
 import VocabView from './phases/VocabView';
@@ -74,7 +75,12 @@ export default function App() {
   const [onboarded, setOnboarded]         = useState(() => localStorage.getItem('gre_onboarded') === '1');
   const [showPaywall, setShowPaywall]     = useState(null); // null or reason string
   const [sessionComplete, setSessionComplete] = useState(null); // null or { correct, total, ... }
+  const [toast, setToast]                 = useState(null); // null or { message, type }
   const mainRef = useRef(null);
+
+  useEffect(() => {
+    window.showToast = (message, type = 'error') => setToast({ message, type });
+  }, []);
 
   // ─── Test date countdown ──────────────────────────────────────────────────────
   const testDate = loadJSON('gre_testDate', null);
@@ -597,6 +603,8 @@ export default function App() {
 
       {/* ── OVERLAYS ── */}
       <SettingsPanel open={showSettings} onClose={() => setShowSettings(false)} />
+      {/* Toasts & Modals */}
+      <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
       <AchievementToast achievement={achToast} onDone={() => setAchToast(null)} />
       <AiTutor />
       {showPaywall && <PaywallModal reason={showPaywall} onClose={() => setShowPaywall(null)} />}

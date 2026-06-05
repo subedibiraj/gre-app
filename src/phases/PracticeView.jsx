@@ -51,7 +51,8 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
       } else if (msg.includes('fetch') || msg.includes('network')) {
         msg = 'Cannot reach the server. Make sure to run: npm run server';
       }
-      setError(msg);
+      if (window.showToast) window.showToast(msg);
+      else setError(msg);
       console.error(e);
     }
     setLoading(false);

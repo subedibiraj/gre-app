@@ -57,7 +57,9 @@ export default function AiTutor() {
       });
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${err.message}. Make sure the server is running (\`node server/index.js\`) and your GEMINI_API_KEY is set in .env` }]);
+      const msg = err.message || 'Failed to connect to AI Tutor.';
+      if (window.showToast) window.showToast(msg);
+      setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${msg}` }]);
     } finally {
       setLoading(false);
     }

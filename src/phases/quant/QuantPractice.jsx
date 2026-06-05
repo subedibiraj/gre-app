@@ -367,7 +367,17 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
           subtopics: topicData.subtopics, weakAreas, profile,
       });
       setQs(_qs.json());
-    } catch (e) { setError(e.message); }
+    } catch(e) {
+      let msg = e.message || 'Failed to generate questions.';
+      if (msg.includes('429') || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
+        msg = 'API rate limit reached. Please wait 30 seconds and try again.';
+      } else if (msg.includes('fetch') || msg.includes('network')) {
+        msg = 'Cannot reach the server. Make sure to run: npm run server';
+      }
+      if (window.showToast) window.showToast(msg);
+      else setError(msg);
+      console.error(e);
+    }
     setLoading(false);
   }, [topicData]);
 

@@ -87,9 +87,9 @@ export default function ContrastRecall({ day, onComplete }) {
 
   return (
     <div>
-      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4}}>
+      <div style={{display:'flex', flexWrap:'wrap', alignItems:'center', justifyContent:'space-between', gap:8, marginBottom:4}}>
         <SectionHead label="Contrast Recall" count={`${questions.length} pairs · all days`} color={C.goldBr} />
-        <Btn small variant="ghost" onClick={reshuffle}>🔀 Reshuffle</Btn>
+        <Btn small variant="ghost" style={{ whiteSpace: 'nowrap', flexShrink: 0 }} onClick={reshuffle}>🔀 Reshuffle</Btn>
       </div>
       <p style={{ color: C.textMid, fontSize: 12, marginBottom: 18, lineHeight: 1.6 }}>
         Match each word to its correct definition. Tests cumulative vocabulary across all {day} days.

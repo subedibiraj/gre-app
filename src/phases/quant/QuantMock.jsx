@@ -289,8 +289,12 @@ export default function QuantMock() {
       // set first Q
       const first = `qc_${data.qc?.[0]?.id}`;
       setCurrentQ(first);
-    } catch (e) { setError(e.message); }
-    setLoading(false);
+    } catch (e) {
+      if (window.showToast) window.showToast(e.message || 'Failed to generate mock exam.');
+      else setError(e.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const jumpToQ = (navId) => {
