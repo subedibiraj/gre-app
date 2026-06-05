@@ -366,7 +366,7 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
           topicId: topicData.id, topicLabel: topicData.label,
           subtopics: topicData.subtopics, weakAreas, profile,
       });
-      setQs(_qs.json());
+      setQs(_qs);
     } catch(e) {
       let msg = e.message || 'Failed to generate questions.';
       if (msg.includes('429') || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {

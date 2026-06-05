@@ -260,6 +260,13 @@ export default function App() {
     ) :
     <QuantLanding onSelectTopic={setQuantPage} scores={quantScores} />;
 
+  // ─── AWA CONTENT ──────────────────────────────────────────────────────────────
+  const awaContent = (
+    <div style={{ height: '100%', minHeight: 600 }}>
+      <AwaView onSessionComplete={(res) => setSessionComplete(res)} />
+    </div>
+  );
+
   // ─── SIDEBAR CONTENT ─────────────────────────────────────────────────────────
   const BOSS_DAY_MAP = { 2: 'boss_2', 4: 'boss_4', 7: 'boss_7' };
   const sidebarContent = section === 'verbal' ? (
