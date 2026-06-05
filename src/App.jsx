@@ -360,7 +360,9 @@ export default function App() {
         ))}
       </div>
     </div>
-  ) : (
+  );
+
+  const sidebarContentRender = section === 'awa' ? (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <p style={{ fontSize: 10, color: C.textDim, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, paddingLeft: 4, fontWeight: 700 }}>AWA Writing</p>
       <button style={{
