@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Flame, Shield, CalendarDays, Zap, Menu, WifiOff, LayoutDashboard, PenTool, Calculator, Target, Network, Sprout, Sun, Lock, Trophy, Swords, ShieldAlert } from 'lucide-react';
 import C from './theme';
 import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
@@ -354,6 +355,7 @@ export default function App() {
           return (
             <button key={d.day} onClick={() => {
               if (!canAccessDay(d.day)) { setShowPaywall('days'); return; }
+              if (section !== 'verbal') setSection('verbal');
               setCurrentDay(d.day); setTab('vocab');
             }} style={{
               width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
@@ -380,15 +382,16 @@ export default function App() {
       {/* Bottom nav items */}
       <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
         {[
-          { id: -1,  label: '🎯 Mock Exam',    tab: 'mock' },
-          { id: -2,  label: '🔗 Word Map',     tab: 'relations' },
-          { id: -3,  label: '🌱 Roots',        tab: 'roots' },
-          { id: 0,   label: "☀️ Today's Plan", tab: 'overview', green: true },
+          { id: -1,  label: 'Mock Exam',    icon: <Target size={16} />,     tab: 'mock' },
+          { id: -2,  label: 'Word Map',     icon: <Network size={16} />,    tab: 'relations' },
+          { id: -3,  label: 'Roots',        icon: <Sprout size={16} />,     tab: 'roots' },
+          { id: 0,   label: "Today's Plan", icon: <Sun size={16} />,        tab: 'overview', green: true },
         ].map(item => {
           const locked = !canAccessDay(item.id);
           return (
             <button key={item.id} onClick={() => {
               if (locked) { setShowPaywall('features'); return; }
+              if (section !== 'verbal') setSection('verbal');
               setCurrentDay(item.id); setTab(item.tab);
             }} style={{
               width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
@@ -398,7 +401,10 @@ export default function App() {
               fontSize: 13, fontWeight: 600, opacity: locked ? 0.6 : 1,
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
-              <span>{locked ? '🔒' : ''} {item.label}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {locked ? <Lock size={16} opacity={0.6} /> : item.icon}
+                <span>{item.label}</span>
+              </div>
             </button>
           );
         })}
@@ -583,9 +589,9 @@ export default function App() {
         {/* Streak + Shield — desktop only */}
         {streak.current > 0 && (
           <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: 5, background: C.goldDim + '33', border: `1px solid ${C.goldDim}`, borderRadius: 20, padding: '3px 10px' }}>
-            <span style={{ fontSize: 14 }}>🔥</span>
+            <Flame size={16} color={C.gold} style={{ marginRight: 2 }} />
             <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 13, color: C.gold }}>{streak.current}</span>
-            {shield.available && <span title="Streak Shield ready" style={{ fontSize: 12, marginLeft: 2, opacity: 0.8 }}>🛡️</span>}
+            {shield.available && <Shield size={14} color={C.greenBr} title="Streak Shield ready" style={{ marginLeft: 4, opacity: 0.8 }} />}
           </div>
         )}
 
@@ -597,7 +603,7 @@ export default function App() {
             background: daysUntilTest <= 14 ? `${C.red}18` : daysUntilTest <= 30 ? `${C.gold}18` : `${C.green}18`,
             border: `1px solid ${daysUntilTest <= 14 ? C.red : daysUntilTest <= 30 ? C.gold : C.green}44`,
           }}>
-            <span style={{ fontSize: 12 }}>📅</span>
+            <CalendarDays size={14} color={daysUntilTest <= 14 ? C.red : daysUntilTest <= 30 ? C.gold : C.greenBr} />
             <span style={{
               fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 12,
               color: daysUntilTest <= 14 ? C.red : daysUntilTest <= 30 ? C.gold : C.greenBr,
@@ -617,7 +623,11 @@ export default function App() {
             padding: '5px 10px', borderRadius: 6, border: `1px solid ${C.red}44`,
             background: `${C.red}18`, color: C.red, cursor: 'pointer',
             fontSize: 11, fontWeight: 700, flexShrink: 0, minHeight: 32,
-          }}>⚡ {weakWords.length}</button>
+            display: 'flex', alignItems: 'center', gap: 4
+          }}>
+            <Zap size={14} />
+            {weakWords.length}
+          </button>
         )}
 
         {/* Boss button */}
@@ -700,8 +710,11 @@ export default function App() {
             <button onClick={() => setDrawerOpen(d => !d)} style={{
               background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6,
               padding: '6px 10px', cursor: 'pointer', color: C.textMid,
-              fontSize: 16, minHeight: 36, flexShrink: 0,
-            }}>☰</button>
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              minHeight: 36, flexShrink: 0,
+            }}>
+              <Menu size={18} />
+            </button>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ color: C.text, fontSize: 13, fontWeight: 700, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {mobileContextLabel}
@@ -712,13 +725,13 @@ export default function App() {
             </div>
             {daysUntilTest !== null && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, padding: '2px 6px', borderRadius: 8, background: `${C.gold}18` }}>
-                <span style={{ fontSize: 12 }}>📅</span>
+                <CalendarDays size={14} color={C.gold} />
                 <span style={{ fontFamily: 'Courier New,monospace', fontSize: 12, fontWeight: 700, color: C.gold }}>{daysUntilTest}d</span>
               </div>
             )}
             {streak.current > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-                <span style={{ fontSize: 14 }}>🔥</span>
+                <Flame size={16} color={C.gold} />
                 <span style={{ fontFamily: 'Courier New,monospace', fontSize: 13, fontWeight: 700, color: C.gold }}>{streak.current}</span>
               </div>
             )}
@@ -735,15 +748,15 @@ export default function App() {
                 style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 {section === 'pricing' ? (
-                  <Suspense fallback={<div>Loading Pricing...</div>}><Pricing /></Suspense>
+                  <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '100px 20px', color: C.gold }}><div style={{ animation: 'spin 1s linear infinite', fontSize: 24 }}>⏳</div></div>}><Pricing /></Suspense>
                 ) : section === 'terms' ? (
-                  <Suspense fallback={<div>Loading Terms...</div>}><Terms /></Suspense>
+                  <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '100px 20px', color: C.gold }}><div style={{ animation: 'spin 1s linear infinite', fontSize: 24 }}>⏳</div></div>}><Terms /></Suspense>
                 ) : section === 'privacy' ? (
-                  <Suspense fallback={<div>Loading Privacy...</div>}><Privacy /></Suspense>
+                  <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '100px 20px', color: C.gold }}><div style={{ animation: 'spin 1s linear infinite', fontSize: 24 }}>⏳</div></div>}><Privacy /></Suspense>
                 ) : section === 'refund' ? (
-                  <Suspense fallback={<div>Loading Refund...</div>}><Refund /></Suspense>
+                  <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '100px 20px', color: C.gold }}><div style={{ animation: 'spin 1s linear infinite', fontSize: 24 }}>⏳</div></div>}><Refund /></Suspense>
                 ) : section === 'admin' ? (
-                  <Suspense fallback={<div style={{padding: 40}}>Loading Admin...</div>}>
+                  <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '100px 20px', color: C.gold }}><div style={{ animation: 'spin 1s linear infinite', fontSize: 24 }}>⏳</div></div>}>
                     <AdminDashboard />
                   </Suspense>
                 ) : (
@@ -826,7 +839,7 @@ export default function App() {
           padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 8,
           boxShadow: '0 4px 20px rgba(0,0,0,0.4)', whiteSpace: 'nowrap',
         }}>
-          <span>📡</span>
+          <WifiOff size={16} color="#B53028" />
           <span style={{ color: '#B53028', fontSize: 12, fontWeight: 600 }}>No internet connection</span>
         </div>
       )}
@@ -852,7 +865,11 @@ function QuantLanding({ onSelectTopic, scores }) {
   return (
     <div>
       <div style={{ textAlign: 'center', marginBottom: 28 }}>
-        <p style={{ fontSize: 40, marginBottom: 6 }}>🧮</p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+          <div style={{ background: `${C.gold}22`, padding: 16, borderRadius: '50%' }}>
+            <Calculator size={32} color={C.gold} />
+          </div>
+        </div>
         <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 22, color: C.gold, marginBottom: 8 }}>Quantitative Reasoning</h2>
         <p style={{ color: C.textMid, fontSize: 13 }}>Master all 4 topics. AI-generated adaptive practice.</p>
       </div>
