@@ -1,6 +1,6 @@
 import { authenticateAndSecure } from './_middleware.js';
-import { DAYS } from './days.js';
-import { QUANT_TOPICS } from './quant-topics.js';
+import { DAYS } from './_days.js';
+import { QUANT_TOPICS } from './_quant-topics.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST' && req.method !== 'OPTIONS') {

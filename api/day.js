@@ -1,5 +1,5 @@
 import { authenticateAndSecure } from './_middleware.js';
-import { DAYS } from './days.js';
+import { DAYS } from './_days.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST' && req.method !== 'OPTIONS') {
