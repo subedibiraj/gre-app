@@ -60,7 +60,15 @@ const isMobile = () => window.innerWidth < 768;
 
 // ─── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [section, setSection]       = useState('verbal');
+  const getInitialSection = () => {
+    const p = window.location.pathname;
+    if (p === '/terms') return 'terms';
+    if (p === '/privacy') return 'privacy';
+    if (p === '/refund') return 'refund';
+    if (p === '/pricing') return 'pricing';
+    return 'verbal';
+  };
+  const [section, setSection]       = useState(getInitialSection);
   const [currentDay, setCurrentDay] = useState(1);
   const [tab, setTab]               = useState('vocab');
   const [weakWords, setWeakWords]   = useState(() => loadJSON('gre_weakWords', []));
@@ -150,7 +158,7 @@ export default function App() {
   useEffect(() => {
     if (section === 'verbal' && currentDay > 0) {
       const dayData = window.__GRE_DAYS?.[currentDay - 1];
-      if (dayData && (!dayData.words || dayData.words.length === 0) && isPro()) {
+      if (dayData && (!dayData.words || dayData.words.length === 0) && (isPro() || currentDay <= 7)) {
         const fetchDay = async () => {
           try {
             const headers = { 'Content-Type': 'application/json' };
@@ -197,6 +205,23 @@ export default function App() {
       }
     }
   }, [section, currentDay, quantPage, session]);
+
+  // ─── Routing Sync ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const path = (section === 'verbal' || section === 'quant' || section === 'awa') ? '/' : `/${section}`;
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
+  }, [section]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const p = window.location.pathname;
+      setSection(p === '/terms' ? 'terms' : p === '/privacy' ? 'privacy' : p === '/refund' ? 'refund' : p === '/pricing' ? 'pricing' : 'verbal');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // ─── Document title ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -815,7 +840,7 @@ export default function App() {
                     <AdminDashboard />
                   </Suspense>
                 ) : (
-                  <Suspense fallback={<div style={{height:'400px', display:'flex', alignItems:'center', justifyContent:'center', color:C.gold}}>Loading...</div>}>
+                  <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '100px 20px', color: C.gold }}><div style={{ animation: 'spin 1s linear infinite', fontSize: 24 }}>⏳</div></div>}>
                     {section === 'verbal' ? verbalContent : section === 'quant' ? quantContent : awaContent}
                   </Suspense>
                 )}
