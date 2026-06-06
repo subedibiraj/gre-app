@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import C from '../theme';
+import Icon from '../components/Icon';
 import { DAYS } from '../data/days';
 import { QUANT_TOPICS } from '../data/quant-topics';
 import { getStreak } from '../engine/streak';
@@ -44,10 +45,11 @@ function TimeBlock({ icon, duration, title, desc, color, done, onClick, tag }) {
       opacity: done ? 0.75 : 1,
     }}>
       <div style={{
-        width: 44, height: 44, borderRadius: 10, flexShrink: 0,
+        width: 44, height: 44, borderRadius: 12, flexShrink: 0,
         background: done ? `${C.green}22` : `${color}22`,
+        border: `1px solid ${done ? C.green : color}44`,
         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
-      }}>{done ? '✅' : icon}</div>
+      }}>{done ? <Icon name="Check" size={20} color={C.greenBr} /> : icon}</div>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
           <span style={{ color: done ? C.greenBr : C.text, fontSize: 13, fontWeight: 700, textDecoration: done ? 'line-through' : 'none' }}>{title}</span>
@@ -208,18 +210,18 @@ export default function DailyRoadmap({ currentDay: verbalCurrentDay, onNavigate 
   // Build today's time blocks
   const isMock = isMockDay;
   const todayBlocks = isMock ? [
-    { icon: '☀️', duration: '10', title: 'Morning Drill', desc: 'Quick 5-question vocab blitz to warm up', color: C.gold, done: drillDone, nav: 'drill', tag: 'Habit' },
-    { icon: '📖', duration: '10', title: `Vocab Review: All Days`, desc: 'Skim weak words, SR-flagged items', color: C.blue, done: false, nav: 'verbal_vocab' },
-    { icon: '🎯', duration: '30', title: 'Full Verbal Mock', desc: 'TC + SE + RC — treat it like the real test', color: C.red, done: false, nav: 'verbal_mock', tag: 'Mock Day' },
-    { icon: '🧮', duration: '35', title: 'Quant Mock', desc: '20 questions, timed, full navigator', color: C.greenBr, done: false, nav: 'quant_mock', tag: 'Mock Day' },
-    { icon: '🔍', duration: '15', title: 'Error Review', desc: 'Go through every wrong answer — understand why', color: '#9B6BDB', done: false },
+    { icon: <Icon name="Sun" size={18} color={C.gold}/>, duration: '10', title: 'Morning Drill', desc: 'Quick 5-question vocab blitz to warm up', color: C.gold, done: drillDone, nav: 'drill', tag: 'Habit' },
+    { icon: <Icon name="BookOpen" size={18} color={C.blue}/>, duration: '10', title: `Vocab Review: All Days`, desc: 'Skim weak words, SR-flagged items', color: C.blue, done: false, nav: 'verbal_vocab' },
+    { icon: <Icon name="Target" size={18} color={C.red}/>, duration: '30', title: 'Full Verbal Mock', desc: 'TC + SE + RC — treat it like the real test', color: C.red, done: false, nav: 'verbal_mock', tag: 'Mock Day' },
+    { icon: <Icon name="Calculator" size={18} color={C.greenBr}/>, duration: '35', title: 'Quant Mock', desc: '20 questions, timed, full navigator', color: C.greenBr, done: false, nav: 'quant_mock', tag: 'Mock Day' },
+    { icon: <Icon name="Search" size={18} color="#9B6BDB"/>, duration: '15', title: 'Error Review', desc: 'Go through every wrong answer — understand why', color: '#9B6BDB', done: false },
   ] : [
-    { icon: '☀️', duration: '5',  title: 'Morning Drill', desc: 'Quick 5-question vocab blitz', color: C.gold, done: drillDone, nav: 'drill', tag: 'Habit' },
-    { icon: '📖', duration: '15', title: `Vocab: Day ${verbalDay} Words`, desc: `Study + expand ${DAYS[verbalDay - 1]?.words.length || 0} words. Use TC Patterns & SE Strategy tabs.`, color: C.blue, done: false, nav: `verbal_vocab_${verbalDay}` },
-    { icon: '✍️', duration: '20', title: 'Verbal Practice', desc: 'VIC + TC + SE (AI-generated, adaptive)', color: '#9B6BDB', done: false, nav: 'verbal_practice' },
-    { icon: `${quantTopicData?.icon || '🔢'}`, duration: '15', title: `Learn: ${quantTopicData?.label}`, desc: 'Concept cards → worked examples → traps', color: C.greenBr, done: false, nav: 'quant_learn' },
-    { icon: '📝', duration: '20', title: `Practice: ${quantTopicData?.label}`, desc: 'AI questions adapted to your weak subtopics', color: C.gold, done: false, nav: 'quant_practice' },
-    ...(dueWords.length > 3 ? [{ icon: '⚡', duration: '10', title: `Weak Word Blitz (${dueWords.length} due)`, desc: 'Targeted drill on your weakest words', color: C.red, done: false, nav: 'blitz', tag: 'Priority' }] : []),
+    { icon: <Icon name="Sun" size={18} color={C.gold}/>, duration: '5',  title: 'Morning Drill', desc: 'Quick 5-question vocab blitz', color: C.gold, done: drillDone, nav: 'drill', tag: 'Habit' },
+    { icon: <Icon name="BookOpen" size={18} color={C.blue}/>, duration: '15', title: `Vocab: Day ${verbalDay} Words`, desc: `Study + expand ${DAYS[verbalDay - 1]?.words?.length || 0} words.`, color: C.blue, done: false, nav: `verbal_vocab_${verbalDay}` },
+    { icon: <Icon name="PenTool" size={18} color="#9B6BDB"/>, duration: '20', title: 'Verbal Practice', desc: 'VIC + TC + SE (AI-generated, adaptive)', color: '#9B6BDB', done: false, nav: 'verbal_practice' },
+    { icon: <Icon name="LayoutGrid" size={18} color={C.greenBr}/>, duration: '15', title: `Learn: ${quantTopicData?.label}`, desc: 'Concept cards → worked examples → traps', color: C.greenBr, done: false, nav: 'quant_learn' },
+    { icon: <Icon name="Edit3" size={18} color={C.gold}/>, duration: '20', title: `Practice: ${quantTopicData?.label}`, desc: 'AI questions adapted to your weak subtopics', color: C.gold, done: false, nav: 'quant_practice' },
+    ...(dueWords.length > 3 ? [{ icon: <Icon name="Zap" size={18} color={C.red}/>, duration: '10', title: `Weak Word Blitz (${dueWords.length} due)`, desc: 'Targeted drill on your weakest words', color: C.red, done: false, nav: 'blitz', tag: 'Priority' }] : []),
   ];
 
   const totalTime = todayBlocks.reduce((a, b) => a + parseInt(b.duration), 0);
@@ -230,16 +232,17 @@ export default function DailyRoadmap({ currentDay: verbalCurrentDay, onNavigate 
       {/* Top stats */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
         {[
-          { icon: level.icon, label: 'Level', val: level.name, color: C.gold },
-          { icon: '🔥', label: 'Streak', val: `${streak.current}d`, color: '#FF6B35' },
-          { icon: '📅', label: 'Study Day', val: `Day ${studyDay}`, color: C.blue },
-          { icon: '📚', label: 'SR Due', val: `${dueWords.length}`, color: dueWords.length > 5 ? C.red : C.greenBr },
+          { icon: <Icon name={level.icon} size={22} color={C.gold}/>, label: 'Level', val: level.name, color: C.gold },
+          { icon: <Icon name="Flame" size={22} color="#FF6B35"/>, label: 'Streak', val: `${streak.current}d`, color: '#FF6B35' },
+          { icon: <Icon name="Calendar" size={22} color={C.blue}/>, label: 'Study Day', val: `Day ${studyDay}`, color: C.blue },
+          { icon: <Icon name="Book" size={22} color={dueWords.length > 5 ? C.red : C.greenBr}/>, label: 'SR Due', val: `${dueWords.length}`, color: dueWords.length > 5 ? C.red : C.greenBr },
         ].map(s => (
           <div key={s.label} style={{
             flex: 1, minWidth: 90, textAlign: 'center', padding: '10px 8px',
             background: `${s.color}12`, borderRadius: 10, border: `1px solid ${s.color}22`,
+            display: 'flex', flexDirection: 'column', alignItems: 'center'
           }}>
-            <p style={{ fontSize: 18, margin: '0 0 2px' }}>{s.icon}</p>
+            <div style={{ marginBottom: 4 }}>{s.icon}</div>
             <p style={{ fontFamily: 'Courier New,monospace', fontSize: 15, fontWeight: 700, color: s.color, margin: 0 }}>{s.val}</p>
             <p style={{ color: C.textDim, fontSize: 9, margin: '2px 0 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</p>
           </div>

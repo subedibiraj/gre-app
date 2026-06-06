@@ -7,7 +7,6 @@ import { QUANT_TOPICS } from './data/quant-topics';
 import { getStreak, getShieldStatus } from './engine/streak';
 import { getSRStats } from './engine/spaced';
 import SessionComplete from './components/SessionComplete';
-import PaywallModal from './components/PaywallModal';
 import { canAccessDay, canGenerate, isPro } from './lib/subscription';
 import Tag from './components/Tag';
 import AiTutor from './components/AiTutor';
@@ -90,7 +89,6 @@ export default function App() {
   const [drawerOpen, setDrawerOpen]       = useState(false); // mobile day/topic drawer
   const [offline, setOffline]             = useState(!navigator.onLine);
   const [onboarded, setOnboarded]         = useState(() => localStorage.getItem('gre_onboarded') === '1');
-  const [showPaywall, setShowPaywall]     = useState(null); // null or reason string
   const [curriculumLoading, setCurriculumLoading] = useState(true);
   
   const { user, session } = useAuth();
@@ -262,7 +260,7 @@ export default function App() {
       if (k === 'escape') { setShowSettings(false); setDrawerOpen(false); return; }
       if (k === 'v') { setSection('verbal'); setCurrentDay(1); setTab('vocab'); return; }
       if (k === 'q') { 
-        if (!isPro()) { setShowPaywall('quant'); return; }
+        if (!isPro()) { setSection('pricing'); return; }
         setSection('quant'); setQuantPage(null); return; 
       }
       if (k === 'p' && section === 'verbal' && currentDay > 0) { setTab('practice'); return; }
@@ -279,7 +277,7 @@ export default function App() {
 
   const goQuant = useCallback((page = null, tab = null) => {
     if (!isPro()) {
-      setShowPaywall('quant');
+      setSection('pricing');
       return;
     }
     setSection('quant');
@@ -434,7 +432,7 @@ export default function App() {
           const bossBeaten = bossResult?.beaten;
           return (
             <button key={d.day} onClick={() => {
-              if (!canAccessDay(d.day)) { setShowPaywall('days'); return; }
+              if (!canAccessDay(d.day)) { setSection('pricing'); return; }
               if (section !== 'verbal') setSection('verbal');
               setCurrentDay(d.day); setTab('vocab');
             }} style={{
@@ -470,7 +468,7 @@ export default function App() {
           const locked = !canAccessDay(item.id);
           return (
             <button key={item.id} onClick={() => {
-              if (locked) { setShowPaywall('features'); return; }
+              if (locked) { setSection('pricing'); return; }
               if (section !== 'verbal') setSection('verbal');
               setCurrentDay(item.id); setTab(item.tab);
             }} style={{
@@ -509,7 +507,7 @@ export default function App() {
           const sc = quantScores[t.id];
           const isCurrent = quantPage === t.id;
           return (
-            <button key={t.id} onClick={() => setQuantPage(t.id)} style={{
+            <button key={t.id} onClick={() => goQuant(t.id)} style={{
               width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
               background: isCurrent ? C.gold : 'transparent',
@@ -533,7 +531,7 @@ export default function App() {
           { id: 'formulas', label: '📐 Formulas' },
           { id: 'progress', label: '📊 Progress', green: true },
         ].map(item => (
-          <button key={item.id} onClick={() => setQuantPage(item.id)} style={{
+          <button key={item.id} onClick={() => goQuant(item.id)} style={{
             width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
             border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
             background: quantPage === item.id ? (item.green ? C.green + '33' : C.gold + '22') : 'transparent',
@@ -653,7 +651,7 @@ export default function App() {
         <div style={{ display: 'flex', background: C.bg, borderRadius: 6, border: `1px solid ${C.border}`, overflow: 'hidden', flexShrink: 0 }}>
           {[{ id: 'verbal', label: 'Verbal' }, { id: 'quant', label: 'Quant' }, { id: 'awa', label: 'Writing' }].map(s => (
             <button key={s.id} onClick={() => { 
-              if (s.id === 'awa' && !isPro()) { setShowPaywall('awa'); return; }
+              if (s.id === 'awa' && !isPro()) { setSection('pricing'); return; }
               setSection(s.id); 
               if (s.id === 'quant') setQuantPage(null); 
               if (s.id === 'verbal') { setCurrentDay(1); setTab('vocab'); } 
@@ -872,7 +870,7 @@ export default function App() {
           <span className="icon">📐</span>Quant
         </button>
         <button className={section === 'awa' ? 'active' : ''} onClick={() => {
-          if (!isPro()) { setShowPaywall('awa'); return; }
+          if (!isPro()) { setSection('pricing'); return; }
           setSection('awa');
         }}>
           <span className="icon">✍️</span>Writing
@@ -891,13 +889,7 @@ export default function App() {
       <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
       <AchievementToast achievement={achToast} onDone={() => setAchToast(null)} />
       <AiTutor />
-      {showPaywall && (
-        <PaywallModal 
-          reason={showPaywall} 
-          onClose={() => setShowPaywall(null)} 
-          onViewPricing={() => { setShowPaywall(null); setSection('pricing'); }}
-        />
-      )}
+      {showMorningDrill && <MorningDrill onComplete={() => setShowMorningDrill(false)} />}
       {sessionComplete && (
         <SessionComplete
           {...sessionComplete}

@@ -71,11 +71,10 @@ export default function Pricing() {
         </div>
       </div>
 
-      {/* Pricing Cards */}
-      <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap', textAlign: 'left' }}>
+      <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap', textAlign: 'left', padding: '0 10px' }}>
         {plans.map(p => (
           <div key={p.id} style={{
-            width: '100%', maxWidth: 340, background: p.outline ? C.surface : `linear-gradient(180deg, ${C.cardHi}, ${C.card})`,
+            flex: '1 1 320px', maxWidth: 400, background: p.outline ? C.surface : `linear-gradient(180deg, ${C.cardHi}, ${C.card})`,
             border: `1px solid ${p.outline ? C.border : C.gold + '55'}`, borderRadius: 20,
             padding: 32, display: 'flex', flexDirection: 'column',
             boxShadow: p.outline ? 'none' : `0 20px 40px ${C.gold}11`,
