@@ -120,12 +120,13 @@ export default function App() {
         }
         
         const body = JSON.stringify({ geminiKey: getGeminiKey() });
-        const res = await fetch('/api/content', { method: 'POST', headers, body });
+        const res = await fetch('/api/index-meta', { method: 'POST', headers, body });
         if (!res.ok) throw new Error('Failed to fetch curriculum');
         
         const data = await res.json();
         window.__GRE_DAYS = data.DAYS;
         window.__GRE_QUANT_TOPICS = data.QUANT_TOPICS;
+        setCurriculumLoading(false);
       } catch (err) {
         console.error('Curriculum fetch error:', err);
         // Fallback or retry logic could go here
@@ -142,6 +143,60 @@ export default function App() {
   const testDate = loadJSON('gre_testDate', null);
   const daysUntilTest = testDate ? Math.max(0, Math.ceil((new Date(testDate) - new Date()) / 86400000)) : null;
   const shield = getShieldStatus();
+
+  // ─── CHUNKED FETCHING ────────────────────────────────────────────────────────
+  const [, setForceUpdate] = useState(0);
+
+  useEffect(() => {
+    if (section === 'verbal' && currentDay > 0) {
+      const dayData = window.__GRE_DAYS?.[currentDay - 1];
+      if (dayData && (!dayData.words || dayData.words.length === 0) && isPro()) {
+        const fetchDay = async () => {
+          try {
+            const headers = { 'Content-Type': 'application/json' };
+            if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
+            const res = await fetch('/api/day', {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ geminiKey: getGeminiKey(), day: currentDay })
+            });
+            const data = await res.json();
+            if (data.day) {
+              window.__GRE_DAYS[currentDay - 1] = data.day;
+              setForceUpdate(n => n + 1); // Trigger re-render
+            }
+          } catch (e) { console.error('Failed to load day chunk', e); }
+        };
+        fetchDay();
+      }
+    }
+
+    if (section === 'quant' && quantPage) {
+      const topicIndex = window.__GRE_QUANT_TOPICS?.findIndex(t => t.id === quantPage);
+      if (topicIndex >= 0) {
+        const topic = window.__GRE_QUANT_TOPICS[topicIndex];
+        if (!topic.questions || topic.questions.length === 0) {
+          const fetchQuant = async () => {
+            try {
+              const headers = { 'Content-Type': 'application/json' };
+              if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
+              const res = await fetch('/api/quant', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ geminiKey: getGeminiKey(), topicId: quantPage })
+              });
+              const data = await res.json();
+              if (data.topic) {
+                window.__GRE_QUANT_TOPICS[topicIndex] = data.topic;
+                setForceUpdate(n => n + 1);
+              }
+            } catch (e) { console.error('Failed to load quant chunk', e); }
+          };
+          fetchQuant();
+        }
+      }
+    }
+  }, [section, currentDay, quantPage, session]);
 
   // ─── Document title ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -194,7 +249,7 @@ export default function App() {
 
   const streak  = getStreak();
   const srStats = getSRStats();
-  const totalWords = DAYS.flatMap(d => d.words).length;
+  const totalWords = DAYS.reduce((sum, d) => sum + (d.wordCount || d.words?.length || 0), 0);
   const day = currentDay > 0 ? DAYS[currentDay-1] : null;
 
   const goQuant = useCallback((page = null, tab = null) => {
