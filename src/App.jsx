@@ -404,7 +404,7 @@ export default function App() {
         {quantTab === 'learn' ? <ConceptLearn topicId={quantPage} /> : <QuantPractice topic={quantPage} onScoreUpdate={updateQuantScore} />}
       </>
     ) :
-    <QuantLanding onSelectTopic={setQuantPage} scores={quantScores} />;
+    <QuantLanding onSelectTopic={(tId) => goQuant(tId)} scores={quantScores} />;
 
   // ─── AWA CONTENT ──────────────────────────────────────────────────────────────
   const awaContent = (
@@ -866,7 +866,7 @@ export default function App() {
         <button className={section === 'verbal' ? 'active' : ''} onClick={() => { setSection('verbal'); setCurrentDay(1); setTab('vocab'); }}>
           <span className="icon">📖</span>Verbal
         </button>
-        <button className={section === 'quant' ? 'active' : ''} onClick={() => goQuant(null)}>
+        <button className={section === 'quant' ? 'active' : ''} onClick={() => { setSection('quant'); setQuantPage(null); }}>
           <span className="icon">📐</span>Quant
         </button>
         <button className={section === 'awa' ? 'active' : ''} onClick={() => {
