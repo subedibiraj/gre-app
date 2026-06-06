@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { DAYS } from './days';
-import { QUANT_TOPICS } from './quant-topics';
+import { DAYS } from './days.js';
+import { QUANT_TOPICS } from './quant-topics.js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
