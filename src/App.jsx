@@ -65,6 +65,9 @@ export default function App() {
     if (p === '/privacy') return 'privacy';
     if (p === '/refund') return 'refund';
     if (p === '/pricing') return 'pricing';
+    if (p === '/quant') return 'quant';
+    if (p === '/awa') return 'awa';
+    if (p === '/verbal') return 'verbal';
     return 'verbal';
   };
   const [section, setSection]       = useState(getInitialSection);
@@ -202,12 +205,12 @@ export default function App() {
         }
       }
     }
-  }, [section, currentDay, quantPage, session]);
+  }, [section, currentDay, quantPage, session, curriculumLoading]);
 
   // ─── Routing Sync ────────────────────────────────────────────────────────────
   useEffect(() => {
-    const path = (section === 'verbal' || section === 'quant' || section === 'awa') ? '/' : `/${section}`;
-    if (window.location.pathname !== path) {
+    const path = section === 'verbal' ? '/' : `/${section}`;
+    if (window.location.pathname !== path && window.location.pathname !== `/${section}`) {
       window.history.pushState({}, '', path);
     }
   }, [section]);
@@ -215,7 +218,15 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       const p = window.location.pathname;
-      setSection(p === '/terms' ? 'terms' : p === '/privacy' ? 'privacy' : p === '/refund' ? 'refund' : p === '/pricing' ? 'pricing' : 'verbal');
+      setSection(
+        p === '/terms' ? 'terms' : 
+        p === '/privacy' ? 'privacy' : 
+        p === '/refund' ? 'refund' : 
+        p === '/pricing' ? 'pricing' : 
+        p === '/quant' ? 'quant' :
+        p === '/awa' ? 'awa' :
+        'verbal'
+      );
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
