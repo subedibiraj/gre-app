@@ -14,12 +14,47 @@ function canAccessDay(dayNum, plan, hasKey) {
   return dayNum > 0 && dayNum <= 7;
 }
 
+const ALLOWED_ORIGINS = [
+  'https://gre.biraj-subedi.com.np',
+  'https://gre-app-eta.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
+// Simple in-memory rate limiter (per Vercel instance)
+const rateLimit = new Map();
+
 export default async function handler(req, res) {
+  // 1. Strict CORS Check
+  const origin = req.headers.origin || req.headers.referer;
+  const isAllowedOrigin = ALLOWED_ORIGINS.some(o => origin?.startsWith(o));
+  
+  if (!isAllowedOrigin && process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ error: 'Forbidden: Invalid Origin' });
+  }
+
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     return res.status(200).end();
+  }
+
+  // 2. IP Rate Limiting (10 reqs per 10s)
+  const ip = req.headers['x-forwarded-for'] || 'unknown_ip';
+  const now = Date.now();
+  const reqCount = rateLimit.get(ip) || { count: 0, time: now };
+  
+  if (now - reqCount.time > 10000) {
+    reqCount.count = 1;
+    reqCount.time = now;
+  } else {
+    reqCount.count++;
+  }
+  rateLimit.set(ip, reqCount);
+
+  if (reqCount.count > 10) {
+    return res.status(429).json({ error: 'Too Many Requests' });
   }
 
   if (req.method !== 'POST') {
@@ -27,12 +62,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { hasGeminiKey } = req.body || {};
+    const { geminiKey } = req.body || {};
     const authHeader = req.headers.authorization;
     let plan = 'free';
     let userEmail = null;
 
-    if (hasGeminiKey) plan = 'pro'; // BYOK users get curriculum access
+    // 3. Validate Gemini Key serverside if provided
+    if (geminiKey) {
+      try {
+        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
+        if (geminiRes.ok) plan = 'pro';
+      } catch (e) {
+        console.error('Gemini Key validation failed:', e);
+      }
+    }
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];

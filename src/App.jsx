@@ -19,7 +19,7 @@ import XPBar from './components/XPBar';
 import AchievementToast from './components/AchievementToast';
 import Toast from './components/Toast';
 import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
-import { apiFetch, hasGeminiKey } from './lib/gemini';
+import { apiFetch, getGeminiKey } from './lib/gemini';
 import VocabView from './phases/VocabView';
 import ScoreOverview from './phases/ScoreOverview';
 import ProgressDashboard from './phases/ProgressDashboard';
@@ -118,7 +118,7 @@ export default function App() {
           headers['Authorization'] = `Bearer ${session.access_token}`;
         }
         
-        const body = JSON.stringify({ hasGeminiKey: hasGeminiKey() });
+        const body = JSON.stringify({ geminiKey: getGeminiKey() });
         const res = await fetch('/api/content', { method: 'POST', headers, body });
         if (!res.ok) throw new Error('Failed to fetch curriculum');
         
