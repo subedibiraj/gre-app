@@ -24,8 +24,8 @@ export default function Pricing() {
     {
       id: 'pro',
       name: 'GRE Pro',
-      price: billing === 'annual' ? '$99' : '$15',
-      period: billing === 'annual' ? 'per year' : 'per month',
+      price: billing === 'annual' ? '$39' : '$5',
+      period: billing === 'annual' ? 'per year ($3.25/mo)' : 'per month',
       desc: 'Unlock the complete GRE curriculum.',
       features: [
         'All 30 days (445+ high-yield words)',
@@ -66,7 +66,7 @@ export default function Pricing() {
             boxShadow: billing === 'annual' ? `0 2px 8px rgba(0,0,0,0.2)` : 'none',
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
-            Annual <span style={{ background: C.gold + '22', color: C.gold, fontSize: 10, padding: '2px 6px', borderRadius: 8 }}>Save 45%</span>
+            Annual <span style={{ background: C.gold + '22', color: C.gold, fontSize: 10, padding: '2px 6px', borderRadius: 8 }}>Save 35%</span>
           </button>
         </div>
       </div>

@@ -264,3 +264,15 @@ a:hover { color: var(--gold-br); text-decoration: underline; }
   .main-content { padding: 0 !important; }
   body { background: white; color: black; }
 }
+
+/* ─── Input Date Fixes for Mobile/Dark Mode ───────────────────────────────── */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) opacity(0.8);
+  cursor: pointer;
+}
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+input[type="date"] {
+  color-scheme: dark; /* Forces native dark mode picker on iOS/Android */
+}

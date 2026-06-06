@@ -150,13 +150,13 @@ export default function PaywallModal({ onClose, reason = 'days' }) {
             <div>
               {priceType === 'monthly' ? (
                 <div>
-                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 700, color: C.gold, margin: '0 0 2px' }}>$2.99</p>
+                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 700, color: C.gold, margin: '0 0 2px' }}>$5.00</p>
                   <p style={{ color: C.textDim, fontSize: 11, margin: 0 }}>/ month</p>
                 </div>
               ) : (
                 <div>
-                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 700, color: C.greenBr, margin: '0 0 2px' }}>$19.99</p>
-                  <p style={{ color: C.textDim, fontSize: 11, margin: 0 }}>/ year <span style={{ color: C.greenBr, fontWeight: 700 }}>Save 44%</span></p>
+                  <p style={{ fontFamily: 'Courier New,monospace', fontSize: 28, fontWeight: 700, color: C.greenBr, margin: '0 0 2px' }}>$39.00</p>
+                  <p style={{ color: C.textDim, fontSize: 11, margin: 0 }}>/ year <span style={{ color: C.greenBr, fontWeight: 700 }}>Save 35%</span></p>
                 </div>
               )}
             </div>

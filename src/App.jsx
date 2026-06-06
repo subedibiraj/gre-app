@@ -526,7 +526,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ background: C.bg, minHeight: '100dvh', color: C.text, display: 'flex', flexDirection: 'column', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: 'easeOut' }} style={{ background: C.bg, minHeight: '100dvh', color: C.text, display: 'flex', flexDirection: 'column', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
 
       {/* ── Modals ── */}
       {showMorningDrill && (
@@ -843,7 +843,7 @@ export default function App() {
           onClose={() => setShowDailySession(false)}
         />
       )}
-    </div>
+    </motion.div>
   );
 }
 
