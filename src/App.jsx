@@ -45,6 +45,11 @@ import AwaView from './phases/AwaView';
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 import Icon from './components/Icon';
 
+const Pricing = lazy(() => import('./phases/Pricing'));
+const Terms = lazy(() => import('./phases/legal/Terms'));
+const Privacy = lazy(() => import('./phases/legal/Privacy'));
+const Refund = lazy(() => import('./phases/legal/Refund'));
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 const loadJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
 const saveJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -666,6 +671,12 @@ export default function App() {
                 {section === 'verbal' ? `${totalWords} words · ${srStats.mastered} mastered` : 'Master all 4 topics'}
               </p>
             </div>
+            {daysUntilTest !== null && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, padding: '2px 6px', borderRadius: 8, background: `${C.gold}18` }}>
+                <span style={{ fontSize: 12 }}>📅</span>
+                <span style={{ fontFamily: 'Courier New,monospace', fontSize: 12, fontWeight: 700, color: C.gold }}>{daysUntilTest}d</span>
+              </div>
+            )}
             {streak.current > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                 <span style={{ fontSize: 14 }}>🔥</span>
@@ -682,13 +693,42 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
+                style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
               >
-                <Suspense fallback={<div style={{height:'400px', display:'flex', alignItems:'center', justifyContent:'center', color:C.gold}}>Loading...</div>}>
-                  {section === 'verbal' ? verbalContent : section === 'quant' ? quantContent : section === 'awa' ? awaContent : adminContent}
-                </Suspense>
+                {section === 'pricing' ? (
+                  <Suspense fallback={<div>Loading Pricing...</div>}><Pricing /></Suspense>
+                ) : section === 'terms' ? (
+                  <Suspense fallback={<div>Loading Terms...</div>}><Terms /></Suspense>
+                ) : section === 'privacy' ? (
+                  <Suspense fallback={<div>Loading Privacy...</div>}><Privacy /></Suspense>
+                ) : section === 'refund' ? (
+                  <Suspense fallback={<div>Loading Refund...</div>}><Refund /></Suspense>
+                ) : section === 'admin' ? (
+                  <Suspense fallback={<div style={{padding: 40}}>Loading Admin...</div>}>
+                    <AdminDashboard />
+                  </Suspense>
+                ) : (
+                  <Suspense fallback={<div style={{height:'400px', display:'flex', alignItems:'center', justifyContent:'center', color:C.gold}}>Loading...</div>}>
+                    {section === 'verbal' ? verbalContent : section === 'quant' ? quantContent : awaContent}
+                  </Suspense>
+                )}
               </motion.div>
             </AnimatePresence>
           </ErrorBoundary>
+
+          {/* APP FOOTER (for Paddle Compliance) */}
+          <footer style={{
+            marginTop: 60, paddingTop: 20, borderTop: `1px solid ${C.border}`,
+            display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap',
+            fontSize: 12, color: C.textDim
+          }}>
+            <button onClick={() => setSection('pricing')} style={{ background: 'none', border: 'none', color: C.textDim, cursor: 'pointer' }}>Pricing</button>
+            <button onClick={() => setSection('terms')} style={{ background: 'none', border: 'none', color: C.textDim, cursor: 'pointer' }}>Terms of Service</button>
+            <button onClick={() => setSection('privacy')} style={{ background: 'none', border: 'none', color: C.textDim, cursor: 'pointer' }}>Privacy Policy</button>
+            <button onClick={() => setSection('refund')} style={{ background: 'none', border: 'none', color: C.textDim, cursor: 'pointer' }}>Refund Policy</button>
+            <span style={{ color: C.textDim }}>© 2026 GRE Mastery</span>
+          </footer>
+
         </main>
       </div>
 
@@ -719,7 +759,13 @@ export default function App() {
       <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
       <AchievementToast achievement={achToast} onDone={() => setAchToast(null)} />
       <AiTutor />
-      {showPaywall && <PaywallModal reason={showPaywall} onClose={() => setShowPaywall(null)} />}
+      {showPaywall && (
+        <PaywallModal 
+          reason={showPaywall} 
+          onClose={() => setShowPaywall(null)} 
+          onViewPricing={() => { setShowPaywall(null); setSection('pricing'); }}
+        />
+      )}
       {sessionComplete && (
         <SessionComplete
           {...sessionComplete}
