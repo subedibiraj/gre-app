@@ -215,6 +215,13 @@ export default function App() {
     }
   }, [section]);
 
+  // Route guard for Pro-only sections
+  useEffect(() => {
+    if (section === 'awa' && !isPro()) {
+      setSection('pricing');
+    }
+  }, [section, user, session]);
+
   useEffect(() => {
     const handlePopState = () => {
       const p = window.location.pathname;
@@ -531,6 +538,7 @@ export default function App() {
                   <p style={{ fontSize: 10, margin: 0, opacity: 0.65 }}>{t.subtopics.length} subtopics</p>
                 </div>
                 {sc && <span style={{ fontSize: 10, color: isCurrent ? '#07090F' : C.greenBr }}>✓</span>}
+                {!isPro() && <Lock size={12} color={isCurrent ? '#07090F' : C.textDim} />}
               </div>
             </button>
           );
@@ -547,8 +555,11 @@ export default function App() {
             border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
             background: quantPage === item.id ? (item.green ? C.green + '33' : C.gold + '22') : 'transparent',
             color: quantPage === item.id ? (item.green ? C.greenBr : C.gold) : C.textMid,
-            fontSize: 13, fontWeight: 600,
-          }}>{item.label}</button>
+            fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+          }}>
+            <span>{item.label}</span>
+            {!isPro() && <Lock size={12} color={quantPage === item.id ? C.gold : C.textDim} />}
+          </button>
         ))}
       </div>
       {isAdmin && (
@@ -585,8 +596,10 @@ export default function App() {
           width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
           border: `1px solid ${C.gold}`, cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
           background: C.gold + '22', color: C.gold, fontSize: 13, fontWeight: 600,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between'
         }}>
-        ✍️ Issue Task
+        <span>✍️ Issue Task</span>
+        {!isPro() && <Lock size={12} color={C.gold} />}
       </button>
     </div>
   ) : sidebarContent;
@@ -973,6 +986,7 @@ function QuantLanding({ onSelectTopic, scores }) {
                   <p style={{ color: C.textDim, fontSize: 11, margin: '2px 0 0' }}>{t.subtopics.length} subtopics</p>
                 </div>
                 {sc && <Tag color={C.greenBr}>{sc.correct}/{sc.total}</Tag>}
+                {!isPro() && <Lock size={16} color={C.textDim} />}
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {t.subtopics.slice(0, 3).map(s => (
