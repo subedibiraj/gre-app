@@ -2,10 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { DAYS } from './days';
 import { QUANT_TOPICS } from './quant-topics';
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
 
 // Helper to determine access
 function canAccessDay(dayNum, plan, hasKey) {
@@ -38,7 +36,14 @@ export default async function handler(req, res) {
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      const { data: { user }, error } = await supabase.auth.getUser(token);
+      
+      // Create a scoped client with the user's JWT so RLS works
+      const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: `Bearer ${token}` } }
+      });
+
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
       if (user && !error) {
         userEmail = user.email;
         const { data: progress } = await supabase
