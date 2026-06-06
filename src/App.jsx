@@ -19,7 +19,7 @@ import XPBar from './components/XPBar';
 import AchievementToast from './components/AchievementToast';
 import Toast from './components/Toast';
 import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
-import { apiFetch } from './lib/gemini';
+import { apiFetch, hasGeminiKey } from './lib/gemini';
 import VocabView from './phases/VocabView';
 import ScoreOverview from './phases/ScoreOverview';
 import ProgressDashboard from './phases/ProgressDashboard';
@@ -82,8 +82,9 @@ export default function App() {
   const [offline, setOffline]             = useState(!navigator.onLine);
   const [onboarded, setOnboarded]         = useState(() => localStorage.getItem('gre_onboarded') === '1');
   const [showPaywall, setShowPaywall]     = useState(null); // null or reason string
+  const [curriculumLoading, setCurriculumLoading] = useState(true);
   
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const isAdmin = user?.email === (import.meta.env.VITE_ADMIN_EMAIL || 'biraj.077bct031@acem.edu.np');
 
   const [sessionComplete, setSessionComplete] = useState(null); // null or { correct, total, ... }
@@ -107,6 +108,34 @@ export default function App() {
     window.addEventListener('gre_progress_synced', handleSync);
     return () => window.removeEventListener('gre_progress_synced', handleSync);
   }, []);
+
+  // ─── Fetch Secure Curriculum ──────────────────────────────────────────────────
+  useEffect(() => {
+    async function fetchCurriculum() {
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (session?.access_token) {
+          headers['Authorization'] = `Bearer ${session.access_token}`;
+        }
+        
+        const body = JSON.stringify({ hasGeminiKey: hasGeminiKey() });
+        const res = await fetch('/api/content', { method: 'POST', headers, body });
+        if (!res.ok) throw new Error('Failed to fetch curriculum');
+        
+        const data = await res.json();
+        window.__GRE_DAYS = data.DAYS;
+        window.__GRE_QUANT_TOPICS = data.QUANT_TOPICS;
+      } catch (err) {
+        console.error('Curriculum fetch error:', err);
+        // Fallback or retry logic could go here
+      } finally {
+        setCurriculumLoading(false);
+      }
+    }
+    
+    // Only fetch once, but refetch if user logs in to get premium data
+    fetchCurriculum();
+  }, [user?.id]);
 
   // ─── Test date countdown ──────────────────────────────────────────────────────
   const testDate = loadJSON('gre_testDate', null);
@@ -483,6 +512,16 @@ export default function App() {
           window.location.reload();
         }} />
       </Suspense>
+    );
+  }
+
+  // ─── CURRICULUM LOADING GATE ──────────────────────────────────────────────────
+  if (curriculumLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: C.bg, color: C.gold }}>
+        <div style={{ animation: 'spin 1s linear infinite', fontSize: 32, marginBottom: 16 }}>⏳</div>
+        <p style={{ fontFamily: 'Georgia,serif', fontWeight: 700, margin: 0 }}>Syncing Curriculum securely...</p>
+      </div>
     );
   }
 
