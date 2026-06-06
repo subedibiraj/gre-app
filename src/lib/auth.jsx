@@ -83,12 +83,26 @@ export function AuthProvider({ children }) {
   const handleSignOut = async () => {
     try {
       if (user) await pushProgressToCloud(user.id);
-      await signOut();
-      window.location.reload();
     } catch (e) {
-      console.error('Sign out error:', e);
-      alert('Sign out error: ' + (e.message || 'Unknown error'));
+      console.warn('Failed to push progress before signout', e);
     }
+
+    try {
+      await signOut();
+    } catch (e) {
+      console.warn('Supabase signout failed, clearing locally', e);
+    }
+
+    // Clear local storage to ensure next user has a clean slate
+    const SYNC_KEYS = [
+      'gre_dayScores', 'gre_quantScores', 'gre_weakWords',
+      'gre_spacedRep', 'gre_streak', 'gre_xp', 'gre_achievements',
+      'gre_scoreHistory', 'gre_testDate', 'gre_dailyGoal', 'gre_onboarded', 'gre_plan'
+    ];
+    SYNC_KEYS.forEach(k => localStorage.removeItem(k));
+    
+    // Redirect gracefully
+    window.location.href = '/';
   };
 
   return (

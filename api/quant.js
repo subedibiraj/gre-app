@@ -21,6 +21,10 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Topic not found' });
     }
 
+    if (auth.plan !== 'pro' && topicId !== 'arithmetic') {
+      return res.status(403).json({ error: 'Pro subscription required for this topic' });
+    }
+
     return res.status(200).json({ topic: topicData });
   } catch (err) {
     console.error('Quant API Error:', err);

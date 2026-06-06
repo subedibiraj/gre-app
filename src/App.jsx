@@ -278,7 +278,6 @@ export default function App() {
       if (k === 'escape') { setShowSettings(false); setDrawerOpen(false); return; }
       if (k === 'v') { setSection('verbal'); setCurrentDay(1); setTab('vocab'); return; }
       if (k === 'q') { 
-        if (!isPro()) { setSection('pricing'); return; }
         setSection('quant'); setQuantPage(null); return; 
       }
       if (k === 'p' && section === 'verbal' && currentDay > 0) { setTab('practice'); return; }
@@ -294,7 +293,7 @@ export default function App() {
   const day = currentDay > 0 ? DAYS[currentDay-1] : null;
 
   const goQuant = useCallback((page = null, tab = null) => {
-    if (!isPro()) {
+    if (!isPro() && page !== null && page !== 'arithmetic') {
       setSection('pricing');
       return;
     }
@@ -538,7 +537,7 @@ export default function App() {
                   <p style={{ fontSize: 10, margin: 0, opacity: 0.65 }}>{t.subtopics.length} subtopics</p>
                 </div>
                 {sc && <span style={{ fontSize: 10, color: isCurrent ? '#07090F' : C.greenBr }}>✓</span>}
-                {!isPro() && <Lock size={12} color={isCurrent ? '#07090F' : C.textDim} />}
+                {!isPro() && t.id !== 'arithmetic' && <Lock size={12} color={isCurrent ? '#07090F' : C.textDim} />}
               </div>
             </button>
           );
@@ -986,7 +985,7 @@ function QuantLanding({ onSelectTopic, scores }) {
                   <p style={{ color: C.textDim, fontSize: 11, margin: '2px 0 0' }}>{t.subtopics.length} subtopics</p>
                 </div>
                 {sc && <Tag color={C.greenBr}>{sc.correct}/{sc.total}</Tag>}
-                {!isPro() && <Lock size={16} color={C.textDim} />}
+                {!isPro() && t.id !== 'arithmetic' && <Lock size={16} color={C.textDim} />}
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {t.subtopics.slice(0, 3).map(s => (
