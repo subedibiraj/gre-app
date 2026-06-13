@@ -315,7 +315,7 @@ export default function VocabView({ day }) {
         <div>
           <SectionHead
             label={`Day ${day}: ${displayDay?.theme}`}
-            count={`${displayDay?.words?.length || 0} words`}
+            count={`${displayDay?.wordCount || displayDay?.words?.length || 0} words`}
             color={C.goldBr}
           />
           {displayDay?.date && (

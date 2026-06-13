@@ -479,7 +479,7 @@ export default function App() {
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: 12, fontWeight: isCurrent ? 700 : 500, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.theme}</p>
-                  <p style={{ fontSize: 10, margin: 0, opacity: 0.65 }}>{d.words.length} words</p>
+                  <p style={{ fontSize: 10, margin: 0, opacity: 0.65 }}>{d.wordCount || d.words?.length || 0} words</p>
                 </div>
                 {bossBeaten && <span style={{ fontSize: 11 }}>🏆</span>}
                 {bossAvailable && <span style={{ fontSize: 11, animation: 'pulse 2s infinite' }}>⚔️</span>}
