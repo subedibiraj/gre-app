@@ -160,22 +160,58 @@ function StrategyCard({ strategy }) {
 
       {open && (
         <div style={{ padding:'0 20px 20px', animation:'fadeIn 0.25s ease-out' }}>
-          {/* When */}
-          <div style={{ background:`${C.gold}12`, borderRadius:8, padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center', gap:8 }}>
-            <span style={{ fontSize:14 }}>🎯</span>
-            <div>
-              <p style={{ color:C.gold, fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:2 }}>When to use</p>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, marginBottom: 16 }}>
+            {/* When */}
+            <div style={{ background:`linear-gradient(135deg, ${C.gold}12, transparent)`, borderRadius:10, padding:'14px', border:`1px solid ${C.gold}22` }}>
+              <p style={{ color:C.gold, fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', margin:'0 0 8px', display:'flex', alignItems:'center', gap:6 }}>
+                <span style={{ fontSize:14 }}>🎯</span> Trigger
+              </p>
               <p style={{ color:C.text, fontSize:13, margin:0, lineHeight:1.5 }}>{strategy.when}</p>
+            </div>
+
+            {/* How */}
+            <div style={{ background:`linear-gradient(135deg, ${C.blue}12, transparent)`, borderRadius:10, padding:'14px', border:`1px solid ${C.blue}22` }}>
+              <p style={{ color:C.blue, fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', margin:'0 0 8px', display:'flex', alignItems:'center', gap:6 }}>
+                <span style={{ fontSize:14 }}>🛠️</span> The Playbook
+              </p>
+              <p style={{ color:C.text, fontSize:13, margin:0, lineHeight:1.5 }}>{strategy.how}</p>
             </div>
           </div>
 
-          {/* How */}
-          <p style={{ color:C.text, fontSize:13, lineHeight:1.8, marginBottom:14, padding:'0 4px' }}>{strategy.how}</p>
-
           {/* Example */}
-          <div style={{ background:C.bg, borderRadius:10, padding:'14px 16px', border:`1px solid ${C.border}` }}>
-            <p style={{ color:C.greenBr, fontSize:9, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>✎ Worked Example</p>
-            <pre style={{ color:C.text, fontSize:12, lineHeight:1.7, margin:0, whiteSpace:'pre-wrap', fontFamily:'Courier New,monospace' }}>{strategy.example}</pre>
+          <div style={{ background:C.surface, borderRadius:12, padding:'16px', border:`1px solid ${C.border}` }}>
+            <p style={{ color:C.greenBr, fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, display:'flex', alignItems:'center', gap:6 }}>
+              <span style={{ fontSize:14 }}>✎</span> Action Breakdown
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {strategy.example.split('\n').map((line, i) => {
+                if (line.startsWith('Q:') || line.startsWith('Qty ')) {
+                  return (
+                    <div key={i} style={{ background: C.card, padding: '12px 16px', borderRadius: 8, borderLeft: `3px solid ${C.text}` }}>
+                      <p style={{ fontFamily: 'Georgia,serif', fontSize: 14, color: C.text, margin: 0, fontWeight: 600 }}>{line}</p>
+                    </div>
+                  );
+                }
+                if (line.includes('Answer:')) {
+                  const parts = line.split('Answer:');
+                  return (
+                    <div key={i} style={{ background: `${C.green}18`, padding: '10px 16px', borderRadius: 8, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+                      <p style={{ color: C.textMid, fontSize: 13, margin: 0, flex: 1 }}>{parts[0]}</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ color: C.greenBr, fontSize: 10, fontWeight: 800 }}>ANSWER:</span>
+                        <span style={{ color: C.greenBr, fontSize: 14, fontWeight: 700, fontFamily: 'Courier New,monospace' }}>{parts[1].trim()}</span>
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <div key={i} style={{ padding: '0 8px', borderLeft: `2px dashed ${C.border}`, marginLeft: 8 }}>
+                    <p style={{ color: C.textMid, fontSize: 13, margin: 0, lineHeight: 1.6, fontFamily: 'Courier New,monospace' }}>{line}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
