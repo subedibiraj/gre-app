@@ -249,6 +249,28 @@ export default function DailyRoadmap({ currentDay: verbalCurrentDay, onNavigate 
         ))}
       </div>
 
+      {/* Day 1 Onboarding Hero */}
+      {studyDay === 1 && xp.total === 0 && (
+        <div style={{
+          background: `linear-gradient(135deg, ${C.card}, ${C.bg})`,
+          border: `1px solid ${C.gold}44`,
+          borderRadius: 14, padding: '24px 20px', marginBottom: 24,
+          position: 'relative', overflow: 'hidden',
+          boxShadow: `0 8px 30px ${C.gold}11`
+        }}>
+          <div style={{ position: 'absolute', top: -50, right: -50, width: 150, height: 150, background: C.gold, opacity: 0.05, filter: 'blur(40px)', borderRadius: '50%' }} />
+          <h2 style={{ fontFamily: 'Georgia,serif', color: C.gold, fontSize: 24, margin: '0 0 8px', position: 'relative' }}>
+            Welcome to GRE Mastery. Let's hit 330+.
+          </h2>
+          <p style={{ color: C.textMid, fontSize: 14, margin: '0 0 16px', lineHeight: 1.6, position: 'relative' }}>
+            This is your personal roadmap. In just 30 days, you'll master the exact vocabulary, quantitative concepts, and strategies required to score in the top 1%. 
+          </p>
+          <p style={{ color: C.text, fontSize: 13, fontWeight: 700, margin: 0, position: 'relative' }}>
+            👇 Start with your Day 1 Plan below.
+          </p>
+        </div>
+      )}
+
       {/* Tab toggle */}
       <div style={{ display: 'flex', background: C.surface, borderRadius: 10, padding: 4, gap: 3, marginBottom: 20 }}>
         {[

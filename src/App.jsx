@@ -1012,41 +1012,57 @@ export default function App() {
 // ─── QUANT LANDING ────────────────────────────────────────────────────────────
 function QuantLanding({ onSelectTopic, scores }) {
   return (
-    <div>
-      <div style={{ textAlign: 'center', marginBottom: 28 }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-          <div style={{ background: `${C.gold}22`, padding: 16, borderRadius: '50%' }}>
-            <Calculator size={32} color={C.gold} />
+    <div style={{ maxWidth: 800, margin: '0 auto', padding: '20px 0' }}>
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <div style={{ background: `linear-gradient(135deg, ${C.gold}33, transparent)`, padding: 20, borderRadius: '50%', border: `1px solid ${C.gold}44`, boxShadow: `0 8px 32px ${C.gold}22` }}>
+            <Calculator size={36} color={C.gold} />
           </div>
         </div>
-        <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 22, color: C.gold, marginBottom: 8 }}>Quantitative Reasoning</h2>
-        <p style={{ color: C.textMid, fontSize: 13 }}>Master all 4 topics. AI-generated adaptive practice.</p>
+        <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 26, color: C.text, marginBottom: 8 }}>Quantitative Reasoning</h2>
+        <p style={{ color: C.textMid, fontSize: 14, maxWidth: 400, margin: '0 auto' }}>Master all 4 topics through our AI-generated adaptive practice. We focus heavily on data interpretation and geometry traps.</p>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 14 }}>
+      
+      {/* Topics Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
         {QUANT_TOPICS.map(t => {
           const sc = scores[t.id];
+          const locked = !isPro() && t.id !== 'arithmetic';
           return (
-            <button key={t.id} onClick={() => onSelectTopic(t.id)} style={{
-              background: C.card, border: `1px solid ${C.border}`, borderRadius: 12,
-              padding: '20px 16px', cursor: 'pointer', transition: 'all 0.2s',
-              borderLeft: `4px solid ${C.gold}`, textAlign: 'left',
-              minHeight: 80,
+            <button key={t.id} onClick={() => onSelectTopic(t.id)} className="glass-hover" style={{
+              background: `linear-gradient(135deg, ${C.card}, ${C.bg})`, border: `1px solid ${C.border}`, borderRadius: 16,
+              padding: '24px 20px', cursor: 'pointer', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+              borderLeft: `4px solid ${locked ? C.textDim : C.gold}`, textAlign: 'left',
+              display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden',
+              opacity: locked ? 0.7 : 1,
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-                <span style={{ fontSize: 28 }}>{t.icon}</span>
+              {locked && <div style={{ position: 'absolute', top: -20, right: -20, width: 60, height: 60, background: C.textDim, opacity: 0.1, borderRadius: '50%', filter: 'blur(10px)' }} />}
+              {!locked && <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, background: C.gold, opacity: 0.05, borderRadius: '50%', filter: 'blur(20px)' }} />}
+              
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 16 }}>
+                <span style={{ fontSize: 32, background: `${C.surface}`, padding: 8, borderRadius: 12, border: `1px solid ${C.border}` }}>{t.icon}</span>
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontFamily: 'Georgia,serif', fontSize: 15, fontWeight: 700, color: C.text, margin: 0 }}>{t.label}</p>
-                  <p style={{ color: C.textDim, fontSize: 11, margin: '2px 0 0' }}>{t.subtopics.length} subtopics</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <p style={{ fontFamily: 'Georgia,serif', fontSize: 17, fontWeight: 700, color: locked ? C.textMid : C.text, margin: 0 }}>{t.label}</p>
+                    {locked && <Lock size={16} color={C.textDim} />}
+                  </div>
+                  <p style={{ color: C.textDim, fontSize: 12, margin: 0 }}>{t.subtopics.length} core subtopics</p>
                 </div>
-                {sc && <Tag color={C.greenBr}>{sc.correct}/{sc.total}</Tag>}
-                {!isPro() && t.id !== 'arithmetic' && <Lock size={16} color={C.textDim} />}
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: sc ? 16 : 0 }}>
                 {t.subtopics.slice(0, 3).map(s => (
-                  <span key={s} style={{ fontSize: 10, color: C.textDim, background: C.surface, padding: '2px 8px', borderRadius: 4 }}>{s}</span>
+                  <span key={s} style={{ fontSize: 10, color: locked ? C.textDim : C.textMid, background: locked ? 'transparent' : C.surface, border: `1px solid ${C.border}`, padding: '4px 10px', borderRadius: 6 }}>{s}</span>
                 ))}
-                {t.subtopics.length > 3 && <span style={{ fontSize: 10, color: C.textDim }}>+{t.subtopics.length - 3} more</span>}
+                {t.subtopics.length > 3 && <span style={{ fontSize: 10, color: C.textDim, padding: '4px 0' }}>+{t.subtopics.length - 3} more</span>}
               </div>
+
+              {sc && (
+                <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ color: C.textMid, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Progress</span>
+                  <Tag color={sc.correct > sc.total * 0.7 ? C.greenBr : C.gold}>{sc.correct} / {sc.total} Correct</Tag>
+                </div>
+              )}
             </button>
           );
         })}

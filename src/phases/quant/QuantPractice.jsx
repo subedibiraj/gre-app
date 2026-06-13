@@ -7,6 +7,7 @@ import { QUANT_TOPICS } from '../../data/quant-topics';
 import { recordQuantResults, saveLastSessionWrong, getLastSessionWrong, getWeakSubtopics, getQuantWeakAreas } from '../../engine/QuantErrorEngine';
 import Tag from '../../components/Tag';
 import Timer from '../../components/Timer';
+import { playPop, playCorrect, playWrong, hapticTap, hapticCorrect, hapticWrong } from '../../lib/audio';
 
 // ─── Shared style helpers ──────────────────────────────────────────────────────
 const card  = (extra = {}) => ({ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: '18px 20px', marginBottom: 14, transition: 'all 0.2s', ...extra });
@@ -117,7 +118,7 @@ function QCCard({ q, num, answer, onAnswer, checked, timed }) {
           const isC = checked && o.l === q.answer;
           const isW = checked && sel && o.l !== q.answer;
           return (
-            <button key={o.l} onClick={() => !checked && onAnswer(o.l)} disabled={checked} style={{
+            <button key={o.l} onClick={() => { if(!checked) { hapticTap(); playPop(); onAnswer(o.l); } }} disabled={checked} style={{
               padding: '10px 14px', borderRadius: 8, textAlign: 'left', fontSize: 12, lineHeight: 1.4,
               cursor: checked ? 'default' : 'pointer', transition: 'all 0.15s',
               border: `1.5px solid ${isC ? C.green : isW ? C.red : sel ? C.gold : C.border}`,
@@ -162,7 +163,7 @@ function MCCard({ q, num, answer, onAnswer, checked, timed }) {
           const isC = checked && o.l === q.answer;
           const isW = checked && sel && o.l !== q.answer;
           return (
-            <button key={o.l} onClick={() => !checked && onAnswer(o.l)} disabled={checked} style={{
+            <button key={o.l} onClick={() => { if(!checked) { hapticTap(); playPop(); onAnswer(o.l); } }} disabled={checked} style={{
               padding: '11px 16px', borderRadius: 8, textAlign: 'left', fontSize: 13, lineHeight: 1.5,
               cursor: checked ? 'default' : 'pointer', transition: 'all 0.15s',
               border: `1.5px solid ${isC ? C.green : isW ? C.red : sel ? C.gold : C.border}`,
@@ -435,6 +436,12 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
       question: [...qs.qc, ...qs.mc, ...qs.ne].find(q => q.id === r.id)?.q?.slice(0, 60) || '',
     }));
     saveLastSessionWrong(wrongItems);
+    
+    // Play sound/haptics based on overall performance
+    if (c === t && t > 0) { hapticCorrect(); playCorrect(); }
+    else if (c > 0) { hapticTap(); playPop(); }
+    else { hapticWrong(); playWrong(); }
+
     onScoreUpdate?.(topicData.id, c, t);
   };
 
@@ -551,11 +558,12 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
 
   // ─── LOADING ──────────────────────────────────────────────────────────────
   if (loading) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px', gap: 16 }}>
-      <div style={{ width: 52, height: 52, border: `3px solid ${C.border}`, borderTop: `3px solid ${C.gold}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-      <p style={{ color: C.gold, fontSize: 16, fontWeight: 700, fontFamily: 'Georgia,serif' }}>Generating {topicData.label}...</p>
-      <p style={{ color: C.textDim, fontSize: 12 }}>Adapting to your weak areas</p>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    <div style={{ maxWidth: 540, margin: '0 auto', padding: '24px 0' }}>
+      <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        <h3 style={{ fontFamily: 'Georgia,serif', fontSize: 21, color: C.gold, margin: '0 0 6px' }}>Generating {topicData.label}...</h3>
+        <p style={{ color: C.textDim, fontSize: 13 }}>Tailoring questions to your weak areas</p>
+      </div>
+      <QuantLoadingSkeleton />
     </div>
   );
 

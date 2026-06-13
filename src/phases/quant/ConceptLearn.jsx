@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import C from '../../theme';
 import { CONCEPTS, STRATEGIES } from '../../data/quant-concepts';
+import { playPop, hapticTap } from '../../lib/audio';
 
 const freqColor = { 'Very High': C.red, 'High': C.gold, 'Medium': C.blue };
 const tag = (color) => ({ display:'inline-flex', padding:'3px 10px', borderRadius:20, fontSize:10, fontWeight:700, letterSpacing:'0.04em', textTransform:'uppercase', background:color+'22', color });
@@ -11,13 +12,13 @@ function ConceptCard({ concept, idx }) {
   const fc = freqColor[concept.freq] || C.gold;
 
   return (
-    <div style={{
+    <div className="glass-hover" style={{
       background: C.card, border:`1px solid ${open?fc+'55':C.border}`,
       borderRadius:12, marginBottom:14, overflow:'hidden',
       transition:'all 0.25s', boxShadow: open?`0 4px 20px ${fc}15`:'none',
     }}>
       {/* Header — always visible */}
-      <div onClick={()=>setOpen(o=>!o)} style={{
+      <div onClick={()=>{ playPop(); hapticTap(); setOpen(o=>!o); }} style={{
         padding:'16px 20px', cursor:'pointer', display:'flex', alignItems:'center', gap:14,
         background: open?`linear-gradient(135deg, ${fc}12, transparent)`:'transparent',
         transition:'background 0.2s',
@@ -139,7 +140,7 @@ function StrategyCard({ strategy }) {
   const color = isEss?C.greenBr:strategy.level==='Time saver'?C.gold:C.blue;
 
   return (
-    <div onClick={()=>setOpen(o=>!o)} style={{
+    <div className="glass-hover" onClick={()=>{ playPop(); hapticTap(); setOpen(o=>!o); }} style={{
       background:C.card, border:`1px solid ${open?color+'55':C.border}`,
       borderRadius:12, marginBottom:12, cursor:'pointer', overflow:'hidden',
       transition:'all 0.25s', boxShadow:open?`0 4px 20px ${color}15`:'none',

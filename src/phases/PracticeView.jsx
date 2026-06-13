@@ -13,6 +13,7 @@ import VocabInContext from './VocabInContext';
 import TCSection from './TCSection';
 import SESection from './SESection';
 import RCSection from './RCSection';
+import { playPop, playCorrect, playWrong, hapticTap, hapticCorrect, hapticWrong } from '../lib/audio';
 
 export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpdate, dayScores, cachedQuestions, onCacheQuestions, onSessionComplete }) {
   const [qs, setQs]           = useState(cachedQuestions);
@@ -113,16 +114,23 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
         sectionBreakdown: breakdown,
         pacing: sectionPacing,
       });
+
+      // Provide overall audio/haptic feedback
+      if (totalCorrect === totalTotal && totalTotal > 0) { hapticCorrect(); playCorrect(); }
+      else if (totalCorrect > 0) { hapticTap(); playPop(); }
+      else { hapticWrong(); playWrong(); }
+
     }, 500);
   };
 
   const renderAISections = () => {
     if (loading) return (
-      <div style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'40px 20px', gap:16}}>
-        <div style={{width:40, height:40, border:`3px solid ${C.border}`, borderTop:`3px solid ${C.gold}`, borderRadius:'50%', animation:'spin 1s linear infinite'}}/>
-        <p style={{color:C.textMid, fontSize:14}}>Gemini is crafting your practice for Day {day}...</p>
-        <p style={{color:C.textDim, fontSize:12}}>5 Vocab in Context · 5 Text Completion · 3 Sentence Equivalence</p>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ maxWidth: 540, margin: '0 auto', padding: '24px 0' }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <h3 style={{ fontFamily: 'Georgia,serif', fontSize: 21, color: C.gold, margin: '0 0 6px' }}>Crafting Practice for Day {day}...</h3>
+          <p style={{ color: C.textDim, fontSize: 13 }}>5 Vocab in Context · 5 Text Completion · 3 Sentence Equivalence</p>
+        </div>
+        <PracticeLoadingSkeleton />
       </div>
     );
 
