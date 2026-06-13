@@ -912,7 +912,7 @@ export default function App() {
       <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
       <AchievementToast achievement={achToast} onDone={() => setAchToast(null)} />
       <AiTutor />
-      {showMorningDrill && <MorningDrill onComplete={() => setShowMorningDrill(false)} />}
+
       {sessionComplete && (
         <SessionComplete
           {...sessionComplete}
