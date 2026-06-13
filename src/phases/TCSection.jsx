@@ -33,6 +33,10 @@ export default function TCSection({ questions, onComplete, timed = false }) {
   const checkQ = () => {
     const score = q.blanks.filter((b,i)=>sel[i]===b.answer).length;
     if (score === q.blanks.length) Sound.success(); else Sound.error();
+    // Log mistake to Error Log
+    if (score < q.blanks.length) {
+      import('../engine/error-log').then(({ logMistake }) => logMistake({ ...q, type: 'tc' }, sel, 'verbal')).catch(console.error);
+    }
     if (startTimesRef.current[qIdx] !== null) {
       elapsedRef.current[qIdx] = Math.round((Date.now() - startTimesRef.current[qIdx]) / 1000);
     }

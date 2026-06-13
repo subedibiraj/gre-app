@@ -419,16 +419,25 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
     qs.qc.forEach(q => {
       t++; const correct = qcA[q.id] === q.answer;
       if (correct) c++;
+      else {
+        import('../../engine/error-log').then(({ logMistake }) => logMistake(q, qcA[q.id], 'quant')).catch(console.error);
+      }
       results.push({ id: q.id, topic: topicData.id, subtopic: q.topic || topicData.id, correct });
     });
     qs.mc.forEach(q => {
       t++; const correct = mcA[q.id] === q.answer;
       if (correct) c++;
+      else {
+        import('../../engine/error-log').then(({ logMistake }) => logMistake(q, mcA[q.id], 'quant')).catch(console.error);
+      }
       results.push({ id: q.id, topic: topicData.id, subtopic: q.topic || topicData.id, correct });
     });
     qs.ne.forEach(q => {
       t++; const correct = String(neA[q.id] || '').trim() === String(q.answer).trim();
       if (correct) c++;
+      else {
+        import('../../engine/error-log').then(({ logMistake }) => logMistake(q, neA[q.id], 'quant')).catch(console.error);
+      }
       results.push({ id: q.id, topic: topicData.id, subtopic: q.topic || topicData.id, correct });
     });
 

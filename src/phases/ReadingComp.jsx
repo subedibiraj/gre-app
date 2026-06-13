@@ -40,6 +40,11 @@ export default function ReadingComp({ passage, onComplete }) {
       }
     } else {
       setShowExplanation(true);
+      if (!isCorrect()) {
+        import('../engine/error-log').then(({ logMistake }) => {
+          logMistake({ ...q, passageText: passage.text, passageTitle: passage.title }, answers[currentQ], 'verbal');
+        }).catch(console.error);
+      }
     }
   };
 

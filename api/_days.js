@@ -3799,6 +3799,9 @@ export const DAYS = [
       "SE twins for crystal clear in expression: lucid ↔ pellucid — Perfect SE twins.",
       "SE twins for continuously recurring: perpetual ↔ chronic — both = continuing or recurring over a long time. Fine as SE twins.",
       "SE twins for found everywhere: ubiquitous ↔ pervasive — both = present everywhere and hard to avoid. Perfect SE twins.",
+      "SE twins for causing harm subtly: insidious ↔ pernicious — both = harmful in a gradual, sneaky way. Perfect SE twins.",
+      "TRAP: ephemeral ↔ transient are close, but transient implies moving through, while ephemeral implies short-lived by nature. They are twins if context implies brevity.",
+      "[170-Level] Always check the direction of the action. Elicit vs Evoke: Elicit draws out a tangible response (information, a nod). Evoke calls up an intangible feeling or memory. They are rarely twins.",
     ],
     words: [
       {
@@ -3936,7 +3939,10 @@ export const DAYS = [
     seStrategy: [
       "SE twins for biased toward one viewpoint: tendentious ↔ partisan — both = slanted toward a particular side. Fine as SE twins.",
       "SE twins for extremely careful about details: meticulous ↔ scrupulous — both = extremely careful and thorough. Perfect SE twins.",
+      "SE twins for pacifying an angry crowd: placate ↔ appease — both = giving in to demands to calm someone. Perfect SE twins.",
       "TRAP: spurious ↔ specious are only SE twins when the sentence does NOT distinguish between data/claims (spurious = fake) and arguments (specious = sounds convincing but is flawed). Always check what noun the word modifies.",
+      "[170-Level] The 'Double Reversal' TC: When two contrast pivots appear in one sentence (e.g., 'Although... ironically...'), the sentence ultimately points in the SAME direction as the original clause.",
+      "[170-Level] The 'Degree of Certainty' Trap: Often, two choices mean the same thing but one is an absolute ('inevitable') and one is moderate ('likely'). The moderate claim is mathematically more defensible unless the text explicitly justifies the absolute.",
     ],
     words: [
       {

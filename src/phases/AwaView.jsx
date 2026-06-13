@@ -2,14 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import C from '../theme';
 import { apiFetch } from '../lib/gemini';
 import { addScoreEntry, addAwaEntry, getAwaHistory } from '../engine/history';
-
-const PROMPTS = [
-  "As people rely more and more on technology to solve problems, the ability of humans to think for themselves will surely deteriorate.",
-  "To understand the most important characteristics of a society, one must study its major cities.",
-  "Educational institutions have a responsibility to dissuade students from pursuing fields of study in which they are unlikely to succeed.",
-  "Scandals are useful because they focus our attention on problems in ways that no speaker or reformer ever could.",
-  "Claim: Governments must ensure that their major cities receive the financial support they need in order to thrive. Reason: It is primarily in cities that a nation's cultural traditions are preserved and generated."
-];
+import { AWA_PROMPTS } from '../data/awa-prompts';
 
 export default function AwaView({ onSessionComplete }) {
   const [prompt, setPrompt] = useState('');
@@ -21,12 +14,13 @@ export default function AwaView({ onSessionComplete }) {
   const [tab, setTab] = useState('write'); // 'write' | 'history'
   const [history, setHistory] = useState(() => getAwaHistory());
   const [viewingHistoryIdx, setViewingHistoryIdx] = useState(null);
-  
   const textareaRef = useRef(null);
+
+  const promptsList = window.__GRE_AWA_PROMPTS || AWA_PROMPTS;
 
   // Pick random prompt on mount
   useEffect(() => {
-    setPrompt(PROMPTS[Math.floor(Math.random() * PROMPTS.length)]);
+    setPrompt(promptsList[Math.floor(Math.random() * promptsList.length)]);
   }, []);
 
   // Timer logic

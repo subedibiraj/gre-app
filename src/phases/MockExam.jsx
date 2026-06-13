@@ -449,9 +449,46 @@ export default function MockExam() {
 
   // ─── SUBMIT ─────────────────────────────────────────────────────────────────
   const submit = useCallback(() => {
+    import('../engine/error-log').then(({ logMistake }) => {
+      // Log TC mistakes
+      exam.tc.forEach(q => {
+        const ans = tcAnswers[q.id] || [];
+        const correct = q.blanks.every((b, i) => ans[i] === b.answer);
+        if (!correct) logMistake(q, ans, 'verbal');
+      });
+      // Log SE mistakes
+      exam.se.forEach(q => {
+        const ans = seAnswers[q.id] || [];
+        const isFullyCorrect = ans.length === 2 && q.answers.every(a => ans.includes(a));
+        if (!isFullyCorrect) logMistake(q, ans, 'verbal');
+      });
+      // Log RC mistakes
+      exam.rc.forEach(p => {
+        const ans = rcAnswers[p.id] || [];
+        p.questions.forEach((q, qi) => {
+          if (ans[qi] !== q.answer) logMistake({ ...q, passageText: p.text, passageTitle: p.title }, ans[qi], 'verbal');
+        });
+      });
+    }).catch(e => console.error('Error logging mistakes:', e));
+    
+    const score = calcScore(exam, tcAnswers, seAnswers, rcAnswers);
+    let timeTaken = 30 * 60;
+    if (startTime) timeTaken = Math.round((Date.now() - startTime) / 1000);
+    
+    addScoreEntry({
+      type: 'verbal-mock',
+      scaledScore: score.scaledScore,
+      timeTaken,
+      sections: {
+        tc: { correct: score.tc, total: score.tcMax },
+        se: { correct: score.se, total: score.seMax },
+        rc: { correct: score.rc, total: score.rcMax }
+      }
+    });
+
     setSubmitted(true);
     setTimerActive(false);
-  }, []);
+  }, [exam, tcAnswers, seAnswers, rcAnswers]);
 
   const handleTimeUp = useCallback(() => { submit(); }, [submit]);
 

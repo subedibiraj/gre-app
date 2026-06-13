@@ -1,6 +1,8 @@
 // ─── GRE READING COMPREHENSION PASSAGES (170-LEVEL) ────────────────────────────
+import { RC_EXPANSION } from '../src/data/rc-expansion';
+import { RC_EXPANSION_2 } from '../src/data/rc-expansion2';
 
-export const RC_PASSAGES = [
+const BASE_PASSAGES = [
   {
     id: 'rc_1',
     title: 'The Paradox of Choice',
@@ -250,3 +252,5 @@ export const RC_PASSAGES = [
     ]
   }
 ];
+
+export const RC_PASSAGES = [...BASE_PASSAGES, ...RC_EXPANSION, ...RC_EXPANSION_2];

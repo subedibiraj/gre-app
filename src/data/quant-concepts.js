@@ -50,12 +50,19 @@ export const CONCEPTS = {
           ans: 'Yes — always divisible by 24',
           trick: 'Product of n consecutive integers is always divisible by n!. Here, 4! = 24.',
         },
+        {
+          q: '[170-Level] QC: x and y are positive integers such that x² is a multiple of y³. Qty A: x. Qty B: y.',
+          work: 'Test cases. Case 1: x=8, y=4 (64 is multiple of 64). A(8) > B(4). Case 2: x=1, y=1 (1 is multiple of 1). A(1) = B(1). Since we have A>B and A=B, the answer is D.',
+          ans: 'D (Cannot be determined)',
+          trick: 'Never assume x > y just because x has a smaller exponent in the condition. Always check the trivial boundary case (1,1) for integer multiplier problems.',
+        },
       ],
       traps: [
         'Assuming "number" means "positive integer" — 0, negatives, and fractions are also numbers',
         'Forgetting 1 is NOT prime (it has only 1 factor)',
         'Thinking 0² = even means 0 is positive — 0 is even AND neither positive nor negative',
         'Applying factor-count formula before prime-factorizing (will get wrong answer)',
+        '[170-Level] Assuming that if x² is a multiple of y, then x is a multiple of y. (False: if x=6, x²=36 is a multiple of y=12, but 6 is not).',
       ],
     },
     {
@@ -202,12 +209,19 @@ export const CONCEPTS = {
           ans: 'D (Cannot determine)',
           trick: 'Test the edge case 0<x<1 AND x>1. For 0<x<1, smaller exponent → larger value.',
         },
+        {
+          q: '[170-Level] QC: x is a negative integer. Qty A: (-x)^x. Qty B: -x^x.',
+          work: 'Let x=-1: Qty A = (-(-1))^-1 = 1^-1 = 1. Qty B = -(-1)^-1 = -(-1) = 1. (Wait, B: - (-1)^-1. (-1)^-1 = -1. -(-1) = 1. So A=B=1). Let x=-2: Qty A = (-(-2))^-2 = 2^-2 = 1/4. Qty B = -(-2)^-2 = -(1/4) = -1/4. (A>B). Since we have A=B and A>B, answer is D.',
+          ans: 'D (Cannot determine)',
+          trick: 'For negative bases and exponents, always test x=-1 and x=-2. The even/odd parity completely changes the relationship.',
+        },
       ],
       traps: [
         'Assuming x² > x always — false for 0<x<1 and x negative',
         '(−2)² = 4 but −2² = −4 (order of operations matters)',
         'Distributing exponents over addition: (a+b)² ≠ a²+b²',
         'Forgetting a⁰ = 1 for any nonzero a, including fractions and negatives',
+        '[170-Level] Confusing x^(x²) with (x^x)². x^(x²) means the exponent is x². (x^x)² means x^(2x).',
       ],
     },
     {
@@ -378,12 +392,19 @@ export const CONCEPTS = {
           ans: 'A = 5',
           trick: 'Translate word-by-word: "3 more than" = +3 after. "twice B" = 2B. Substitute one equation into the other.',
         },
+        {
+          q: '[170-Level] QC: x and y are real numbers such that 3x + 2y > 10 and x - 4y < 5. Qty A: x. Qty B: 2.',
+          work: 'Test cases that satisfy both inequalities. Case 1: x=6, y=1. 3(6)+2(1)=20>10. 6-4(1)=2<5. Both satisfied. Qty A(6) > B(2). Case 2: x=0, y=6. 3(0)+2(6)=12>10. 0-4(6)=-24<5. Both satisfied. Qty A(0) < B(2). Since A>B and A<B are both possible, the answer is D.',
+          ans: 'D (Cannot determine)',
+          trick: 'Do not attempt to solve a system of inequalities algebraically if they face opposite directions. Test extreme opposite cases that satisfy both conditions.',
+        },
       ],
       traps: [
         'Flipping inequality only for division/multiplication by negative — NOT for adding a negative',
         'Solving only one case of an absolute value equation (missing x = k and x = −k)',
         'Using x = 0 in a QC where x ≠ 0 is implied but not stated',
         'Thinking 2 equations with 3 unknowns means unsolvable — the question might only ask for one expression',
+        '[170-Level] Adding inequalities that face opposite directions. You can only add inequalities if the signs face the SAME direction (e.g., a > b and c > d implies a+c > b+d).',
       ],
     },
     {

@@ -93,9 +93,55 @@ export function getOverallStats() {
   const verbalTrend = verbalMocks.slice(-6).map(e => ({ date: e.date, score: e.scaledScore }));
   const quantTrend  = quantMocks.slice(-6).map(e => ({ date: e.date, score: e.scaledScore }));
 
+  // Quant Topic-level accuracy (from both quant-practice AND quant-mock)
+  const topicAccuracy = {};
+  const allQuantWithTopics = [...quantPrac, ...quantMocks].filter(e => e.topics);
+  ['arithmetic', 'algebra', 'geometry', 'data'].forEach(topic => {
+    const entries = allQuantWithTopics.filter(e => e.topics?.[topic]);
+    if (entries.length) {
+      const total   = entries.reduce((s, e) => s + e.topics[topic].total, 0);
+      const correct = entries.reduce((s, e) => s + e.topics[topic].correct, 0);
+      topicAccuracy[topic] = total > 0 ? Math.round(correct / total * 100) : null;
+    } else {
+      topicAccuracy[topic] = null;
+    }
+  });
+
+  // Pacing analytics
+  const quantPacing = quantMocks.filter(e => e.timeTaken > 0);
+  const verbalPacing = verbalMocks.filter(e => e.timeTaken > 0);
+  const avgQuantPace = quantPacing.length
+    ? Math.round(quantPacing.reduce((a, e) => {
+        const totalQs = Object.values(e.sections || {}).reduce((s, sec) => s + (sec.total || 0), 0) || 1;
+        return a + e.timeTaken / totalQs;
+      }, 0) / quantPacing.length)
+    : null;
+  const avgVerbalPace = verbalPacing.length
+    ? Math.round(verbalPacing.reduce((a, e) => {
+        const totalQs = Object.values(e.sections || {}).reduce((s, sec) => s + (sec.total || 0), 0) || 1;
+        return a + e.timeTaken / totalQs;
+      }, 0) / verbalPacing.length)
+    : null;
+
+  // Total questions and overall accuracy (handles both section-based and flat entries)
+  let totalQuestions = 0, totalCorrect = 0;
+  history.forEach(e => {
+    if (e.sections) {
+      Object.values(e.sections).forEach(sec => {
+        totalQuestions += sec.total || 0;
+        totalCorrect  += sec.correct || 0;
+      });
+    } else if (e.total) {
+      totalQuestions += e.total;
+      totalCorrect  += e.correct || 0;
+    }
+  });
+
   return {
     totalSessions:   history.length,
     todaySessions:   todayEntries.length,
+    totalQuestions,
+    overallAccuracy: totalQuestions > 0 ? Math.round(totalCorrect / totalQuestions * 100) : null,
     verbalMockAvg:   verbalMocks.length ? Math.round(verbalMocks.reduce((a, e) => a + e.scaledScore, 0) / verbalMocks.length) : null,
     quantMockAvg:    quantMocks.length  ? Math.round(quantMocks.reduce((a, e) => a + e.scaledScore, 0) / quantMocks.length) : null,
     verbalMockBest:  verbalMocks.length ? Math.max(...verbalMocks.map(e => e.scaledScore)) : null,
@@ -103,8 +149,11 @@ export function getOverallStats() {
     lastVerbalMock:  verbalMocks[verbalMocks.length - 1] || null,
     lastQuantMock:   quantMocks[quantMocks.length - 1] || null,
     sectionAccuracy,
+    topicAccuracy,
     verbalTrend,
     quantTrend,
+    avgQuantPace,
+    avgVerbalPace,
     recentSessions:  history.slice(-10),
   };
 }

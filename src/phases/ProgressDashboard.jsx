@@ -7,6 +7,7 @@ import { getSRStats, getAllSR, getSRLevel } from '../engine/spaced';
 import { DAYS } from '../data/days';
 import { QUANT_TOPICS } from '../data/quant-topics';
 import { getQuantWeakAreas, getQuantStats } from '../engine/QuantErrorEngine';
+import { getOverallStats } from '../engine/history';
 import { getBossResult, BOSSES } from '../components/BossChallenge';
 import ShareModal from '../components/ShareCard';
 import Flashcards from '../components/Flashcards';
@@ -582,6 +583,7 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
   const streak     = getStreak();
   const srStats    = getSRStats();
   const quantStats = getQuantStats();
+  const historyStats = getOverallStats();
   const unlocked   = getUnlockedAchievements();
   const allWords   = useMemo(() => DAYS.flatMap(d => d.words), []);
   const masteredFormulas = useMemo(() => {
@@ -665,6 +667,42 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
                 </div>
               </div>
 
+              {/* Baseline vs Current comparison */}
+              {(() => {
+                const baseline = loadJSON('gre_baselineScores', null);
+                if (!baseline || !estV) return null;
+                const vDelta = estV[0] - baseline.verbal;
+                const qDelta = estQ ? estQ[0] - baseline.quant : null;
+                return (
+                  <div style={{ background: `linear-gradient(135deg, ${C.gold}0A, transparent)`, border: `1px solid ${C.gold}22`, borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
+                    <p style={{ color: C.gold, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>📈 Growth Since Diagnostic</p>
+                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                      <div style={{ flex: 1, minWidth: 120 }}>
+                        <p style={{ color: C.textDim, fontSize: 10, margin: '0 0 4px' }}>Verbal</p>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                          <span style={{ color: C.textDim, fontSize: 13, fontFamily: 'Courier New,monospace' }}>{baseline.verbal}</span>
+                          <span style={{ color: C.textDim }}>→</span>
+                          <span style={{ color: C.blue, fontSize: 15, fontWeight: 700, fontFamily: 'Courier New,monospace' }}>{estV[0]}</span>
+                          {vDelta !== 0 && <span style={{ color: vDelta > 0 ? C.greenBr : C.red, fontSize: 12, fontWeight: 700 }}>{vDelta > 0 ? '+' : ''}{vDelta}</span>}
+                        </div>
+                      </div>
+                      {estQ && (
+                        <div style={{ flex: 1, minWidth: 120 }}>
+                          <p style={{ color: C.textDim, fontSize: 10, margin: '0 0 4px' }}>Quant</p>
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                            <span style={{ color: C.textDim, fontSize: 13, fontFamily: 'Courier New,monospace' }}>{baseline.quant}</span>
+                            <span style={{ color: C.textDim }}>→</span>
+                            <span style={{ color: C.gold, fontSize: 15, fontWeight: 700, fontFamily: 'Courier New,monospace' }}>{estQ[0]}</span>
+                            {qDelta !== null && qDelta !== 0 && <span style={{ color: qDelta > 0 ? C.greenBr : C.red, fontSize: 12, fontWeight: 700 }}>{qDelta > 0 ? '+' : ''}{qDelta}</span>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <p style={{ color: C.textDim, fontSize: 10, marginTop: 8, margin: '8px 0 0' }}>Baseline from {new Date(baseline.date).toLocaleDateString()}</p>
+                  </div>
+                );
+              })()}
+
               {/* 330 progress bar */}
               <div style={{ marginBottom: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -694,8 +732,8 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
       {/* Pacing Analytics */}
       <Section title="⏱️ Pacing Analytics" defaultOpen={true}>
         <div style={{ paddingTop: 14 }}>
-          <PacingCard avgTimePerQ={null} targetTime={105} />
-          <p style={{ color: C.textDim, fontSize: 11, marginTop: 8 }}>Based on practice session performance. Target: 1:45/question for 170-level.</p>
+          <PacingCard avgTimePerQ={historyStats.avgQuantPace} targetTime={105} />
+          <p style={{ color: C.textDim, fontSize: 11, marginTop: 8 }}>Based on mock exam performance. Target: 1:45/question for 170-level.</p>
         </div>
       </Section>
 

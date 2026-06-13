@@ -220,7 +220,8 @@ function StrategyCard({ strategy }) {
 }
 
 export default function ConceptLearn({ topicId }) {
-  const concepts = CONCEPTS[topicId] || [];
+  const sourceConcepts = window.__GRE_CONCEPTS || CONCEPTS;
+  const concepts = sourceConcepts[topicId] || [];
   const [mode, setMode] = useState('concepts');
 
   const topicMap = { arithmetic:'🔢 Arithmetic', algebra:'📐 Algebra', geometry:'📏 Geometry', data:'📊 Data Analysis' };

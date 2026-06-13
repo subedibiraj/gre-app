@@ -120,6 +120,15 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
       else if (totalCorrect > 0) { hapticTap(); playPop(); }
       else { hapticWrong(); playWrong(); }
 
+      // Record to history engine for analytics
+      addScoreEntry({
+        type: 'verbal-practice',
+        correct: totalCorrect,
+        total: totalTotal,
+        day,
+        sections: breakdown,
+      });
+
     }, 500);
   };
 

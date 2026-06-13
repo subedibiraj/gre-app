@@ -34,6 +34,10 @@ export default function VocabInContext({ questions, onComplete, timed = false })
     const isCorrect = sel === q.answer;
     updateWordSR(q.word, isCorrect);
     if (isCorrect) Sound.success(); else Sound.error();
+    // Log mistake to Error Log
+    if (!isCorrect) {
+      import('../engine/error-log').then(({ logMistake }) => logMistake({ ...q, type: 'vic' }, sel, 'verbal')).catch(console.error);
+    }
     // Record elapsed time for this question
     if (startTimesRef.current[qIdx] !== null) {
       elapsedRef.current[qIdx] = Math.round((Date.now() - startTimesRef.current[qIdx]) / 1000);

@@ -44,6 +44,8 @@ const AdminDashboard = lazy(() => import('./phases/AdminDashboard'));
 const AwaView = lazy(() => import('./phases/AwaView'));
 const RcLanding = lazy(() => import('./phases/RcLanding'));
 const ProgressDashboard = lazy(() => import('./phases/ProgressDashboard'));
+const ErrorLogView = lazy(() => import('./phases/ErrorLogView'));
+const CustomBuilder = lazy(() => import('./phases/CustomBuilder'));
 
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 import Icon from './components/Icon';
@@ -52,6 +54,7 @@ const Pricing = lazy(() => import('./phases/Pricing'));
 const Terms = lazy(() => import('./phases/legal/Terms'));
 const Privacy = lazy(() => import('./phases/legal/Privacy'));
 const Refund = lazy(() => import('./phases/legal/Refund'));
+const AnalyticsDashboard = lazy(() => import('./phases/AnalyticsDashboard'));
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 const loadJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
@@ -71,6 +74,7 @@ export default function App() {
     if (p === '/quant') return 'quant';
     if (p === '/awa') return 'awa';
     if (p === '/verbal') return 'verbal';
+    if (p === '/analytics') return 'analytics';
     return 'verbal';
   };
   const [section, setSection]       = useState(getInitialSection);
@@ -132,13 +136,15 @@ export default function App() {
           headers['Authorization'] = `Bearer ${session.access_token}`;
         }
         
-        const body = JSON.stringify({ geminiKey: getGeminiKey() });
-        const res = await fetch('/api/index-meta', { method: 'POST', headers, body });
+        const body = JSON.stringify({ action: 'index', geminiKey: getGeminiKey() });
+        const res = await fetch('/api/curriculum', { method: 'POST', headers, body });
         if (!res.ok) throw new Error('Failed to fetch curriculum');
         
         const data = await res.json();
         window.__GRE_DAYS = data.DAYS;
         window.__GRE_QUANT_TOPICS = data.QUANT_TOPICS;
+        window.__GRE_CONCEPTS = data.CONCEPTS;
+        window.__GRE_AWA_PROMPTS = data.AWA_PROMPTS;
         setCurriculumLoading(false);
       } catch (err) {
         console.error('Curriculum fetch error:', err);
@@ -179,10 +185,10 @@ export default function App() {
             if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
             
             await Promise.all(missingDays.map(async (dayNum) => {
-              const res = await fetch('/api/day', {
+              const res = await fetch('/api/curriculum', {
                 method: 'POST',
                 headers,
-                body: JSON.stringify({ geminiKey: getGeminiKey(), day: dayNum })
+                body: JSON.stringify({ action: 'day', geminiKey: getGeminiKey(), day: dayNum })
               });
               const data = await res.json();
               if (data.day) {
@@ -207,10 +213,10 @@ export default function App() {
             try {
               const headers = { 'Content-Type': 'application/json' };
               if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
-              const res = await fetch('/api/quant', {
+              const res = await fetch('/api/curriculum', {
                 method: 'POST',
                 headers,
-                body: JSON.stringify({ geminiKey: getGeminiKey(), topicId: quantPage })
+                body: JSON.stringify({ action: 'quant', geminiKey: getGeminiKey(), topicId: quantPage })
               });
               const data = await res.json();
               if (data.topic) {
@@ -250,6 +256,8 @@ export default function App() {
         p === '/pricing' ? 'pricing' : 
         p === '/quant' ? 'quant' :
         p === '/awa' ? 'awa' :
+        p === '/analytics' ? 'analytics' :
+        p === '/custom' ? 'custom' :
         'verbal'
       );
     };
@@ -367,6 +375,7 @@ export default function App() {
     if (nav.startsWith('verbal_vocab')) { const d = parseInt(nav.split('_')[2]) || 1; setSection('verbal'); setCurrentDay(d); setTab('vocab'); }
     else if (nav === 'verbal_practice') { setSection('verbal'); setCurrentDay(1); setTab('practice'); }
     else if (nav === 'verbal_mock') { setSection('verbal'); setCurrentDay(-1); }
+    else if (nav === 'errorlog') { setSection('verbal'); setCurrentDay(-5); }
     else if (nav === 'quant_learn') { goQuant('arithmetic', 'learn'); }
     else if (nav === 'quant_practice') { goQuant('arithmetic', 'practice'); }
     else if (nav === 'quant_mock') { goQuant('mock'); }
@@ -379,6 +388,7 @@ export default function App() {
     currentDay === -2 ? <WordRelations day={DAYS.length} /> :
     currentDay === -3 ? <RootsModule /> :
     currentDay === -4 ? <RcLanding onUpsell={setUpsellFeature} /> :
+    currentDay === -5 ? <ErrorLogView /> :
     currentDay === 0  ? <DailyRoadmap currentDay={currentDay} onNavigate={navigate} /> :
     <>
       {/* Tab bar */}
@@ -497,6 +507,7 @@ export default function App() {
       <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
         {[
           { id: -4,  label: 'Reading Comp', icon: <BookOpen size={16} />,   tab: 'rc' },
+          { id: -5,  label: 'Error Log',    icon: <ShieldAlert size={16} />,tab: 'errorlog' },
           { id: -1,  label: 'Mock Exam',    icon: <Target size={16} />,     tab: 'mock' },
           { id: -2,  label: 'Word Map',     icon: <Network size={16} />,    tab: 'relations' },
           { id: -3,  label: 'Roots',        icon: <Sprout size={16} />,     tab: 'roots' },
@@ -544,7 +555,8 @@ export default function App() {
           const sc = quantScores[t.id];
           const isCurrent = quantPage === t.id;
           return (
-            <button key={t.id} onClick={() => goQuant(t.id)} style={{
+          return (
+            <button key={t.id} className="hover-lift" onClick={() => goQuant(t.id)} style={{
               width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
               background: isCurrent ? C.gold : 'transparent',
@@ -569,7 +581,7 @@ export default function App() {
           { id: 'formulas', label: '📐 Formulas', locked: false },
           { id: 'progress', label: '📊 Progress', green: true, locked: false },
         ].map(item => (
-          <button key={item.id} onClick={() => {
+          <button key={item.id} className="hover-lift" onClick={() => {
             if (item.locked) setUpsellFeature('Unlimited Mock Exams');
             else goQuant(item.id);
           }} style={{
@@ -628,7 +640,7 @@ export default function App() {
 
   // ─── MOBILE CONTEXT LABEL ─────────────────────────────────────────────────────
   const mobileContextLabel = section === 'verbal'
-    ? (currentDay > 0 ? `Day ${currentDay}: ${day?.theme}` : currentDay === -1 ? 'Mock Exam' : currentDay === -2 ? 'Word Map' : currentDay === -3 ? 'Roots' : "Today's Plan")
+    ? (currentDay > 0 ? `Day ${currentDay}: ${day?.theme}` : currentDay === -1 ? 'Mock Exam' : currentDay === -2 ? 'Word Map' : currentDay === -3 ? 'Roots' : currentDay === -4 ? 'Reading Comp' : currentDay === -5 ? 'Error Log' : "Today's Plan")
     : section === 'quant' 
       ? (quantPage ? QUANT_TOPICS.find(t => t.id === quantPage)?.label || quantPage : 'Quant Overview')
       : 'Analytical Writing';
@@ -715,7 +727,8 @@ export default function App() {
 
       {/* ── HEADER ── */}
       <header style={{
-        background: C.surface, borderBottom: `1px solid ${C.border}`,
+        background: 'rgba(12, 18, 32, 0.75)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', 
+        borderBottom: `1px solid ${C.border}`,
         padding: '0 16px', height: 52, display: 'flex', alignItems: 'center',
         gap: 12, position: 'sticky', top: 0, zIndex: 30, flexShrink: 0,
       }}>
@@ -726,9 +739,9 @@ export default function App() {
 
         {/* Section switcher */}
         <div style={{ display: 'flex', background: C.bg, borderRadius: 6, border: `1px solid ${C.border}`, overflow: 'hidden', flexShrink: 0 }}>
-          {[{ id: 'verbal', label: 'Verbal' }, { id: 'quant', label: 'Quant' }, { id: 'awa', label: 'Writing' }].map(s => (
+          {[{ id: 'verbal', label: 'Verbal' }, { id: 'quant', label: 'Quant' }, { id: 'awa', label: 'Writing' }, { id: 'custom', label: 'Custom' }, { id: 'analytics', label: 'Analytics' }].map(s => (
             <button key={s.id} onClick={() => { 
-              if (s.id === 'awa' && !isPro()) { setSection('pricing'); return; }
+              if ((s.id === 'awa' || s.id === 'custom') && !isPro()) { setSection('pricing'); return; }
               setSection(s.id); 
               if (s.id === 'quant') setQuantPage(null); 
               if (s.id === 'verbal') { setCurrentDay(1); setTab('vocab'); } 
@@ -824,13 +837,16 @@ export default function App() {
       <div className="body-wrapper" style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
 
         {/* DESKTOP SIDEBAR */}
-        <aside className="desktop-sidebar" style={{
-          width: 200, flexShrink: 0, background: C.surface,
-          borderRight: `1px solid ${C.border}`, padding: '16px 10px',
-          overflowY: 'auto', display: 'flex', flexDirection: 'column',
-        }}>
-          {sidebarContentRender}
-        </aside>
+        {section !== 'analytics' && section !== 'custom' && (
+          <aside className="desktop-sidebar" style={{
+            width: 200, flexShrink: 0, 
+            background: 'rgba(12, 18, 32, 0.75)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            borderRight: `1px solid ${C.border}`, padding: '16px 10px',
+            overflowY: 'auto', display: 'flex', flexDirection: 'column',
+          }}>
+            {sidebarContentRender}
+          </aside>
+        )}
 
         {/* MOBILE DRAWER BACKDROP */}
         {drawerOpen && (
@@ -905,10 +921,10 @@ export default function App() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${section}-${section === 'verbal' ? tab : quantTab}`}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
                 style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
               >
                 {section === 'pricing' ? (
@@ -925,7 +941,7 @@ export default function App() {
                   </Suspense>
                 ) : (
                   <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '100px 20px', color: C.gold }}><div style={{ animation: 'spin 1s linear infinite', fontSize: 24 }}>⏳</div></div>}>
-                    {section === 'verbal' ? verbalContent : section === 'quant' ? quantContent : awaContent}
+                    {section === 'verbal' ? verbalContent : section === 'quant' ? quantContent : section === 'custom' ? <CustomBuilder /> : section === 'analytics' ? <AnalyticsDashboard /> : awaContent}
                   </Suspense>
                 )}
               </motion.div>
@@ -960,6 +976,15 @@ export default function App() {
           setSection('awa');
         }}>
           <span className="icon">✍️</span>Writing
+        </button>
+        <button className={section === 'custom' ? 'active' : ''} onClick={() => {
+          if (!isPro()) { setUpsellFeature('Custom Practice Builder'); return; }
+          setSection('custom');
+        }}>
+          <span className="icon">⚙️</span>Custom
+        </button>
+        <button className={section === 'analytics' ? 'active' : ''} onClick={() => setSection('analytics')}>
+          <span className="icon">🔬</span>Analytics
         </button>
         <button onClick={() => setDrawerOpen(d => !d)} className={drawerOpen ? 'active' : ''}>
           <span className="icon">☰</span>Menu

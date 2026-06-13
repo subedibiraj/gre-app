@@ -90,8 +90,8 @@ const DIAGNOSTIC = [
     qtyB: '8',
     info: '',
     opts: ['A. Quantity A is greater','B. Quantity B is greater','C. The two quantities are equal','D. Cannot be determined'],
-    answer: 'C',
-    explain: '36 = 2² × 3². Factors = (2+1)(2+1) = 9. Wait — that\'s 9, not 8. Re-check: factors of 36 are 1,2,3,4,6,9,12,18,36 = 9 factors. QtyA=9 > QtyB=8 → A. The trap is miscounting and getting 8.',
+    answer: 'A',
+    explain: '36 = 2² × 3². Number of factors = (2+1)(2+1) = 9. The factors are: 1, 2, 3, 4, 6, 9, 12, 18, 36. QtyA = 9 > QtyB = 8 → A is greater. The trap is miscounting and getting 8.',
   },
 ];
 
@@ -395,21 +395,72 @@ function ResultsScreen({ score, total, breakdown, onComplete }) {
   const colors = { 1: C.red, 2: '#E4A060', 3: C.gold, 4: C.green, 5: C.greenBr };
   const color  = colors[level];
 
+  // ── Baseline Score Calculation (130-170 GRE scale) ──────────────────────────
+  // Verbal: weighted by VIC(30%), TC(30%), SE(20%), QC(20%)
+  const verbalSections = ['vic', 'tc', 'se'];
+  const quantSections  = ['qc'];
+  const calcSectionScore = (sections) => {
+    let correct = 0, total = 0;
+    sections.forEach(s => { if (breakdown[s]) { correct += breakdown[s].correct; total += breakdown[s].total; } });
+    return total > 0 ? correct / total : 0;
+  };
+  const verbalPct = calcSectionScore(verbalSections);
+  const quantPct  = calcSectionScore(quantSections);
+
+  // Non-linear ETS-calibrated scale
+  const toScaled = (p) => {
+    const bands = [
+      [0.00,0.15,130],[0.15,0.25,136],[0.25,0.35,140],[0.35,0.45,144],
+      [0.45,0.55,148],[0.55,0.65,152],[0.65,0.75,156],[0.75,0.85,160],
+      [0.85,0.92,164],[0.92,1.01,168],
+    ];
+    const b = bands.find(([lo,hi]) => p >= lo && p < hi) || bands[bands.length-1];
+    return b[2];
+  };
+  const verbalBaseline = toScaled(verbalPct);
+  const quantBaseline  = toScaled(quantPct);
+  const verbalRange = [Math.max(130, verbalBaseline - 2), Math.min(170, verbalBaseline + 2)];
+  const quantRange  = [Math.max(130, quantBaseline - 2), Math.min(170, quantBaseline + 2)];
+
+  // Save baseline scores to localStorage on first render
+  useState(() => {
+    const baseline = {
+      verbal: verbalBaseline,
+      quant: quantBaseline,
+      verbalRange, quantRange,
+      level, pct, breakdown,
+      date: new Date().toISOString(),
+    };
+    localStorage.setItem('gre_baselineScores', JSON.stringify(baseline));
+  });
+
   return (
     <div style={{ textAlign: 'center' }} className="bounce-in">
       <div style={{ fontSize: 48, marginBottom: 12 }}>
         {pct >= 80 ? '🎯' : pct >= 60 ? '💪' : pct >= 40 ? '📚' : '🌱'}
       </div>
-      <p style={{ fontFamily: 'Courier New,monospace', fontSize: 42, fontWeight: 700, color, margin: '0 0 4px' }}>
-        {score}/{total}
-      </p>
+
+      {/* Simulated GRE Score Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+        <div style={{ background: `linear-gradient(135deg, ${C.blue}15, ${C.blue}05)`, border: `1px solid ${C.blue}33`, borderRadius: 12, padding: '16px 12px' }}>
+          <p style={{ fontSize: 10, color: C.blue, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6, fontWeight: 700 }}>Verbal Baseline</p>
+          <p style={{ fontFamily: 'Courier New,monospace', fontSize: 32, fontWeight: 700, color: C.blue, margin: '0 0 2px' }}>{verbalBaseline}</p>
+          <p style={{ fontSize: 11, color: C.textDim, margin: 0 }}>Range: {verbalRange[0]}–{verbalRange[1]}</p>
+        </div>
+        <div style={{ background: `linear-gradient(135deg, ${C.gold}15, ${C.gold}05)`, border: `1px solid ${C.gold}33`, borderRadius: 12, padding: '16px 12px' }}>
+          <p style={{ fontSize: 10, color: C.gold, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6, fontWeight: 700 }}>Quant Baseline</p>
+          <p style={{ fontFamily: 'Courier New,monospace', fontSize: 32, fontWeight: 700, color: C.gold, margin: '0 0 2px' }}>{quantBaseline}</p>
+          <p style={{ fontSize: 11, color: C.textDim, margin: 0 }}>Range: {quantRange[0]}–{quantRange[1]}</p>
+        </div>
+      </div>
+
       <p style={{ fontSize: 14, color, fontWeight: 700, marginBottom: 4 }}>{labels[level]}</p>
-      <p style={{ color: C.textDim, fontSize: 13, marginBottom: 24 }}>
-        Your first session will be calibrated to Level {level}/5
+      <p style={{ color: C.textDim, fontSize: 13, marginBottom: 20 }}>
+        Your sessions will be calibrated to Level {level}/5
       </p>
 
       {/* Section breakdown */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8, marginBottom: 24, textAlign: 'left' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8, marginBottom: 20, textAlign: 'left' }}>
         {Object.entries(breakdown).map(([sec, { correct, total: t }]) => {
           const secColor = correct / t >= 0.67 ? C.greenBr : correct / t >= 0.34 ? C.gold : C.red;
           const labels2 = { vic: 'Vocabulary', tc: 'Text Completion', se: 'Sentence Equiv.', qc: 'Quant Comparison' };

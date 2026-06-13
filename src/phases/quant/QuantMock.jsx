@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { apiFetch, hasGeminiKey } from '../../lib/gemini';
 import C from '../../theme';
 import { recordQuantResults, saveLastSessionWrong, getQuantWeakAreas } from '../../engine/QuantErrorEngine';
+import { addScoreEntry } from '../../engine/history';
 import { recordScoreSnapshot } from '../../components/ScoreGraph';
 import Tag from '../../components/Tag';
 import ChartRenderer from '../../components/ChartRenderer';
@@ -380,16 +381,68 @@ export default function QuantMock() {
       sessionSeconds.current = Math.round((Date.now() - sessionStart.current) / 1000);
     }
     if (!exam) return;
-    // Record results for error engine
+    
+    import('../../engine/error-log').then(({ logMistake }) => {
+      exam.qc?.forEach(q => { if (qcA[q.id] !== q.answer) logMistake(q, qcA[q.id], 'quant'); });
+      exam.mc?.forEach(q => { if (mcA[q.id] !== q.answer) logMistake(q, mcA[q.id], 'quant'); });
+      exam.mcm?.forEach(q => {
+        const ans = mcmA[q.id] || [];
+        const isFullyCorrect = q.answers.length === ans.length && q.answers.every(a => ans.includes(a));
+        if (!isFullyCorrect) logMistake(q, ans, 'quant');
+      });
+      exam.ne?.forEach(q => { if (String(neA[q.id] || '').trim() !== String(q.answer).trim()) logMistake(q, neA[q.id], 'quant'); });
+    }).catch(e => console.error('Error logging mistakes:', e));
+
+    // Record results for adaptive engine
     const results = [];
-    exam.qc?.forEach(q => results.push({ topic: q.topic || 'QC', subtopic: q.topic || 'Quantitative Comparison', correct: qcA[q.id] === q.answer }));
-    exam.mc?.forEach(q => results.push({ topic: q.topic || 'MC', subtopic: q.topic || 'Multiple Choice', correct: mcA[q.id] === q.answer }));
-    exam.ne?.forEach(q => results.push({ topic: q.topic || 'NE', subtopic: q.topic || 'Numeric Entry', correct: String(neA[q.id] || '').trim() === String(q.answer).trim() }));
+    const topicCount = {};
+    
+    exam.qc?.forEach(q => {
+      const isCorrect = qcA[q.id] === q.answer;
+      const t = (q.topic || 'arithmetic').toLowerCase();
+      if (!topicCount[t]) topicCount[t] = { correct: 0, total: 0 };
+      topicCount[t].total++;
+      if (isCorrect) topicCount[t].correct++;
+      results.push({ topic: t, subtopic: q.topic || 'Quantitative Comparison', correct: isCorrect });
+    });
+    
+    exam.mc?.forEach(q => {
+      const isCorrect = mcA[q.id] === q.answer;
+      const t = (q.topic || 'algebra').toLowerCase();
+      if (!topicCount[t]) topicCount[t] = { correct: 0, total: 0 };
+      topicCount[t].total++;
+      if (isCorrect) topicCount[t].correct++;
+      results.push({ topic: t, subtopic: q.topic || 'Multiple Choice', correct: isCorrect });
+    });
+    
+    exam.ne?.forEach(q => {
+      const isCorrect = String(neA[q.id] || '').trim() === String(q.answer).trim();
+      const t = (q.topic || 'geometry').toLowerCase();
+      if (!topicCount[t]) topicCount[t] = { correct: 0, total: 0 };
+      topicCount[t].total++;
+      if (isCorrect) topicCount[t].correct++;
+      results.push({ topic: t, subtopic: q.topic || 'Numeric Entry', correct: isCorrect });
+    });
+    
     recordQuantResults(results);
     const wrongItems = results.filter(r => !r.correct).slice(0, 3).map(r => ({ subtopic: r.subtopic, question: '' }));
     saveLastSessionWrong(wrongItems);
+
+    const score = calcScore();
+    addScoreEntry({
+      type: 'quant-mock',
+      scaledScore: score.scaledScore,
+      timeTaken: sessionSeconds.current,
+      sections: {
+        qc: { correct: score.qc, total: score.qcMax },
+        mc: { correct: score.mc + score.mcm, total: score.mcMax + score.mcmMax },
+        ne: { correct: score.ne, total: score.neMax }
+      },
+      topics: topicCount
+    });
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exam, qcA, mcA, neA]);
+  }, [exam, qcA, mcA, mcmA, neA]);
 
   const totalAnswered = Object.keys(qcA).length + Object.keys(mcA).length + Object.keys(mcmA).length + Object.keys(neA).length;
   const totalQs = allQuestions.length;

@@ -35,6 +35,10 @@ export default function SESection({ questions, onComplete, timed = false }) {
   const checkQ = () => {
     const isCorrect = sel.length===2 && q.answers.every(a=>sel.includes(a));
     if (isCorrect) Sound.success(); else Sound.error();
+    // Log mistake to Error Log
+    if (!isCorrect) {
+      import('../engine/error-log').then(({ logMistake }) => logMistake({ ...q, type: 'se' }, sel, 'verbal')).catch(console.error);
+    }
     if (startTimesRef.current[qIdx] !== null) {
       elapsedRef.current[qIdx] = Math.round((Date.now() - startTimesRef.current[qIdx]) / 1000);
     }
