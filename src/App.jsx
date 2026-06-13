@@ -555,7 +555,6 @@ export default function App() {
           const sc = quantScores[t.id];
           const isCurrent = quantPage === t.id;
           return (
-          return (
             <button key={t.id} className="hover-lift" onClick={() => goQuant(t.id)} style={{
               width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
