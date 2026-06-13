@@ -81,32 +81,41 @@ export function AuthProvider({ children }) {
   };
 
   const handleSignOut = async () => {
+    // Guarantee we ALWAYS redirect, even if Supabase hangs
+    const forceRedirect = setTimeout(() => {
+      console.warn('Sign-out timed out, forcing redirect');
+      window.location.href = '/';
+    }, 3000);
+
     try {
+      // Best-effort: push progress before signing out (1s timeout)
       if (user) {
         await Promise.race([
-          pushProgressToCloud(user.id),
-          new Promise(r => setTimeout(r, 1000)) // 1 second timeout
+          pushProgressToCloud(user.id).catch(() => {}),
+          new Promise(r => setTimeout(r, 1000)),
         ]);
       }
-    } catch (e) {
-      console.warn('Failed to push progress before signout', e);
-    }
+    } catch { /* ignore */ }
 
     try {
-      await signOut();
+      // Sign out from Supabase (with its own timeout)
+      await Promise.race([
+        signOut(),
+        new Promise(r => setTimeout(r, 2000)),
+      ]);
     } catch (e) {
-      console.warn('Supabase signout failed, clearing locally', e);
+      console.warn('Supabase signout error, clearing locally:', e);
     }
 
-    // Clear local storage to ensure next user has a clean slate
+    // Clear synced keys from localStorage
     const SYNC_KEYS = [
       'gre_dayScores', 'gre_quantScores', 'gre_weakWords',
       'gre_spacedRep', 'gre_streak', 'gre_xp', 'gre_achievements',
       'gre_scoreHistory', 'gre_testDate', 'gre_dailyGoal', 'gre_plan'
     ];
     SYNC_KEYS.forEach(k => localStorage.removeItem(k));
-    
-    // Redirect gracefully
+
+    clearTimeout(forceRedirect);
     window.location.href = '/';
   };
 
