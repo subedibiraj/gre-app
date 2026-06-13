@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Shield, CalendarDays, Zap, Menu, WifiOff, LayoutDashboard, PenTool, Calculator, Target, Network, Sprout, Sun, Lock, Trophy, Swords, ShieldAlert } from 'lucide-react';
+import { Flame, Shield, CalendarDays, Zap, Menu, WifiOff, LayoutDashboard, PenTool, Calculator, Target, Network, Sprout, Sun, Lock, Trophy, Swords, ShieldAlert, BookOpen } from 'lucide-react';
 import C from './theme';
 import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
