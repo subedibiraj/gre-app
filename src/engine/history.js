@@ -23,6 +23,27 @@ export function addScoreEntry(entry) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }
 
+// ─── AWA HISTORY ──────────────────────────────────────────────────────────────
+const AWA_HISTORY_KEY = 'gre_awaHistory';
+
+export function getAwaHistory() {
+  try { return JSON.parse(localStorage.getItem(AWA_HISTORY_KEY)) || []; }
+  catch { return []; }
+}
+
+export function addAwaEntry(entry) {
+  const history = getAwaHistory();
+  const full = {
+    ...entry,
+    id: Date.now().toString(),
+    timestamp: Date.now(),
+    date: new Date().toLocaleDateString(),
+  };
+  history.push(full);
+  if (history.length > 50) history.splice(0, history.length - 50);
+  localStorage.setItem(AWA_HISTORY_KEY, JSON.stringify(history));
+}
+
 // ─── Section-level trend ──────────────────────────────────────────────────────
 export function getSectionTrend(type, section, count = 8) {
   return getScoreHistory()

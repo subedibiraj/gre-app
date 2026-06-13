@@ -313,6 +313,28 @@ export default function SettingsPanel({ open, onClose }) {
           ))}
         </Card>
 
+        {/* ── Danger Zone ── */}
+        <Card style={{ marginTop: 14, border: `1px solid ${C.red}44`, background: `${C.red}0A` }}>
+          <p style={{ color: C.red, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 700 }}>Danger Zone</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            <p style={{ color: C.textMid, fontSize: 12, margin: 0, maxWidth: 260, lineHeight: 1.5 }}>
+              Wipe all local progress, saved words, scores, and restart the onboarding process. This action cannot be undone.
+            </p>
+            <button onClick={() => {
+              if (window.confirm('Are you absolutely sure you want to wipe all progress? This will reset everything.')) {
+                localStorage.clear();
+                window.location.reload();
+              }
+            }} style={{
+              padding: '8px 16px', borderRadius: 8, border: `1px solid ${C.red}88`,
+              background: C.red + '22', color: C.red, fontSize: 12, fontWeight: 700,
+              cursor: 'pointer', transition: 'all 0.15s',
+            }}>
+              Wipe Data & Restart
+            </button>
+          </div>
+        </Card>
+
       </div>
     </div>
   );

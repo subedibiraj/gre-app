@@ -22,6 +22,7 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
   const [sectionTotals, setSectionTotals] = useState({contrast:null, vic:null, tc:null, se:null, rc:null});
   const [sessionWeakWords, setSessionWeakWords] = useState([]);
   const [timed, setTimed]     = useState(false);
+  const [sectionPacing, setSectionPacing] = useState({vic:null, tc:null, se:null, rc:null});
 
   useEffect(() => {
     if (cachedQuestions && !qs) setQs(cachedQuestions);
@@ -65,24 +66,27 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
     recordPractice();
   };
 
-  const handleVICComplete = (correct, total, wrongWords) => {
+  const handleVICComplete = (correct, total, wrongWords, pacing) => {
     setSectionScores(s=>({...s, vic:correct}));
     setSectionTotals(s=>({...s, vic:total}));
+    if (pacing) setSectionPacing(p => ({...p, vic: pacing}));
     if (wrongWords?.length) { onWeakUpdate(wrongWords); setSessionWeakWords(w => [...w, ...wrongWords]); }
     onScoreUpdate(day, 'vic', correct, total);
     recordPractice();
   };
 
-  const handleTCComplete = (correct, total) => {
+  const handleTCComplete = (correct, total, pacing) => {
     setSectionScores(s=>({...s, tc:correct}));
     setSectionTotals(s=>({...s, tc:total}));
+    if (pacing) setSectionPacing(p => ({...p, tc: pacing}));
     onScoreUpdate(day, 'tc', correct, total);
     recordPractice();
   };
 
-  const handleSEComplete = (correct, total) => {
+  const handleSEComplete = (correct, total, pacing) => {
     setSectionScores(s=>({...s, se:correct}));
     setSectionTotals(s=>({...s, se:total}));
+    if (pacing) setSectionPacing(p => ({...p, se: pacing}));
     onScoreUpdate(day, 'se', correct, total);
     recordPractice();
   };
@@ -107,6 +111,7 @@ export default function PracticeView({ day, weakWords, onWeakUpdate, onScoreUpda
         xpGained: totalCorrect * 10 + 25,
         weakWordsAdded: sessionWeakWords,
         sectionBreakdown: breakdown,
+        pacing: sectionPacing,
       });
     }, 500);
   };

@@ -251,7 +251,7 @@ function DiagnosticQuestion({ q, onAnswer, answered }) {
 }
 
 // ─── SETUP SCREENS ────────────────────────────────────────────────────────────
-function WelcomeScreen({ onStart }) {
+function WelcomeScreen({ onStart, onSkip }) {
   const { signIn } = useAuth();
   
   return (
@@ -285,6 +285,14 @@ function WelcomeScreen({ onStart }) {
         Get Started →
       </button>
 
+      <button onClick={onSkip} style={{
+        marginTop: 12, padding: '10px', borderRadius: 8, border: `1px solid ${C.border}`,
+        background: 'transparent', color: C.textMid, fontSize: 13, cursor: 'pointer',
+        width: '100%', maxWidth: 300,
+      }}>
+        Skip Onboarding
+      </button>
+
       <button onClick={signIn} style={{
         marginTop: 16, padding: '10px', borderRadius: 8, border: 'none',
         background: 'transparent', color: C.textMid, fontSize: 13, cursor: 'pointer',
@@ -296,7 +304,7 @@ function WelcomeScreen({ onStart }) {
   );
 }
 
-function SetupScreen({ onComplete }) {
+function SetupScreen({ onComplete, onSkip }) {
   const [testDate, setTestDate]   = useState('');
   const [dailyGoal, setDailyGoal] = useState(30);
   const [target, setTarget]       = useState('165');
@@ -368,6 +376,13 @@ function SetupScreen({ onComplete }) {
         color: '#07090F', fontWeight: 700, fontSize: 15, cursor: 'pointer', minHeight: 52,
       }}>
         Continue to Diagnostic →
+      </button>
+      
+      <button onClick={onSkip} style={{
+        width: '100%', marginTop: 12, padding: '10px', borderRadius: 8, border: 'none',
+        background: 'transparent', color: C.textDim, fontSize: 13, cursor: 'pointer',
+      }}>
+        Skip Onboarding
       </button>
     </div>
   );
@@ -490,9 +505,15 @@ export default function Onboarding({ onComplete }) {
   return (
     <div style={containerStyle}>
       <div style={panelStyle}>
-        {step === 'welcome' && <WelcomeScreen onStart={() => setStep('setup')} />}
+        {step === 'welcome' && <WelcomeScreen onStart={() => setStep('setup')} onSkip={() => {
+          localStorage.setItem('gre_onboarded', '1');
+          onComplete();
+        }} />}
 
-        {step === 'setup' && <SetupScreen onComplete={() => setStep('diagnostic')} />}
+        {step === 'setup' && <SetupScreen onComplete={() => setStep('diagnostic')} onSkip={() => {
+          localStorage.setItem('gre_onboarded', '1');
+          onComplete();
+        }} />}
 
         {step === 'diagnostic' && (
           <>

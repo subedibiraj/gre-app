@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import C from '../theme';
 import { Sound } from '../engine/audio';
 import Card from '../components/Card';
@@ -13,6 +13,14 @@ export default function TCSection({ questions, onComplete, timed = false }) {
   const [checked, setChecked] = useState(questions.map(()=>false));
   const [partScores, setPart] = useState(questions.map(()=>0));
   const [timedOut, setTimedOut] = useState(questions.map(()=>false));
+  const startTimesRef = useRef(questions.map(() => null));
+  const elapsedRef = useRef(questions.map(() => null));
+
+  useEffect(() => {
+    if (startTimesRef.current[qIdx] === null) {
+      startTimesRef.current[qIdx] = Date.now();
+    }
+  }, [qIdx]);
 
   const q = questions[qIdx], sel = selections[qIdx], isChecked = checked[qIdx];
 
@@ -25,13 +33,17 @@ export default function TCSection({ questions, onComplete, timed = false }) {
   const checkQ = () => {
     const score = q.blanks.filter((b,i)=>sel[i]===b.answer).length;
     if (score === q.blanks.length) Sound.success(); else Sound.error();
+    if (startTimesRef.current[qIdx] !== null) {
+      elapsedRef.current[qIdx] = Math.round((Date.now() - startTimesRef.current[qIdx]) / 1000);
+    }
     setChecked(c=>{const n=[...c];n[qIdx]=true;return n;});
     setPart(p=>{const n=[...p];n[qIdx]=score;return n;});
     const newChecked = checked.map((c,i)=>i===qIdx?true:c);
     if (newChecked.every(Boolean)) {
       const total = questions.reduce((a,qq)=>a+qq.blanks.length,0);
       const correct = [...partScores.slice(0,qIdx), score, ...partScores.slice(qIdx+1)].reduce((a,b)=>a+b,0);
-      setTimeout(()=>onComplete(correct, total), 400);
+      const pacing = elapsedRef.current.filter(t => t !== null);
+      setTimeout(()=>onComplete(correct, total, pacing), 400);
     }
   };
 

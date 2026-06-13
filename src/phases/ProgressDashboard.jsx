@@ -9,6 +9,8 @@ import { QUANT_TOPICS } from '../data/quant-topics';
 import { getQuantWeakAreas, getQuantStats } from '../engine/QuantErrorEngine';
 import { getBossResult, BOSSES } from '../components/BossChallenge';
 import ShareModal from '../components/ShareCard';
+import Flashcards from '../components/Flashcards';
+import WeakWordBlitz from '../components/WeakWordBlitz';
 
 const loadJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
 
@@ -368,6 +370,8 @@ function Section({ title, children, defaultOpen = true }) {
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function ProgressDashboard({ dayScores, quantScores, weakWords, currentDay }) {
   const [showShare, setShowShare] = useState(false);
+  const [showFlashcards, setShowFlashcards] = useState(false);
+  const [showBlitz, setShowBlitz] = useState(false);
   const adaptiveProfile = getDifficultyProfile();
   const xp         = getXP();
   const level      = getLevel(xp.total);
@@ -494,13 +498,40 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
             {weakWords?.length > 0 && <span style={{ color: C.red, fontSize: 12, fontWeight: 700 }}>⚠️ {weakWords.length} flagged weak</span>}
           </div>
           <VocabMastery allWords={allWords} />
+          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+            <button onClick={() => setShowFlashcards(true)} style={{
+              flex: 1, padding: '10px 14px', borderRadius: 8, border: 'none',
+              background: `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
+              color: '#07090F', fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              boxShadow: `0 4px 12px ${C.gold}33`, fontSize: 13
+            }}>
+              🗂️ Launch Flashcards
+            </button>
+            <button onClick={() => setShowBlitz(true)} style={{
+              flex: 1, padding: '10px 14px', borderRadius: 8, border: 'none',
+              background: `linear-gradient(135deg, ${C.red}, #E02820)`,
+              color: '#fff', fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              boxShadow: `0 4px 12px ${C.red}33`, fontSize: 13
+            }}>
+              🎯 Weak Word Blitz
+            </button>
+          </div>
           {srStats.due > 0 && (
             <div style={{ marginTop: 12, padding: '8px 14px', background: `${C.red}12`, borderRadius: 8, border: `1px solid ${C.red}22` }}>
-              <p style={{ color: C.red, fontSize: 12, margin: 0 }}>🔴 <strong>{srStats.due}</strong> words due for spaced repetition review — do the Morning Drill or Weak Word Blitz.</p>
+              <p style={{ color: C.red, fontSize: 12, margin: 0 }}>🔴 <strong>{srStats.due}</strong> words due for spaced repetition review.</p>
             </div>
           )}
         </div>
       </Section>
+
+      {showFlashcards && (
+        <Flashcards words={allWords} onClose={() => setShowFlashcards(false)} onComplete={() => setShowFlashcards(false)} />
+      )}
+      {showBlitz && (
+        <WeakWordBlitz onClose={() => setShowBlitz(false)} />
+      )}
 
       {/* Verbal performance */}
       <Section title="📖 Verbal Performance — Day by Day" defaultOpen={false}>

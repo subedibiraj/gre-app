@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import C from '../theme';
 import { updateWordSR } from '../engine/spaced';
 import { Sound } from '../engine/audio';
@@ -12,6 +12,15 @@ export default function VocabInContext({ questions, onComplete, timed = false })
   const [selected, setSelected] = useState(questions.map(()=>null));
   const [checked, setChecked]   = useState(questions.map(()=>false));
   const [timedOut, setTimedOut]  = useState(questions.map(()=>false));
+  const startTimesRef = useRef(questions.map(() => null));
+  const elapsedRef = useRef(questions.map(() => null));
+
+  // Record start time when navigating to a new question
+  useEffect(() => {
+    if (startTimesRef.current[qIdx] === null) {
+      startTimesRef.current[qIdx] = Date.now();
+    }
+  }, [qIdx]);
 
   const q = questions[qIdx], sel = selected[qIdx], isChecked = checked[qIdx];
 
@@ -25,6 +34,10 @@ export default function VocabInContext({ questions, onComplete, timed = false })
     const isCorrect = sel === q.answer;
     updateWordSR(q.word, isCorrect);
     if (isCorrect) Sound.success(); else Sound.error();
+    // Record elapsed time for this question
+    if (startTimesRef.current[qIdx] !== null) {
+      elapsedRef.current[qIdx] = Math.round((Date.now() - startTimesRef.current[qIdx]) / 1000);
+    }
     const newChecked = checked.map((c,i)=>i===qIdx?true:c);
     setChecked(newChecked);
     if (newChecked.every(Boolean)) {
@@ -36,7 +49,8 @@ export default function VocabInContext({ questions, onComplete, timed = false })
         const s = i===qIdx ? sel : selected[i];
         return s!==qq.answer;
       }).map(qq=>qq.word);
-      setTimeout(()=>onComplete(correct, questions.length, wrong), 400);
+      const pacing = elapsedRef.current.filter(t => t !== null);
+      setTimeout(()=>onComplete(correct, questions.length, wrong, pacing), 400);
     }
   };
 

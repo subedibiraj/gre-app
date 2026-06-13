@@ -227,7 +227,7 @@ function NECard({ q, num, answer, onAnswer, checked }) {
 }
 
 // ─── Post-session analysis ─────────────────────────────────────────────────────
-function SessionAnalysis({ qs, qcA, mcA, neA, topicData, onNewSet }) {
+function SessionAnalysis({ qs, qcA, mcA, neA, topicData, sessionSeconds, onNewSet }) {
   let correct = 0, total = 0;
   const wrongItems = [];
 
@@ -289,6 +289,24 @@ function SessionAnalysis({ qs, qcA, mcA, neA, topicData, onNewSet }) {
            pct >= 60 ? '💪 Good progress. The errors above are your focus areas for next session.' :
            '📚 This topic needs more work. Study the concepts first, then retry.'}
         </p>
+
+        {/* Quant Pacing */}
+        {sessionSeconds > 0 && total > 0 && (
+          <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${color}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+            <span style={{ fontSize: 16 }}>⏱</span>
+            <div style={{ textAlign: 'left' }}>
+              <p style={{ color: C.textMid, fontSize: 12, margin: '0 0 4px' }}>Average Pacing</p>
+              <p style={{ fontFamily: 'Courier New,monospace', fontSize: 14, fontWeight: 700, margin: 0, color: (sessionSeconds / total) <= 105 ? C.greenBr : (sessionSeconds / total) <= 135 ? C.gold : C.red }}>
+                {Math.round(sessionSeconds / total)}s per question
+              </p>
+            </div>
+            <div style={{ width: 1, height: 30, background: `${color}33`, margin: '0 8px' }} />
+            <div style={{ textAlign: 'left' }}>
+              <p style={{ color: C.textMid, fontSize: 12, margin: '0 0 4px' }}>Target</p>
+              <p style={{ color: C.textDim, fontSize: 13, margin: 0, fontWeight: 700 }}>~105s avg</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Wrong items — Tonight's 3 */}
@@ -354,6 +372,8 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
   const [timed, setTimed]    = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [showTonights, setShowTonights] = useState(true);
+  const sessionStart = useRef(null);
+  const sessionSeconds = useRef(0);
 
   const generate = useCallback(async () => {
     setLoading(true); setError(null); setQs(null);
@@ -367,6 +387,7 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
           subtopics: topicData.subtopics, weakAreas, profile,
       });
       setQs(_qs);
+      sessionStart.current = Date.now();
     } catch(e) {
       let msg = e.message || 'Failed to generate questions.';
       if (msg.includes('429') || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
@@ -384,6 +405,9 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
   const submit = () => {
     setChecked(true);
     setShowReview(true);
+    if (sessionStart.current) {
+      sessionSeconds.current = Math.round((Date.now() - sessionStart.current) / 1000);
+    }
 
     // Score
     let c = 0, t = 0;
@@ -538,7 +562,7 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
   // ─── RESULTS VIEW ─────────────────────────────────────────────────────────
   if (showReview && checked) return (
     <SessionAnalysis
-      qs={qs} qcA={qcA} mcA={mcA} neA={neA} topicData={topicData}
+      qs={qs} qcA={qcA} mcA={mcA} neA={neA} topicData={topicData} sessionSeconds={sessionSeconds.current}
       onNewSet={() => { setQs(null); setShowReview(false); setShowTonights(false); }}
     />
   );

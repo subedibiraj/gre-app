@@ -278,6 +278,11 @@ export default function MorningDrill({ onClose }) {
 
     return (
       <div style={overlay}>
+        <div style={{ position: 'absolute', top: 30, right: 30 }}>
+          <button onClick={onClose} style={{
+            background: 'none', border: 'none', color: C.textDim, fontSize: 14, cursor: 'pointer', padding: 8
+          }}>End Early ✕</button>
+        </div>
         <div style={{ ...panel, maxWidth: 480, transition: 'background 0.25s', background: bgFlash }}>
           {/* Progress + Timer */}
           <div style={{ padding: '16px 20px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 16 }}>

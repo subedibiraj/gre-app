@@ -158,26 +158,40 @@ export default function App() {
 
   useEffect(() => {
     if (section === 'verbal' && currentDay > 0) {
-      const dayData = window.__GRE_DAYS?.[currentDay - 1];
-      if (dayData && (!dayData.words || dayData.words.length === 0) && (isPro() || currentDay <= 7)) {
-        const fetchDay = async () => {
-          try {
+      const fetchDaysUpToCurrent = async () => {
+        try {
+          const { FREE_LIMITS } = await import('./lib/subscription.js');
+          
+          const missingDays = [];
+          for (let i = 1; i <= currentDay; i++) {
+            const dayData = window.__GRE_DAYS?.[i - 1];
+            if (dayData && (!dayData.words || dayData.words.length === 0) && (isPro() || i <= FREE_LIMITS.maxDay)) {
+              missingDays.push(i);
+            }
+          }
+
+          if (missingDays.length > 0) {
             const headers = { 'Content-Type': 'application/json' };
             if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
-            const res = await fetch('/api/day', {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({ geminiKey: getGeminiKey(), day: currentDay })
-            });
-            const data = await res.json();
-            if (data.day) {
-              window.__GRE_DAYS[currentDay - 1] = data.day;
-              setForceUpdate(n => n + 1); // Trigger re-render
-            }
-          } catch (e) { console.error('Failed to load day chunk', e); }
-        };
-        fetchDay();
-      }
+            
+            await Promise.all(missingDays.map(async (dayNum) => {
+              const res = await fetch('/api/day', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ geminiKey: getGeminiKey(), day: dayNum })
+              });
+              const data = await res.json();
+              if (data.day) {
+                window.__GRE_DAYS[dayNum - 1] = data.day;
+              }
+            }));
+            
+            setForceUpdate(n => n + 1); // Trigger re-render once after fetching missing days
+          }
+        } catch (e) { console.error('Failed to load day chunks', e); }
+      };
+      
+      fetchDaysUpToCurrent();
     }
 
     if (section === 'quant' && quantPage) {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import C from '../theme';
 import { Sound } from '../engine/audio';
 import Card from '../components/Card';
@@ -11,6 +11,14 @@ export default function SESection({ questions, onComplete, timed = false }) {
   const [selected, setSelected] = useState(questions.map(()=>[]));
   const [checked, setChecked]   = useState(questions.map(()=>false));
   const [timedOut, setTimedOut]  = useState(questions.map(()=>false));
+  const startTimesRef = useRef(questions.map(() => null));
+  const elapsedRef = useRef(questions.map(() => null));
+
+  useEffect(() => {
+    if (startTimesRef.current[qIdx] === null) {
+      startTimesRef.current[qIdx] = Date.now();
+    }
+  }, [qIdx]);
 
   const q = questions[qIdx], sel = selected[qIdx], isChecked = checked[qIdx];
 
@@ -27,6 +35,9 @@ export default function SESection({ questions, onComplete, timed = false }) {
   const checkQ = () => {
     const isCorrect = sel.length===2 && q.answers.every(a=>sel.includes(a));
     if (isCorrect) Sound.success(); else Sound.error();
+    if (startTimesRef.current[qIdx] !== null) {
+      elapsedRef.current[qIdx] = Math.round((Date.now() - startTimesRef.current[qIdx]) / 1000);
+    }
     const newChecked = checked.map((c,i)=>i===qIdx?true:c);
     setChecked(newChecked);
     if (newChecked.every(Boolean)) {
@@ -34,7 +45,8 @@ export default function SESection({ questions, onComplete, timed = false }) {
         const s = i===qIdx ? sel : selected[i];
         return qq.answers.every(a=>s.includes(a)) && s.length===2;
       }).length;
-      setTimeout(()=>onComplete(correct, questions.length), 400);
+      const pacing = elapsedRef.current.filter(t => t !== null);
+      setTimeout(()=>onComplete(correct, questions.length, pacing), 400);
     }
   };
 

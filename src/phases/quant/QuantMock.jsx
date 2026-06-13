@@ -85,7 +85,7 @@ function QuestionNav({ questions, currentQ, answers, flagged, onJump }) {
 }
 
 // ─── Post-exam analysis ────────────────────────────────────────────────────────
-function ExamAnalysis({ exam, allAnswers, score, onRetake }) {
+function ExamAnalysis({ exam, allAnswers, score, sessionSeconds, onRetake }) {
   const weakAreas = getQuantWeakAreas().slice(0, 5);
   const topicBreakdown = {};
 
@@ -116,6 +116,24 @@ function ExamAnalysis({ exam, allAnswers, score, onRetake }) {
         <p style={{ color: C.textDim, fontSize: 12, margin: '0 0 8px' }}>out of 170 · {score.total}/{score.max} correct ({Math.round(score.pct * 100)}%)</p>
         <span style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 20, background: `${band.color}22`, color: band.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>{band.label}</span>
         <p style={{ color: C.textMid, fontSize: 13, lineHeight: 1.7, maxWidth: 440, margin: '0 auto' }}>{band.msg}</p>
+
+        {/* Quant Pacing */}
+        {sessionSeconds > 0 && score.max > 0 && (
+          <div style={{ marginTop: 20, paddingTop: 20, borderTop: `1px solid ${band.color}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+            <span style={{ fontSize: 16 }}>⏱</span>
+            <div style={{ textAlign: 'left' }}>
+              <p style={{ color: C.textMid, fontSize: 12, margin: '0 0 4px' }}>Average Pacing</p>
+              <p style={{ fontFamily: 'Courier New,monospace', fontSize: 14, fontWeight: 700, margin: 0, color: (sessionSeconds / score.max) <= 105 ? C.greenBr : (sessionSeconds / score.max) <= 135 ? C.gold : C.red }}>
+                {Math.round(sessionSeconds / score.max)}s per question
+              </p>
+            </div>
+            <div style={{ width: 1, height: 30, background: `${band.color}33`, margin: '0 8px' }} />
+            <div style={{ textAlign: 'left' }}>
+              <p style={{ color: C.textMid, fontSize: 12, margin: '0 0 4px' }}>Target</p>
+              <p style={{ color: C.textDim, fontSize: 13, margin: 0, fontWeight: 700 }}>~105s avg</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Section breakdown */}
@@ -265,6 +283,9 @@ export default function QuantMock() {
   const [neA, setNEA]   = useState({});
   const [flagged, setFlagged] = useState(new Set());
   const [currentQ, setCurrentQ] = useState(null);
+  
+  const sessionStart = useRef(null);
+  const sessionSeconds = useRef(0);
 
   const EXAM_TIME = 35 * 60;
 
@@ -286,6 +307,7 @@ export default function QuantMock() {
       const data = await apiFetch('/api/quant-mock', {});
       setExam(data);
       setTimerActive(true);
+      sessionStart.current = Date.now();
       // set first Q
       const first = `qc_${data.qc?.[0]?.id}`;
       setCurrentQ(first);
@@ -352,6 +374,9 @@ export default function QuantMock() {
   const submit = useCallback(() => {
     setSubmitted(true);
     setTimerActive(false);
+    if (sessionStart.current) {
+      sessionSeconds.current = Math.round((Date.now() - sessionStart.current) / 1000);
+    }
     if (!exam) return;
     // Record results for error engine
     const results = [];
@@ -418,7 +443,7 @@ export default function QuantMock() {
 
   if (submitted) {
     const score = calcScore();
-    return <ExamAnalysis exam={exam} allAnswers={{ qc: qcA, mc: mcA, mcm: mcmA, ne: neA }} score={score} onRetake={generate} />;
+    return <ExamAnalysis exam={exam} allAnswers={{ qc: qcA, mc: mcA, mcm: mcmA, ne: neA }} score={score} sessionSeconds={sessionSeconds.current} onRetake={generate} />;
   }
 
   // ─── EXAM IN PROGRESS ──────────────────────────────────────────────────────

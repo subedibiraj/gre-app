@@ -47,6 +47,7 @@ export default function SessionComplete({
   xpGained = 0,
   weakWordsAdded = [],
   sectionBreakdown = {}, // { vic: { correct, total }, tc: {...}, ... }
+  pacing = {},            // { vic: [12,18,...], tc: [45,60,...], se: [...] }
   onNext,
   onReview,
   onClose,
@@ -172,6 +173,42 @@ export default function SessionComplete({
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* Pacing Analytics */}
+        {pacing && Object.values(pacing).some(v => v && v.length > 0) && (
+          <div style={{ marginBottom: 18 }}>
+            <p style={{ color: C.textDim, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+              ⏱ Pacing Analytics
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {Object.entries(pacing).filter(([, times]) => times && times.length > 0).map(([sec, times]) => {
+                const avg = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
+                const max = Math.max(...times);
+                // GRE recommended pace per question type
+                const targets = { vic: 45, tc: 90, se: 60, rc: 120 };
+                const target = targets[sec] || 60;
+                const pacingColor = avg <= target ? C.greenBr : avg <= target * 1.3 ? C.gold : C.red;
+                const pacingLabel = avg <= target ? 'On pace' : avg <= target * 1.3 ? 'Slightly slow' : 'Too slow';
+                return (
+                  <div key={sec} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: C.bg, borderRadius: 6 }}>
+                    <span style={{ color: C.textMid, fontSize: 12, flex: 1 }}>{sectionLabels[sec] || sec}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                      <span style={{ fontFamily: 'Courier New,monospace', fontSize: 13, fontWeight: 700, color: pacingColor }}>
+                        {avg}s avg
+                      </span>
+                      <span style={{ fontSize: 9, color: pacingColor, fontWeight: 600 }}>
+                        {pacingLabel} · max {max}s
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p style={{ color: C.textDim, fontSize: 10, marginTop: 6, lineHeight: 1.5 }}>
+              GRE targets: VIC ~45s · TC ~90s · SE ~60s · RC ~2min per question
+            </p>
           </div>
         )}
 
