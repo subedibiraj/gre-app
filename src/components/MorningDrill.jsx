@@ -399,10 +399,45 @@ export default function MorningDrill({ onClose }) {
 
     return (
       <div style={overlay}>
-        <div style={{ ...panel, maxWidth: 420, textAlign: 'center' }}>
-          <div style={{ padding: '28px 24px' }}>
+        <div style={{ ...panel, maxWidth: 420, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+          {/* Confetti particles */}
+          {(allCorrect || mostCorrect) && (
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 1 }}>
+              {Array.from({ length: allCorrect ? 40 : 20 }).map((_, i) => {
+                const colors = [C.gold, C.goldBr, C.greenBr, C.blue, '#E4C060', '#FF6B6B', '#9B6BDB'];
+                const size = Math.random() * 8 + 4;
+                const left = Math.random() * 100;
+                const delay = Math.random() * 1.5;
+                const duration = Math.random() * 2 + 2;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const rotation = Math.random() * 360;
+                return (
+                  <div key={i} style={{
+                    position: 'absolute',
+                    top: -20,
+                    left: `${left}%`,
+                    width: size,
+                    height: size * (Math.random() > 0.5 ? 1 : 0.6),
+                    background: color,
+                    borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+                    transform: `rotate(${rotation}deg)`,
+                    animation: `confettiFall ${duration}s ${delay}s ease-in forwards`,
+                    opacity: 0,
+                  }} />
+                );
+              })}
+              <style>{`
+                @keyframes confettiFall {
+                  0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+                  50% { opacity: 1; }
+                  100% { opacity: 0; transform: translateY(450px) rotate(720deg) scale(0.5); }
+                }
+              `}</style>
+            </div>
+          )}
+          <div style={{ padding: '28px 24px', position: 'relative', zIndex: 2 }}>
             {/* Emoji */}
-            <p style={{ fontSize: 48, margin: '0 0 4px' }}>
+            <p style={{ fontSize: 48, margin: '0 0 4px', animation: 'bounceIn 0.5s ease-out' }}>
               {allCorrect ? '🎯' : mostCorrect ? '💪' : '📚'}
             </p>
 

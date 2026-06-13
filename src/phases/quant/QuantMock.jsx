@@ -275,6 +275,7 @@ export default function QuantMock() {
   const [error, setError]       = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [timerActive, setTimerActive] = useState(false);
+  const [etsMode, setEtsMode]     = useState(false);
 
   // Answers keyed by navId
   const [qcA, setQCA]   = useState({});
@@ -394,7 +395,7 @@ export default function QuantMock() {
 
   // ─── LANDING ──────────────────────────────────────────────────────────────
   if (!exam && !loading) return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '40px 20px', textAlign: 'center' }}>
+    <div className={etsMode ? 'ets-mode' : ''} style={{ maxWidth: 600, margin: '0 auto', padding: '40px 20px', textAlign: 'center', minHeight: '100vh', transition: 'all 0.3s ease' }}>
       <p style={{ fontSize: 52, marginBottom: 8 }}>🧮</p>
       <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 24, color: C.gold, marginBottom: 8 }}>GRE Quant Mock Exam</h2>
       <p style={{ color: C.textMid, fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>Full GRE Quantitative Reasoning section. Question navigator, flag-for-review, adaptive analysis.</p>
@@ -422,6 +423,18 @@ export default function QuantMock() {
         </div>
       </div>
 
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 24 }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+          <input 
+            type="checkbox" 
+            checked={etsMode} 
+            onChange={e => setEtsMode(e.target.checked)} 
+            style={{ width: 16, height: 16, cursor: 'pointer' }}
+          />
+          <span style={{ color: C.textMid, fontSize: 13, fontWeight: 600 }}>Enable "ETS Authentic" Interface</span>
+        </label>
+      </div>
+
       {error && <p style={{ color: C.red, marginBottom: 12 }}>{error}</p>}
       <button onClick={generate} style={{
         padding: '13px 36px', borderRadius: 10, border: 'none', cursor: 'pointer',
@@ -433,11 +446,41 @@ export default function QuantMock() {
   );
 
   if (loading) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px', gap: 16 }}>
-      <div style={{ width: 48, height: 48, border: `3px solid ${C.border}`, borderTop: `3px solid ${C.gold}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-      <p style={{ color: C.gold, fontSize: 16, fontWeight: 700 }}>Generating Quant Mock...</p>
-      <p style={{ color: C.textDim, fontSize: 12 }}>8 QC + 7 MC + 2 MCM + 3 NE = 20 questions</p>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 20, padding: 20 }}>
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div className="skeleton" style={{ width: 140, height: 32, borderRadius: 6 }} />
+          <div style={{ display: 'flex', gap: 10 }}>
+            <div className="skeleton" style={{ width: 80, height: 24, borderRadius: 12 }} />
+            <div className="skeleton" style={{ width: 100, height: 28, borderRadius: 6 }} />
+          </div>
+        </div>
+        <div className="skeleton" style={{ width: 180, height: 24, borderRadius: 6, marginBottom: 16 }} />
+        
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} style={{ padding: 16, background: C.card, borderRadius: 12, marginBottom: 12, border: `1px solid ${C.border}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <div className="skeleton" style={{ width: 40, height: 20, borderRadius: 10 }} />
+              <div className="skeleton" style={{ width: 120, height: 16, borderRadius: 4 }} />
+            </div>
+            <div className="skeleton" style={{ width: '100%', height: 16, borderRadius: 4, marginBottom: 8 }} />
+            <div className="skeleton" style={{ width: '80%', height: 16, borderRadius: 4, marginBottom: 16 }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[1,2,3,4].map(j => (
+                <div key={j} className="skeleton" style={{ width: '100%', height: 40, borderRadius: 6, opacity: 1 - j*0.1 }} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="hide-mobile">
+        <div className="skeleton" style={{ width: '100%', height: 400, borderRadius: 12 }} />
+      </div>
+      <div style={{ position: 'fixed', bottom: 40, left: '50%', transform: 'translateX(-50%)', background: C.card, padding: '12px 24px', borderRadius: 30, border: `1px solid ${C.gold}55`, boxShadow: `0 8px 32px ${C.bg}` }}>
+        <p style={{ color: C.gold, fontSize: 14, fontWeight: 700, margin: 0, animation: 'pulse 1.5s infinite' }}>
+          ✨ Generating Quant Mock...
+        </p>
+      </div>
     </div>
   );
 
@@ -448,11 +491,16 @@ export default function QuantMock() {
 
   // ─── EXAM IN PROGRESS ──────────────────────────────────────────────────────
   return (
-    <div className="mock-exam-grid" style={{ gap: 20, alignItems: 'start' }}>
-      {/* Main exam column */}
-      <div>
+    <div className={`mock-exam-grid ${etsMode ? 'ets-mode' : ''}`} style={{ gap: 20, alignItems: 'flex-start', minHeight: '100vh', padding: etsMode ? 20 : 0, transition: 'all 0.3s ease' }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {etsMode && (
+          <div className="ets-header" style={{ marginBottom: 20, borderRadius: 4, display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ fontWeight: 'bold' }}>GRE QUANTITATIVE REASONING</span>
+            <span>Section 1 of 1</span>
+          </div>
+        )}
         {/* Sticky header */}
-        <div style={{ position: 'sticky', top: 56, zIndex: 15, background: C.bg, padding: '10px 0', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+        <div style={{ position: 'sticky', top: etsMode ? 0 : 56, zIndex: 15, background: C.bg, padding: '12px 0', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
           <div style={{ flex: 1 }}><ExamTimer totalSeconds={EXAM_TIME} onTimeUp={submit} active={timerActive} /></div>
           <span style={{ color: totalAnswered === totalQs ? C.greenBr : C.textDim, fontSize: 12 }}>{totalAnswered}/{totalQs}</span>
           <button onClick={submit} style={{ padding: '7px 16px', borderRadius: 6, border: `1px solid ${C.red}44`, background: `${C.red}18`, color: C.red, cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>Submit</button>

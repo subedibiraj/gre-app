@@ -182,7 +182,7 @@ function WordCard({ v, displayDay, isOpen, onToggle }) {
 
   return (
     <div onClick={onToggle} style={{ marginBottom: 8, cursor: 'pointer' }}>
-      <div style={{
+      <div className="glass-hover" style={{
         background: isOpen ? C.cardHi : C.card,
         border: `1px solid ${isOpen ? cc + '66' : C.border}`,
         borderRadius: 10, padding: '14px 14px', transition: 'all 0.2s',

@@ -276,3 +276,58 @@ input[type="date"]::-webkit-datetime-edit-fields-wrapper {
 input[type="date"] {
   color-scheme: dark; /* Forces native dark mode picker on iOS/Android */
 }
+
+/* ─── ETS AUTHENTIC MODE ──────────────────────────────────────────────────────── */
+.ets-mode {
+  --bg:       #E0E0E0 !important;
+  --surface:  #F0F0F0 !important;
+  --card:     #FFFFFF !important;
+  --border:   #B0B0B0 !important;
+  --border-hi:#888888 !important;
+  --text:     #000000 !important;
+  --text-mid: #333333 !important;
+  --text-dim: #666666 !important;
+  --gold:     #3B609E !important;  /* ETS Blue */
+  --gold-br:  #4B70AE !important;
+  --gold-dim: #2B508E !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.ets-mode button {
+  border-radius: 0 !important;
+  text-transform: uppercase !important;
+  font-weight: bold !important;
+  border: 1px solid #888 !important;
+}
+
+/* ─── GLASSMORPHISM & HOVERS ─────────────────────────────────────────────────── */
+.glass-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+@media (hover: hover) {
+  .glass-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(200, 165, 53, 0.15);
+    border-color: rgba(200, 165, 53, 0.4) !important;
+  }
+}
+
+.boss-glow {
+  animation: bossPulse 2.5s infinite alternate;
+}
+@keyframes bossPulse {
+  0% { box-shadow: 0 0 10px rgba(181, 48, 40, 0.2); border-color: rgba(181, 48, 40, 0.3); }
+  100% { box-shadow: 0 0 25px rgba(181, 48, 40, 0.6); border-color: rgba(181, 48, 40, 0.8); }
+}
+
+/* ─── SKELETON LOADERS ───────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, var(--card) 25%, var(--border) 50%, var(--card) 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoad 1.5s infinite linear;
+  border-radius: 4px;
+}
+@keyframes skeletonLoad {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

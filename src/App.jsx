@@ -639,9 +639,40 @@ export default function App() {
   // ─── CURRICULUM LOADING GATE ──────────────────────────────────────────────────
   if (curriculumLoading) {
     return (
-      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: C.bg, color: C.gold }}>
-        <div style={{ animation: 'spin 1s linear infinite', fontSize: 32, marginBottom: 16 }}>⏳</div>
-        <p style={{ fontFamily: 'Georgia,serif', fontWeight: 700, margin: 0 }}>Syncing Curriculum securely...</p>
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: C.bg }}>
+        {/* Skeleton header */}
+        <div style={{ height: 52, background: C.surface, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12 }}>
+          <div className="skeleton" style={{ width: 40, height: 20, borderRadius: 4 }} />
+          <div className="skeleton" style={{ width: 180, height: 28, borderRadius: 6 }} />
+          <div style={{ flex: 1 }} />
+          <div className="skeleton" style={{ width: 80, height: 24, borderRadius: 12 }} />
+        </div>
+        {/* Skeleton body */}
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Skeleton sidebar */}
+          <div className="hide-mobile" style={{ width: 200, background: C.surface, borderRight: `1px solid ${C.border}`, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div className="skeleton" style={{ width: '60%', height: 12, borderRadius: 4 }} />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="skeleton" style={{ width: '100%', height: 36, borderRadius: 8, opacity: 1 - i * 0.08 }} />
+            ))}
+          </div>
+          {/* Skeleton content */}
+          <div style={{ flex: 1, padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div className="skeleton" style={{ width: '45%', height: 28, borderRadius: 6 }} />
+            <div className="skeleton" style={{ width: '70%', height: 14, borderRadius: 4 }} />
+            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+              {[1,2,3].map(i => (
+                <div key={i} className="skeleton" style={{ flex: 1, height: 80, borderRadius: 10 }} />
+              ))}
+            </div>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="skeleton" style={{ width: '100%', height: 56, borderRadius: 10, opacity: 1 - i * 0.15 }} />
+            ))}
+            <p style={{ textAlign: 'center', color: C.gold, fontFamily: 'Georgia,serif', fontWeight: 700, marginTop: 16, animation: 'pulse 1.5s ease-in-out infinite' }}>
+              Syncing Curriculum securely...
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -703,9 +734,18 @@ export default function App() {
 
         {/* Streak + Shield — desktop only */}
         {streak.current > 0 && (
-          <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: 5, background: C.goldDim + '33', border: `1px solid ${C.goldDim}`, borderRadius: 20, padding: '3px 10px' }}>
+          <div className="hide-mobile" style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            background: streak.current >= 7 ? `linear-gradient(135deg, ${C.goldDim}55, ${C.gold}22)` : C.goldDim + '33',
+            border: `1px solid ${streak.current >= 7 ? C.gold : C.goldDim}`,
+            borderRadius: 20, padding: '3px 10px',
+            animation: streak.current >= 7 ? 'pulse 2s ease-in-out infinite' : 'none',
+            boxShadow: streak.current >= 7 ? `0 0 12px ${C.gold}33` : 'none',
+            transition: 'all 0.3s ease',
+          }}>
             <Flame size={16} color={C.gold} style={{ marginRight: 2 }} />
             <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 13, color: C.gold }}>{streak.current}</span>
+            {streak.current >= 7 && <span style={{ fontSize: 10, marginLeft: 2 }}>🔥</span>}
             {shield.available && <Shield size={14} color={C.greenBr} title="Streak Shield ready" style={{ marginLeft: 4, opacity: 0.8 }} />}
           </div>
         )}

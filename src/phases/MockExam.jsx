@@ -414,6 +414,7 @@ export default function MockExam() {
   const [error, setError]         = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [timerActive, setTimerActive] = useState(false);
+  const [etsMode, setEtsMode]     = useState(false);
 
   const [tcAnswers, setTCAnswers] = useState({});
   const [seAnswers, setSEAnswers] = useState({});
@@ -456,7 +457,7 @@ export default function MockExam() {
 
   // ─── LANDING ────────────────────────────────────────────────────────────────
   if (!exam && !loading) return (
-    <div style={{ maxWidth: 600, margin: '0 auto' }}>
+    <div className={etsMode ? 'ets-mode' : ''} style={{ maxWidth: 600, margin: '0 auto', minHeight: '100vh', transition: 'all 0.3s ease' }}>
       <div style={{ textAlign: 'center', padding: '40px 20px' }}>
         <p style={{ fontSize: 48, marginBottom: 8 }}>🎯</p>
         <h2 style={{
@@ -502,6 +503,18 @@ export default function MockExam() {
           </div>
         </Card>
 
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 24 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input 
+              type="checkbox" 
+              checked={etsMode} 
+              onChange={e => setEtsMode(e.target.checked)} 
+              style={{ width: 16, height: 16, cursor: 'pointer' }}
+            />
+            <span style={{ color: C.textMid, fontSize: 13, fontWeight: 600 }}>Enable "ETS Authentic" Interface</span>
+          </label>
+        </div>
+
         {error && (
           <div style={{
             background: C.redBg, border: `1px solid ${C.red}44`,
@@ -521,24 +534,39 @@ export default function MockExam() {
 
   // ─── LOADING ────────────────────────────────────────────────────────────────
   if (loading) return (
-    <div style={{
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      padding: '60px 20px', gap: 16,
-    }}>
-      <div style={{
-        width: 48, height: 48,
-        border: `3px solid ${C.border}`,
-        borderTop: `3px solid ${C.gold}`,
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite',
-      }} />
-      <p style={{ color: C.gold, fontSize: 16, fontWeight: 700 }}>
-        Generating your GRE Mock Exam...
-      </p>
-      <p style={{ color: C.textMid, fontSize: 13 }}>Creating 6 TC · 4 SE · 2 RC passages</p>
-      <p style={{ color: C.textDim, fontSize: 12 }}>This may take 10–20 seconds</p>
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    <div style={{ padding: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div className="skeleton" style={{ width: 140, height: 32, borderRadius: 6 }} />
+        <div style={{ display: 'flex', gap: 10 }}>
+          <div className="skeleton" style={{ width: 80, height: 24, borderRadius: 12 }} />
+          <div className="skeleton" style={{ width: 100, height: 28, borderRadius: 6 }} />
+        </div>
+      </div>
+      <div className="skeleton" style={{ width: 220, height: 24, borderRadius: 6, marginBottom: 16 }} />
+      <div className="skeleton" style={{ width: '80%', height: 14, borderRadius: 4, marginBottom: 24 }} />
+      
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+            <div className="skeleton" style={{ width: 32, height: 20, borderRadius: 4 }} />
+          </div>
+          <div style={{ padding: 16, background: C.surface, borderRadius: 8, marginBottom: 12 }}>
+            <div className="skeleton" style={{ width: '100%', height: 16, borderRadius: 4, marginBottom: 8 }} />
+            <div className="skeleton" style={{ width: '90%', height: 16, borderRadius: 4, marginBottom: 8 }} />
+            <div className="skeleton" style={{ width: '60%', height: 16, borderRadius: 4 }} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[1,2,3,4,5].map(j => (
+              <div key={j} className="skeleton" style={{ width: '100%', height: 44, borderRadius: 6, opacity: 1 - j*0.1 }} />
+            ))}
+          </div>
+        </div>
+      ))}
+      <div style={{ position: 'fixed', bottom: 40, left: '50%', transform: 'translateX(-50%)', background: C.card, padding: '12px 24px', borderRadius: 30, border: `1px solid ${C.gold}55`, boxShadow: `0 8px 32px ${C.bg}` }}>
+        <p style={{ color: C.gold, fontSize: 14, fontWeight: 700, margin: 0, animation: 'pulse 1.5s infinite' }}>
+          ✨ Generating Mock Exam...
+        </p>
+      </div>
     </div>
   );
 
@@ -702,10 +730,16 @@ export default function MockExam() {
     (exam.rc?.reduce((acc, p) => acc + p.questions.length, 0) ?? 0);
 
   return (
-    <div>
+    <div className={`mock-exam-grid ${etsMode ? 'ets-mode' : ''}`} style={{ minHeight: '100vh', padding: etsMode ? 20 : 0, transition: 'all 0.3s ease' }}>
+      {etsMode && (
+        <div className="ets-header" style={{ marginBottom: 20, borderRadius: 4, display: 'flex', justifyContent: 'space-between' }}>
+          <span style={{ fontWeight: 'bold' }}>GRE VERBAL REASONING</span>
+          <span>Section 1 of 1</span>
+        </div>
+      )}
       {/* Sticky header */}
       <div style={{
-        position: 'sticky', top: 56, zIndex: 15,
+        position: 'sticky', top: etsMode ? 0 : 56, zIndex: 15,
         background: C.bg, padding: '12px 0',
         borderBottom: `1px solid ${C.border}`,
         display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20,
