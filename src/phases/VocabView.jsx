@@ -208,11 +208,6 @@ function WordCard({ v, displayDay, isOpen, onToggle }) {
               >🔊</button>
               <Tag color={cc}>{v.pos}</Tag>
               <Tag color={cc}>{v.cluster}</Tag>
-              {!isToday && (
-                <Tag color={C.textDim}>
-                  Day {DAYS.findIndex(d => d.words.some(w => w.w === v.w)) + 1}
-                </Tag>
-              )}
               <Tag color={sr.color}>{sr.label}</Tag>
             </div>
             {!isOpen && (

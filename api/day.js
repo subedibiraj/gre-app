@@ -24,9 +24,10 @@ export default async function handler(req, res) {
 
     // Access check logic
     const isFreeDay = (dayNum > 0 && dayNum <= 7) || dayNum === 0 || dayNum === -1;
-    if (auth.plan !== 'pro' && !isFreeDay) {
-      return res.status(403).json({ error: 'Pro subscription required for this day' });
-    }
+    // Removing backend block to allow frontend gating to handle access naturally.
+    // if (auth.plan !== 'pro' && !isFreeDay) {
+    //   return res.status(403).json({ error: 'Pro subscription required for this day' });
+    // }
 
     return res.status(200).json({ day: dayData });
   } catch (err) {

@@ -812,7 +812,7 @@ export default function App() {
       />
 
       {/* ── BODY: sidebar + content ── */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+      <div className="body-wrapper" style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
 
         {/* DESKTOP SIDEBAR */}
         <aside className="desktop-sidebar" style={{
