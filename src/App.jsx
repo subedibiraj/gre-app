@@ -31,6 +31,7 @@ import ConceptLearn from './phases/quant/ConceptLearn';
 import MorningDrill from './components/MorningDrill';
 import { getBossStatus, getBossResult, BOSSES } from './components/BossChallenge';
 import WeakWordBlitz from './components/WeakWordBlitz';
+import ProUpsell from './components/ProUpsell';
 
 // ─── LAZY LOADED COMPONENTS (Code Splitting) ──────────────────────────────────
 const Onboarding = lazy(() => import('./phases/Onboarding'));
@@ -93,6 +94,7 @@ export default function App() {
   const [offline, setOffline]             = useState(!navigator.onLine);
   const [onboarded, setOnboarded]         = useState(() => localStorage.getItem('gre_onboarded') === '1');
   const [curriculumLoading, setCurriculumLoading] = useState(true);
+  const [upsellFeature, setUpsellFeature] = useState(null);
   
   const { user, session } = useAuth();
   const isAdmin = user?.email === (import.meta.env.VITE_ADMIN_EMAIL || 'biraj.077bct031@acem.edu.np');
@@ -435,7 +437,7 @@ export default function App() {
         {quantTab === 'learn' ? <ConceptLearn topicId={quantPage} /> : <QuantPractice topic={quantPage} onScoreUpdate={updateQuantScore} />}
       </>
     ) :
-    <QuantLanding onSelectTopic={(tId) => goQuant(tId)} scores={quantScores} />;
+    <QuantLanding onSelectTopic={(tId) => goQuant(tId)} onUpsell={setUpsellFeature} scores={quantScores} />;
 
   // ─── AWA CONTENT ──────────────────────────────────────────────────────────────
   const awaContent = (
@@ -463,7 +465,7 @@ export default function App() {
           const bossBeaten = bossResult?.beaten;
           return (
             <button key={d.day} onClick={() => {
-              if (!canAccessDay(d.day)) { setSection('pricing'); return; }
+              if (!canAccessDay(d.day)) { setUpsellFeature(`Day ${d.day}: ${d.theme}`); return; }
               if (section !== 'verbal') setSection('verbal');
               setCurrentDay(d.day); setTab('vocab');
             }} style={{
@@ -499,7 +501,7 @@ export default function App() {
           const locked = !canAccessDay(item.id);
           return (
             <button key={item.id} onClick={() => {
-              if (locked) { setSection('pricing'); return; }
+              if (locked) { setUpsellFeature(item.label); return; }
               if (section !== 'verbal') setSection('verbal');
               setCurrentDay(item.id); setTab(item.tab);
             }} style={{
@@ -559,11 +561,14 @@ export default function App() {
       </div>
       <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
         {[
-          { id: 'mock',     label: '🧮 Mock Exam' },
-          { id: 'formulas', label: '📐 Formulas' },
-          { id: 'progress', label: '📊 Progress', green: true },
+          { id: 'mock',     label: '🧮 Mock Exam', locked: !isPro() },
+          { id: 'formulas', label: '📐 Formulas', locked: false },
+          { id: 'progress', label: '📊 Progress', green: true, locked: false },
         ].map(item => (
-          <button key={item.id} onClick={() => goQuant(item.id)} style={{
+          <button key={item.id} onClick={() => {
+            if (item.locked) setUpsellFeature('Unlimited Mock Exams');
+            else goQuant(item.id);
+          }} style={{
             width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8,
             border: 'none', cursor: 'pointer', transition: 'all 0.15s', minHeight: 44,
             background: quantPage === item.id ? (item.green ? C.green + '33' : C.gold + '22') : 'transparent',
@@ -947,7 +952,7 @@ export default function App() {
           <span className="icon">📐</span>Quant
         </button>
         <button className={section === 'awa' ? 'active' : ''} onClick={() => {
-          if (!isPro()) { setSection('pricing'); return; }
+          if (!isPro()) { setUpsellFeature('Analytical Writing (AWA)'); return; }
           setSection('awa');
         }}>
           <span className="icon">✍️</span>Writing
@@ -1005,12 +1010,17 @@ export default function App() {
           onClose={() => setShowDailySession(false)}
         />
       )}
+
+      {/* Pro Upsell Modal */}
+      {upsellFeature && (
+        <ProUpsell featureName={upsellFeature} onClose={() => setUpsellFeature(null)} />
+      )}
     </motion.div>
   );
 }
 
 // ─── QUANT LANDING ────────────────────────────────────────────────────────────
-function QuantLanding({ onSelectTopic, scores }) {
+function QuantLanding({ onSelectTopic, onUpsell, scores }) {
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '20px 0' }}>
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -1029,7 +1039,10 @@ function QuantLanding({ onSelectTopic, scores }) {
           const sc = scores[t.id];
           const locked = !isPro() && t.id !== 'arithmetic';
           return (
-            <button key={t.id} onClick={() => onSelectTopic(t.id)} className="glass-hover" style={{
+            <button key={t.id} onClick={() => {
+              if (locked) onUpsell(`Quant: ${t.label}`);
+              else onSelectTopic(t.id);
+            }} className="glass-hover" style={{
               background: `linear-gradient(135deg, ${C.card}, ${C.bg})`, border: `1px solid ${C.border}`, borderRadius: 16,
               padding: '24px 20px', cursor: 'pointer', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               borderLeft: `4px solid ${locked ? C.textDim : C.gold}`, textAlign: 'left',

@@ -350,6 +350,210 @@ function Recommendations({ estV, estQ, avgV, avgQ, weakWords, streak, srStats, q
   );
 }
 
+// ─── Radar Chart ──────────────────────────────────────────────────────────────
+function RadarChart({ data }) {
+  const size = 280, cx = size / 2, cy = size / 2, r = 100;
+  const n = data.length;
+  const levels = [0.25, 0.5, 0.75, 1];
+
+  // Calculate vertex position for a given axis index and radius fraction
+  const getPoint = (i, frac) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    return [
+      cx + r * frac * Math.cos(angle),
+      cy + r * frac * Math.sin(angle),
+    ];
+  };
+
+  // Build polygon string for a given array of fractional values (0-1)
+  const polyPoints = (values) =>
+    values.map((v, i) => getPoint(i, v).join(',')).join(' ');
+
+  // Grid polygons
+  const gridPolygons = levels.map(l =>
+    polyPoints(Array(n).fill(l))
+  );
+
+  // Data polygon
+  const dataValues = data.map(d => Math.min(Math.max(d.value / 100, 0), 1));
+  const dataPoints = polyPoints(dataValues);
+
+  // Dominant color from the highest-value axis
+  const maxIdx = dataValues.reduce((best, v, i) => v > dataValues[best] ? i : best, 0);
+  const dominantColor = data[maxIdx]?.color || C.gold;
+
+  // Unique ID for the gradient
+  const gradId = 'radarGrad';
+  const glowId = 'radarGlow';
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: 'visible' }}>
+      <defs>
+        <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={dominantColor} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={dominantColor} stopOpacity="0.08" />
+        </radialGradient>
+        <filter id={glowId} x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feFlood floodColor={dominantColor} floodOpacity="0.45" result="color" />
+          <feComposite in2="blur" in="color" operator="in" result="glow" />
+          <feMerge>
+            <feMergeNode in="glow" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* Concentric grid polygons */}
+      {gridPolygons.map((pts, i) => (
+        <polygon
+          key={i}
+          points={pts}
+          fill="none"
+          stroke={C.border}
+          strokeWidth={i === gridPolygons.length - 1 ? 1.2 : 0.6}
+          strokeDasharray={i < gridPolygons.length - 1 ? '3,3' : 'none'}
+          opacity={0.7}
+        />
+      ))}
+
+      {/* Axis lines */}
+      {data.map((_, i) => {
+        const [ex, ey] = getPoint(i, 1);
+        return <line key={i} x1={cx} y1={cy} x2={ex} y2={ey} stroke={C.border} strokeWidth={0.6} opacity={0.5} />;
+      })}
+
+      {/* Data fill polygon */}
+      <polygon
+        points={dataPoints}
+        fill={`url(#${gradId})`}
+        stroke={dominantColor}
+        strokeWidth={2}
+        strokeLinejoin="round"
+        filter={`url(#${glowId})`}
+        style={{ transition: 'all 0.6s ease' }}
+      />
+
+      {/* Data point dots */}
+      {dataValues.map((v, i) => {
+        const [px, py] = getPoint(i, v);
+        return (
+          <circle
+            key={i}
+            cx={px} cy={py} r={4}
+            fill={data[i].color}
+            stroke={C.bg}
+            strokeWidth={1.5}
+            style={{ filter: `drop-shadow(0 0 3px ${data[i].color})` }}
+          />
+        );
+      })}
+
+      {/* Axis labels */}
+      {data.map((d, i) => {
+        const [lx, ly] = getPoint(i, 1.22);
+        const pct = Math.round(d.value);
+        return (
+          <g key={i}>
+            <text
+              x={lx} y={ly - 6}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill={C.textMid}
+              fontSize={11}
+              fontWeight={600}
+              fontFamily="Georgia,serif"
+            >
+              {d.label}
+            </text>
+            <text
+              x={lx} y={ly + 8}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill={d.color}
+              fontSize={10}
+              fontWeight={700}
+              fontFamily="Courier New,monospace"
+            >
+              {pct}%
+            </text>
+          </g>
+        );
+      })}
+
+      {/* Center dot */}
+      <circle cx={cx} cy={cy} r={2} fill={C.textDim} opacity={0.4} />
+    </svg>
+  );
+}
+
+// ─── Pacing Card ──────────────────────────────────────────────────────────────
+function PacingCard({ avgTimePerQ, targetTime }) {
+  const hasData = avgTimePerQ !== null && avgTimePerQ !== undefined;
+  const target = targetTime || 105;
+  const ratio = hasData ? Math.min(target / avgTimePerQ, 1.5) : 0;
+  const isFast = hasData && avgTimePerQ <= target;
+
+  const formatTime = (s) => {
+    if (s === null || s === undefined) return '--:--';
+    const m = Math.floor(s / 60);
+    const sec = Math.round(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
+
+  const barColor = !hasData ? C.textDim : isFast ? C.greenBr : avgTimePerQ > target * 1.3 ? C.red : C.gold;
+  const barPct = !hasData ? 0 : Math.min(ratio * 100, 100);
+  const statusText = !hasData ? 'No data yet' : isFast ? 'Ahead of pace' : 'Work on speed';
+  const emoji = !hasData ? '⏳' : isFast ? '⚡' : '🐢';
+
+  return (
+    <div style={{
+      background: `linear-gradient(135deg, ${barColor}0A, ${barColor}04)`,
+      border: `1px solid ${barColor}22`,
+      borderRadius: 12, padding: '16px 18px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 22 }}>{emoji}</span>
+          <div>
+            <p style={{ color: C.text, fontSize: 13, fontWeight: 700, margin: 0 }}>{statusText}</p>
+            <p style={{ color: C.textDim, fontSize: 10, margin: '2px 0 0' }}>Your avg vs target pace</p>
+          </div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <p style={{ fontFamily: 'Courier New,monospace', fontSize: 22, fontWeight: 700, color: barColor, margin: 0, lineHeight: 1 }}>
+            {formatTime(avgTimePerQ)}
+          </p>
+          <p style={{ color: C.textDim, fontSize: 10, margin: '2px 0 0' }}>per question</p>
+        </div>
+      </div>
+
+      {/* Pace bar */}
+      <div style={{ position: 'relative', height: 10, background: C.border, borderRadius: 5, overflow: 'hidden' }}>
+        <div style={{
+          height: '100%',
+          width: `${barPct}%`,
+          background: `linear-gradient(90deg, ${barColor}88, ${barColor})`,
+          borderRadius: 5,
+          transition: 'width 0.6s ease',
+          boxShadow: hasData ? `0 0 8px ${barColor}44` : 'none',
+        }} />
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+        <span style={{ color: C.textDim, fontSize: 9 }}>Slower</span>
+        <span style={{
+          color: C.gold, fontSize: 9, fontWeight: 700,
+          position: 'relative',
+        }}>
+          Target {formatTime(target)}
+        </span>
+        <span style={{ color: C.textDim, fontSize: 9 }}>Faster</span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 function Section({ title, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -389,6 +593,14 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
   const daysStudied = Object.keys(dayScores).length + Object.keys(quantScores).length;
   const totalPracticed = Object.values(dayScores).reduce((a, s) => a + (s.total || 0), 0)
     + Object.values(quantScores).reduce((a, s) => a + (s.total || 0), 0);
+
+  const radarData = [
+    { label: 'Verbal', value: avgV, color: C.blue },
+    { label: 'Arithmetic', value: quantScores.arithmetic?.total > 0 ? Math.round((quantScores.arithmetic.correct / quantScores.arithmetic.total) * 100) : 0, color: C.gold },
+    { label: 'Algebra', value: quantScores.algebra?.total > 0 ? Math.round((quantScores.algebra.correct / quantScores.algebra.total) * 100) : 0, color: C.greenBr },
+    { label: 'Geometry', value: quantScores.geometry?.total > 0 ? Math.round((quantScores.geometry.correct / quantScores.geometry.total) * 100) : 0, color: '#9B6BDB' },
+    { label: 'Data', value: quantScores.data?.total > 0 ? Math.round((quantScores.data.correct / quantScores.data.total) * 100) : 0, color: C.red },
+  ];
 
   return (
     <div style={{ maxWidth: 820, margin: '0 auto', paddingBottom: 40, position: 'relative' }}>
@@ -468,6 +680,22 @@ export default function ProgressDashboard({ dayScores, quantScores, weakWords, c
               </div>
             </>
           )}
+        </div>
+      </Section>
+
+      {/* Mastery Radar */}
+      <Section title="🕸️ Mastery Radar" defaultOpen={true}>
+        <div style={{ paddingTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <RadarChart data={radarData} />
+          <p style={{ color: C.textDim, fontSize: 11, textAlign: 'center', marginTop: 8 }}>Accuracy across all 5 skill areas</p>
+        </div>
+      </Section>
+
+      {/* Pacing Analytics */}
+      <Section title="⏱️ Pacing Analytics" defaultOpen={true}>
+        <div style={{ paddingTop: 14 }}>
+          <PacingCard avgTimePerQ={null} targetTime={105} />
+          <p style={{ color: C.textDim, fontSize: 11, marginTop: 8 }}>Based on practice session performance. Target: 1:45/question for 170-level.</p>
         </div>
       </Section>
 
