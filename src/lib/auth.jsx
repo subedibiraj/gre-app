@@ -82,7 +82,12 @@ export function AuthProvider({ children }) {
 
   const handleSignOut = async () => {
     try {
-      if (user) await pushProgressToCloud(user.id);
+      if (user) {
+        await Promise.race([
+          pushProgressToCloud(user.id),
+          new Promise(r => setTimeout(r, 1000)) // 1 second timeout
+        ]);
+      }
     } catch (e) {
       console.warn('Failed to push progress before signout', e);
     }
