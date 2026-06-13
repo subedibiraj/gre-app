@@ -59,6 +59,12 @@ MCM format (2 questions, ids 16-17, select all that apply):
 NE format (3 questions, ids 18-20):
 {"id":18,"q":"...","answer":"42","unit":"","topic":"Geometry","explain":"APPROACH:...\\nSOLUTION:...\\nWHY CORRECT:...\\nCOMMON ERRORS:...\\nTRAP:..."}
 
+CRITICAL DATA INTERPRETATION RULES:
+For exactly 2 questions in the 'Data Analysis' topic, include a "chart" object representing a graph. The question text MUST reference this chart.
+Chart Format:
+"chart": { "title": "Store Revenue 2023", "type": "bar", "xAxisKey": "month", "series": [{"key": "sales", "name": "Sales ($K)"}], "data": [{"month": "Jan", "sales": 120}, {"month": "Feb", "sales": 150}, {"month": "Mar", "sales": 110}] }
+Type must be "bar", "line", or "pie".
+
 RETURN EXACTLY: {"qc":[8],"mc":[7],"mcm":[2],"ne":[3]}`;
 
     const response = await ai.models.generateContent({

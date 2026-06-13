@@ -136,7 +136,12 @@ Format:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RETURN EXACTLY: {"qc":[5],"mc":[3],"ne":[2]}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${topicId === 'data' ? `CRITICAL DATA INTERPRETATION RULES:
+For exactly 2 questions, include a "chart" object representing a graph. The question text MUST reference this chart.
+Chart Format:
+"chart": { "title": "Store Revenue 2023", "type": "bar", "xAxisKey": "month", "series": [{"key": "sales", "name": "Sales ($K)"}], "data": [{"month": "Jan", "sales": 120}, {"month": "Feb", "sales": 150}, {"month": "Mar", "sales": 110}] }
+Type must be "bar", "line", or "pie".` : ''}`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',

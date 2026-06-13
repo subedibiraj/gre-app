@@ -8,6 +8,7 @@ import { recordQuantResults, saveLastSessionWrong, getLastSessionWrong, getWeakS
 import Tag from '../../components/Tag';
 import Timer from '../../components/Timer';
 import { playPop, playCorrect, playWrong, hapticTap, hapticCorrect, hapticWrong } from '../../lib/audio';
+import ChartRenderer from '../../components/ChartRenderer';
 
 // ─── Shared style helpers ──────────────────────────────────────────────────────
 const card  = (extra = {}) => ({ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: '18px 20px', marginBottom: 14, transition: 'all 0.2s', ...extra });
@@ -156,6 +157,7 @@ function MCCard({ q, num, answer, onAnswer, checked, timed }) {
         {checked && <span style={stag(correct ? C.green : wrong ? C.red : C.textDim)}>{correct ? '✓ Correct' : wrong ? '✗ Wrong' : '— Skipped'}</span>}
         {timed && !checked && <div style={{ marginLeft: 'auto' }}><Timer key={q.id} seconds={120} onTimeUp={() => onAnswer('__timeout__')} label="⏱" /></div>}
       </div>
+      {q.chart && <div style={{ marginBottom: 16 }}><ChartRenderer data={q.chart} type={q.chart.type || 'bar'} height={240} /></div>}
       <p style={{ color: C.text, fontSize: 14, lineHeight: 1.9, marginBottom: 14, fontFamily: 'Georgia,serif' }}>{q.q}</p>
       <div style={{ display: 'grid', gap: 6 }}>
         {q.opts.map(o => {
@@ -199,6 +201,7 @@ function NECard({ q, num, answer, onAnswer, checked }) {
         {q.topic && <span style={stag(C.textDim)}>{q.topic}</span>}
         {checked && <span style={stag(isCorrect ? C.green : isWrong ? C.red : C.textDim)}>{isCorrect ? '✓ Correct' : isWrong ? '✗ Wrong' : '— Skipped'}</span>}
       </div>
+      {q.chart && <div style={{ marginBottom: 16 }}><ChartRenderer data={q.chart} type={q.chart.type || 'bar'} height={240} /></div>}
       <p style={{ color: C.text, fontSize: 14, lineHeight: 1.9, marginBottom: 14, fontFamily: 'Georgia,serif' }}>{q.q}</p>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         <input type="text" value={answer || ''} onChange={e => !checked && onAnswer(e.target.value)}

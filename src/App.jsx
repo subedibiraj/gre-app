@@ -22,7 +22,6 @@ import { addXP, checkAchievements, XP_VALUES } from './engine/xp';
 import { apiFetch, getGeminiKey } from './lib/gemini';
 import VocabView from './phases/VocabView';
 import ScoreOverview from './phases/ScoreOverview';
-import ProgressDashboard from './phases/ProgressDashboard';
 import DailyRoadmap from './phases/DailyRoadmap';
 import WordRelations from './phases/WordRelations';
 import RootsModule from './phases/RootsModule';
@@ -42,7 +41,10 @@ const QuantMock = lazy(() => import('./phases/quant/QuantMock'));
 const BossChallenge = lazy(() => import('./components/BossChallenge'));
 const DailySession = lazy(() => import('./components/DailySession'));
 const AdminDashboard = lazy(() => import('./phases/AdminDashboard'));
-import AwaView from './phases/AwaView';
+const AwaView = lazy(() => import('./phases/AwaView'));
+const RcLanding = lazy(() => import('./phases/RcLanding'));
+const ProgressDashboard = lazy(() => import('./phases/ProgressDashboard'));
+
 import ScoreGraph, { recordActivity } from './components/ScoreGraph';
 import Icon from './components/Icon';
 
@@ -376,6 +378,7 @@ export default function App() {
   const verbalContent = currentDay === -1 ? <MockExam /> :
     currentDay === -2 ? <WordRelations day={DAYS.length} /> :
     currentDay === -3 ? <RootsModule /> :
+    currentDay === -4 ? <RcLanding onUpsell={setUpsellFeature} /> :
     currentDay === 0  ? <DailyRoadmap currentDay={currentDay} onNavigate={navigate} /> :
     <>
       {/* Tab bar */}
@@ -493,6 +496,7 @@ export default function App() {
       {/* Bottom nav items */}
       <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
         {[
+          { id: -4,  label: 'Reading Comp', icon: <BookOpen size={16} />,   tab: 'rc' },
           { id: -1,  label: 'Mock Exam',    icon: <Target size={16} />,     tab: 'mock' },
           { id: -2,  label: 'Word Map',     icon: <Network size={16} />,    tab: 'relations' },
           { id: -3,  label: 'Roots',        icon: <Sprout size={16} />,     tab: 'roots' },

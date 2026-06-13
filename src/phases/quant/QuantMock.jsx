@@ -4,6 +4,7 @@ import C from '../../theme';
 import { recordQuantResults, saveLastSessionWrong, getQuantWeakAreas } from '../../engine/QuantErrorEngine';
 import { recordScoreSnapshot } from '../../components/ScoreGraph';
 import Tag from '../../components/Tag';
+import ChartRenderer from '../../components/ChartRenderer';
 
 // ─── Exam Timer ────────────────────────────────────────────────────────────────
 function ExamTimer({ totalSeconds, onTimeUp, active, onRef }) {
@@ -523,6 +524,7 @@ export default function QuantMock() {
                 <button onClick={() => toggleFlag(navId)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: flagged.has(navId) ? C.gold : C.textDim, cursor: 'pointer', fontSize: 14 }}>⚑</button>
               </div>
               {q.info && <p style={{ color: C.textMid, fontSize: 12, background: C.surface, padding: '6px 10px', borderRadius: 6, marginBottom: 10 }}>{q.info}</p>}
+              {q.chart && <div style={{ marginBottom: 16 }}><ChartRenderer data={q.chart} type={q.chart.type || 'bar'} height={240} /></div>}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px 1fr', gap: 0, marginBottom: 12, alignItems: 'stretch' }}>
                 <div style={{ background: `${C.blue}12`, borderRadius: '8px 0 0 8px', padding: '12px 14px', textAlign: 'center' }}>
                   <p style={{ color: C.blue, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 4 }}>Qty A</p>
@@ -574,6 +576,7 @@ export default function QuantMock() {
                 {q.topic && <span style={{ color: C.textDim, fontSize: 10 }}>{q.topic}</span>}
                 <button onClick={() => toggleFlag(navId)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: flagged.has(navId) ? C.gold : C.textDim, cursor: 'pointer', fontSize: 14 }}>⚑</button>
               </div>
+              {q.chart && <div style={{ marginBottom: 16 }}><ChartRenderer data={q.chart} type={q.chart.type || 'bar'} height={240} /></div>}
               <p style={{ color: C.text, fontSize: 13, lineHeight: 1.8, marginBottom: 10, fontFamily: 'Georgia,serif' }}>{q.q}</p>
               <div style={{ display: 'grid', gap: 5 }}>
                 {q.opts.map(o => {
@@ -606,6 +609,7 @@ export default function QuantMock() {
                 {q.topic && <span style={{ color: C.textDim, fontSize: 10 }}>{q.topic}</span>}
                 <button onClick={() => toggleFlag(navId)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: flagged.has(navId) ? C.gold : C.textDim, cursor: 'pointer', fontSize: 14 }}>⚑</button>
               </div>
+              {q.chart && <div style={{ marginBottom: 16 }}><ChartRenderer data={q.chart} type={q.chart.type || 'bar'} height={240} /></div>}
               <p style={{ color: C.text, fontSize: 13, lineHeight: 1.8, marginBottom: 12, fontFamily: 'Georgia,serif' }}>{q.q}</p>
               <input type="text" value={neA[q.id] || ''} onChange={e => setNEA(p => ({ ...p, [q.id]: e.target.value }))}
                 placeholder="Type answer" style={{
