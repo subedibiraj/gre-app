@@ -97,7 +97,7 @@ export function AuthProvider({ children }) {
     const SYNC_KEYS = [
       'gre_dayScores', 'gre_quantScores', 'gre_weakWords',
       'gre_spacedRep', 'gre_streak', 'gre_xp', 'gre_achievements',
-      'gre_scoreHistory', 'gre_testDate', 'gre_dailyGoal', 'gre_onboarded', 'gre_plan'
+      'gre_scoreHistory', 'gre_testDate', 'gre_dailyGoal', 'gre_plan'
     ];
     SYNC_KEYS.forEach(k => localStorage.removeItem(k));
     

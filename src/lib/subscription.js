@@ -46,8 +46,8 @@ function saveLimits(data) {
 
 // ─── Feature limits ───────────────────────────────────────────────────────────
 export const FREE_LIMITS = {
-  maxDay: 7,                // Days 1-7 vocabulary
-  aiGenerationsPerDay: 3,   // 3 AI practice sessions/day
+  maxDay: 3,                // Days 1-3 vocabulary
+  aiGenerationsPerDay: 1,   // 1 AI practice sessions/day
   mockExamsPerMonth: 1,     // 1 mock/month
 };
 

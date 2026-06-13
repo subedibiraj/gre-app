@@ -13,10 +13,11 @@ export default function Pricing() {
       period: 'forever',
       desc: 'Build your foundational vocabulary.',
       features: [
-        'Days 1–7 vocabulary (100 words)',
+        'Days 1–3 vocabulary',
         'Basic word quiz & spaced repetition',
         '1 mock exam per month',
-        '3 AI tutor sessions per day',
+        '1 AI tutor session per day',
+        'Arithmetic quant topic',
       ],
       button: 'Current Plan',
       outline: true,
@@ -90,12 +91,35 @@ export default function Pricing() {
               <span style={{ color: C.textDim, fontSize: 14 }}>{p.period}</span>
             </div>
 
-            <button style={{
-              width: '100%', padding: 14, borderRadius: 10, border: 'none', cursor: p.outline ? 'default' : 'pointer',
-              background: p.outline ? C.bg : `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
-              color: p.outline ? C.textMid : '#07090F', fontWeight: 700, fontSize: 15,
-              marginBottom: 32, boxShadow: p.outline ? 'none' : `0 4px 16px ${C.gold}44`,
-            }}>
+            <button 
+              onClick={async () => {
+                if (p.outline) return; // 'Current Plan' button
+                
+                // If they are upgrading, call checkout redirect from subscription.js
+                const { checkoutRedirect } = await import('../lib/subscription.js');
+                const { supabase } = await import('../lib/supabase.js');
+                
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session?.user) {
+                  // User needs to be signed in to purchase
+                  window.showToast?.('Please sign in to upgrade to Pro', 'error');
+                  return;
+                }
+                
+                try {
+                  await checkoutRedirect(billing, session.user.id, session.user.email);
+                } catch (e) {
+                  window.showToast?.(e.message || 'Failed to initiate checkout', 'error');
+                }
+              }}
+              style={{
+                width: '100%', padding: 14, borderRadius: 10, border: 'none', cursor: p.outline ? 'default' : 'pointer',
+                background: p.outline ? C.bg : `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
+                color: p.outline ? C.textMid : '#07090F', fontWeight: 700, fontSize: 15,
+                marginBottom: 32, boxShadow: p.outline ? 'none' : `0 4px 16px ${C.gold}44`,
+              }}
+            >
               {p.button}
             </button>
 
