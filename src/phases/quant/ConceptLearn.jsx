@@ -161,18 +161,18 @@ function StrategyCard({ strategy }) {
       {open && (
         <div style={{ padding:'0 20px 20px', animation:'fadeIn 0.25s ease-out' }}>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, marginBottom: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
             {/* When */}
-            <div style={{ background:`linear-gradient(135deg, ${C.gold}12, transparent)`, borderRadius:10, padding:'14px', border:`1px solid ${C.gold}22` }}>
-              <p style={{ color:C.gold, fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', margin:'0 0 8px', display:'flex', alignItems:'center', gap:6 }}>
-                <span style={{ fontSize:14 }}>🎯</span> Trigger
+            <div style={{ background:`linear-gradient(135deg, ${C.gold}12, transparent)`, borderRadius:10, padding:'12px 14px', border:`1px solid ${C.gold}22` }}>
+              <p style={{ color:C.gold, fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', margin:'0 0 6px', display:'flex', alignItems:'center', gap:6 }}>
+                <span style={{ fontSize:14 }}>🎯</span> When to Use
               </p>
               <p style={{ color:C.text, fontSize:13, margin:0, lineHeight:1.5 }}>{strategy.when}</p>
             </div>
 
             {/* How */}
-            <div style={{ background:`linear-gradient(135deg, ${C.blue}12, transparent)`, borderRadius:10, padding:'14px', border:`1px solid ${C.blue}22` }}>
-              <p style={{ color:C.blue, fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', margin:'0 0 8px', display:'flex', alignItems:'center', gap:6 }}>
+            <div style={{ background:`linear-gradient(135deg, ${C.blue}12, transparent)`, borderRadius:10, padding:'12px 14px', border:`1px solid ${C.blue}22` }}>
+              <p style={{ color:C.blue, fontSize:10, fontWeight:800, textTransform:'uppercase', letterSpacing:'0.1em', margin:'0 0 6px', display:'flex', alignItems:'center', gap:6 }}>
                 <span style={{ fontSize:14 }}>🛠️</span> The Playbook
               </p>
               <p style={{ color:C.text, fontSize:13, margin:0, lineHeight:1.5 }}>{strategy.how}</p>
