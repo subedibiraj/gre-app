@@ -205,9 +205,7 @@ export const DAYS = [
       "Fabricate (act of creating the false thing) vs Spurious (the quality of being fake)",
       "Sophistry (speech/reasoning) · Chicanery (scheme/plan) · Subterfuge (escape trick)",
       "Ingenious (clever) vs Ingenuous (naive) — one letter, constant GRE trap",
-      "People-only words: mendacious · disingenuous · perfidious — never use to describe objects",
-      ", ",
-      ", ",
+      "People-only words: mendacious · disingenuous · perfidious — never use to describe objects"
     ],
     seStrategy: [
       "SE twins for evasive speech: equivocate ↔ prevaricate — both = avoid direct truth. Fine as SE twins.",
