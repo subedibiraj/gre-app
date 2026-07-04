@@ -102,20 +102,20 @@ SECTION 1: VIC — 5 QUESTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${getDifficultyRules(vicLevel)}
 
-VIC format — each question is a fill-in-the-blank sentence that tests the word's SPECIFIC GRE meaning:
+VIC format — each question is a complete sentence that CONTAINS the target word. The options must be DEFINITIONS or SYNONYM PHRASES.
 {
   "id": 1,
   "word": "TACITURN",
-  "sentence": "The ambassador, long known for his ___ demeanor, surprised observers when he delivered a two-hour speech without notes.",
+  "sentence": "The ambassador, long known for his taciturn demeanor, surprised observers when he delivered a two-hour speech without notes.",
   "answer": "B",
   "opts": [
-    {"l":"A","t":"verbose"},
-    {"l":"B","t":"taciturn"},
-    {"l":"C","t":"bombastic"},
-    {"l":"D","t":"diffident"},
-    {"l":"E","t":"loquacious"}
+    {"l":"A","t":"excessively talkative or wordy"},
+    {"l":"B","t":"habitually silent or reserved"},
+    {"l":"C","t":"pompous and grandiloquent"},
+    {"l":"D","t":"shy and lacking self-confidence"},
+    {"l":"E","t":"hostile and argumentative"}
   ],
-  "explain": "APPROACH: Match the context clue...\nSOLUTION: 'surprised observers' signals contrast — the blank must mean 'quiet/reserved'...\nWHY CORRECT: Taciturn means habitually silent, which makes the speech a genuine surprise.\nWRONG ANSWERS: A-verbose means wordy (no contrast). C-bombastic means inflated speech. D-diffident means shy but about confidence not speech. E-loquacious means talkative (same issue as A).\nTRAP: Confusing taciturn (silent by nature) with reticent (reluctant to speak on specific topic)."
+  "explain": "APPROACH: Look at the context clue 'surprised observers when he delivered a two-hour speech'.\nSOLUTION: The word must mean the opposite of delivering long speeches, so 'habitually silent' fits perfectly.\nWHY CORRECT: Taciturn means reserved or saying little.\nWRONG ANSWERS: A is the opposite. C describes the speech, not the demeanor. D is related to shyness, not necessarily silence. E is unrelated."
 }
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

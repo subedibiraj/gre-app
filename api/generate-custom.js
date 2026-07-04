@@ -54,7 +54,7 @@ ${EXPLANATION_FORMAT}`;
       
       vUser += `${getDifficultyRules(level)}\n\n`;
       
-      if (vvic > 0) vUser += `GENERATE ${vvic} VIC (Vocabulary-in-Context) questions.\nFormat:\n{"id": 1, "type":"vic", "word": "...", "sentence": "...", "answer": "B", "opts": [{"l":"A","t":"..."},...], "explain": "..."}\n\n`;
+      if (vvic > 0) vUser += `GENERATE ${vvic} VIC (Vocabulary-in-Context) questions.\nFormat:\n{"id": 1, "type":"vic", "word": "TACITURN", "sentence": "The ambassador, long known for his taciturn demeanor, surprised observers when he delivered a two-hour speech.", "answer": "B", "opts": [{"l":"A","t":"excessively talkative"}, {"l":"B","t":"habitually silent or reserved"}], "explain": "..."}\n\n`;
       if (vtc > 0) vUser += `GENERATE ${vtc} TC (Text Completion) questions.\nFormat for single blank:\n{"id": 1, "type":"tc", "stem": "...", "blanks": [{"label":"Blank 1","answer":"C","opts":[{"l":"A","t":"..."},...]}], "explain": "..."}\n\n`;
       if (vse > 0) vUser += `GENERATE ${vse} SE (Sentence Equivalence) questions.\nFormat:\n{"id": 1, "type":"se", "stem": "...", "answers": ["A","C"], "opts": [{"l":"A","t":"..."},...], "explain": "..."}\n\n`;
       if (vrc > 0) vUser += `GENERATE ${vrc} RC (Reading Comprehension) passages (each with 3 questions).\nFormat:\n{"id": 1, "type":"rc", "topic": "...", "passage": "...", "questions": [{"id": 1, "type": "primary_purpose", "q": "...", "answer": "B", "opts": [{"l":"A","t":"..."},...], "explain": "..."}]}\n\n`;

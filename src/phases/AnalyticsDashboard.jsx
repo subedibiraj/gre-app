@@ -2,7 +2,22 @@ import React, { useMemo } from 'react';
 import C from '../theme';
 import { getOverallStats, getScoreHistory } from '../engine/history';
 import { getQuantWeakAreas } from '../engine/QuantErrorEngine';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip as RechartsTooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+
+function scalePct(pct) {
+  const p = Math.min(Math.max(pct, 0), 1);
+  const bands = [
+    [0.00, 0.10, 130, 133], [0.10, 0.18, 133, 136], [0.18, 0.26, 136, 139],
+    [0.26, 0.34, 139, 142], [0.34, 0.42, 142, 145], [0.42, 0.50, 145, 148],
+    [0.50, 0.56, 148, 151], [0.56, 0.62, 151, 153], [0.62, 0.68, 153, 155],
+    [0.68, 0.73, 155, 157], [0.73, 0.78, 157, 159], [0.78, 0.82, 159, 161],
+    [0.82, 0.86, 161, 163], [0.86, 0.90, 163, 165], [0.90, 0.93, 165, 167],
+    [0.93, 0.96, 167, 168], [0.96, 0.99, 168, 169], [0.99, 1.01, 169, 170],
+  ];
+  const band = bands.find(([lo, hi]) => p >= lo && p < hi) || bands[bands.length - 1];
+  const t = band[1] === band[0] ? 1 : (p - band[0]) / (band[1] - band[0]);
+  return Math.round(band[2] + t * (band[3] - band[2]));
+}
 
 export default function AnalyticsDashboard() {
   const stats = getOverallStats();
@@ -25,6 +40,34 @@ export default function AnalyticsDashboard() {
   }, [stats.topicAccuracy]);
 
   const hasData = history.length > 0;
+
+  // Calculate ETS Prediction
+  const { vEst, qEst } = useMemo(() => {
+    try {
+      const vDays = JSON.parse(localStorage.getItem('gre_dayScores') || '{}');
+      const qDays = JSON.parse(localStorage.getItem('gre_quantScores') || '{}');
+      const vArr = Object.values(vDays).filter(s => s.total > 0);
+      const qArr = Object.values(qDays).filter(s => s.total > 0);
+      const avgV = vArr.length ? vArr.reduce((a, s) => a + s.correct / s.total, 0) / vArr.length : 0;
+      const avgQ = qArr.length ? qArr.reduce((a, s) => a + s.correct / s.total, 0) / qArr.length : 0;
+      
+      const vQs = vArr.reduce((a, s) => a + s.total, 0);
+      const qQs = qArr.reduce((a, s) => a + s.total, 0);
+
+      const vBase = avgV > 0 ? scalePct(avgV) : 130;
+      const qBase = avgQ > 0 ? scalePct(avgQ) : 130;
+      
+      const vMargin = vQs > 0 ? Math.max(1, 4 - Math.floor(vQs / 40)) : 4;
+      const qMargin = qQs > 0 ? Math.max(1, 4 - Math.floor(qQs / 40)) : 4;
+
+      return {
+        vEst: vQs > 0 ? [Math.max(130, vBase - vMargin), Math.min(170, vBase + vMargin)] : null,
+        qEst: qQs > 0 ? [Math.max(130, qBase - qMargin), Math.min(170, qBase + qMargin)] : null,
+      };
+    } catch {
+      return { vEst: null, qEst: null };
+    }
+  }, [history]);
 
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', paddingBottom: 80 }}>
@@ -102,10 +145,62 @@ export default function AnalyticsDashboard() {
               )}
             </div>
 
+            {/* Score Predictor */}
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: '20px' }}>
+              <h3 style={{ color: C.text, fontSize: 15, margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: C.gold }}>🔮</span> ETS Score Predictor
+              </h3>
+              <p style={{ color: C.textDim, fontSize: 12, margin: '0 0 20px', lineHeight: 1.5 }}>
+                Estimated range based on ETS calibrated mock exams and question difficulty.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ color: C.blue, fontSize: 13, fontWeight: 700 }}>Verbal Reasoning</span>
+                    <span style={{ fontFamily: 'Courier New,monospace', color: C.blue, fontWeight: 700 }}>{vEst ? `${vEst[0]} - ${vEst[1]}` : 'Need Data'}</span>
+                  </div>
+                  <div style={{ height: 8, background: C.surface, borderRadius: 4, overflow: 'hidden', border: `1px solid ${C.border}` }}>
+                    {vEst && (
+                      <div style={{ 
+                        height: '100%', 
+                        width: `${((vEst[1] - vEst[0]) / 40) * 100}%`,
+                        marginLeft: `${((vEst[0] - 130) / 40) * 100}%`,
+                        background: `linear-gradient(90deg, ${C.blue}44, ${C.blue}, ${C.blue}44)`,
+                        borderRadius: 4
+                      }} />
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ color: C.greenBr, fontSize: 13, fontWeight: 700 }}>Quantitative</span>
+                    <span style={{ fontFamily: 'Courier New,monospace', color: C.greenBr, fontWeight: 700 }}>{qEst ? `${qEst[0]} - ${qEst[1]}` : 'Need Data'}</span>
+                  </div>
+                  <div style={{ height: 8, background: C.surface, borderRadius: 4, overflow: 'hidden', border: `1px solid ${C.border}` }}>
+                    {qEst && (
+                      <div style={{ 
+                        height: '100%', 
+                        width: `${((qEst[1] - qEst[0]) / 40) * 100}%`,
+                        marginLeft: `${((qEst[0] - 130) / 40) * 100}%`,
+                        background: `linear-gradient(90deg, ${C.greenBr}44, ${C.greenBr}, ${C.greenBr}44)`,
+                        borderRadius: 4
+                      }} />
+                    )}
+                  </div>
+                </div>
+                <div style={{ marginTop: 12, paddingTop: 16, borderTop: `1px solid ${C.border}`, textAlign: 'center' }}>
+                  <span style={{ color: C.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Total Estimate</span>
+                  <p style={{ fontFamily: 'Georgia,serif', fontSize: 32, margin: '4px 0 0', color: C.text }}>
+                    {vEst && qEst ? `${vEst[0] + qEst[0]} - ${vEst[1] + qEst[1]}` : '—'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Pacing Stats */}
             <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: '20px' }}>
               <h3 style={{ color: C.text, fontSize: 15, margin: '0 0 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: C.blue }}>⏱</span> Time Per Question (Mocks)
+                <span style={{ color: C.textMid }}>⏱</span> Time Per Question (Mocks)
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 <PaceBar label="Quant Average" time={stats.avgQuantPace} target={105} color={C.greenBr} />

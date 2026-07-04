@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Shield, CalendarDays, Zap, Menu, WifiOff, LayoutDashboard, PenTool, Calculator, Target, Network, Sprout, Sun, Lock, Trophy, Swords, ShieldAlert, BookOpen } from 'lucide-react';
+import { Flame, Shield, CalendarDays, Zap, Menu, WifiOff, LayoutDashboard, PenTool, Calculator, Target, Network, Sprout, Sun, Lock, Trophy, Swords, ShieldAlert, BookOpen, Mountain } from 'lucide-react';
 import C from './theme';
 import { DAYS } from './data/days';
 import { QUANT_TOPICS } from './data/quant-topics';
@@ -31,6 +31,7 @@ import MorningDrill from './components/MorningDrill';
 import { getBossStatus, getBossResult, BOSSES } from './components/BossChallenge';
 import WeakWordBlitz from './components/WeakWordBlitz';
 import ProUpsell from './components/ProUpsell';
+import VocabMountain from './phases/VocabMountain';
 
 // ─── LAZY LOADED COMPONENTS (Code Splitting) ──────────────────────────────────
 const Onboarding = lazy(() => import('./phases/Onboarding'));
@@ -389,6 +390,7 @@ export default function App() {
     currentDay === -3 ? <RootsModule /> :
     currentDay === -4 ? <RcLanding onUpsell={setUpsellFeature} /> :
     currentDay === -5 ? <ErrorLogView /> :
+    currentDay === -6 ? <VocabMountain setUpsellFeature={setUpsellFeature} /> :
     currentDay === 0  ? <DailyRoadmap currentDay={currentDay} onNavigate={navigate} /> :
     <>
       {/* Tab bar */}
@@ -506,6 +508,7 @@ export default function App() {
       {/* Bottom nav items */}
       <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
         {[
+          { id: -6,  label: 'Vocab Mountain',icon: <Mountain size={16} />,  tab: 'mountain' },
           { id: -4,  label: 'Reading Comp', icon: <BookOpen size={16} />,   tab: 'rc' },
           { id: -5,  label: 'Error Log',    icon: <ShieldAlert size={16} />,tab: 'errorlog' },
           { id: -1,  label: 'Mock Exam',    icon: <Target size={16} />,     tab: 'mock' },

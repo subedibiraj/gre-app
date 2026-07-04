@@ -416,14 +416,15 @@ export default function MockExam() {
   const [timerActive, setTimerActive] = useState(false);
   const [etsMode, setEtsMode]     = useState(false);
 
-  const [tcAnswers, setTCAnswers] = useState({});
-  const [seAnswers, setSEAnswers] = useState({});
-  const [rcAnswers, setRCAnswers] = useState({});
+  const [currentSection, setCurrentSection] = useState(1);
+  const [section1Score, setSection1Score] = useState(null);
+  const [totalTimeTaken, setTotalTimeTaken] = useState(0);
+  const [section1Exam, setSection1Exam] = useState(null);
 
-  const EXAM_TIME = 30 * 60; // 30 minutes
+  const EXAM_TIME = currentSection === 1 ? 18 * 60 : 23 * 60;
 
   // ─── GENERATE ───────────────────────────────────────────────────────────────
-  const generate = useCallback(async () => {
+  const generate = useCallback(async (isSection2 = false, prevScore = null) => {
     setLoading(true);
     setError(null);
     setExam(null);
@@ -434,8 +435,13 @@ export default function MockExam() {
 
     try {
       const profile = getDifficultyProfile();
-      const data = await apiFetch('/api/mock-exam', { profile });
+      const data = await apiFetch('/api/mock-exam', { 
+        profile, 
+        section: isSection2 ? 2 : 1,
+        previousScore: prevScore
+      });
       setExam(data);
+      if (!isSection2) setSection1Exam(data);
       setTimerActive(true);
       setStarted(true);
       setStartTime(Date.now());
@@ -449,48 +455,101 @@ export default function MockExam() {
 
   // ─── SUBMIT ─────────────────────────────────────────────────────────────────
   const submit = useCallback(() => {
-    import('../engine/error-log').then(({ logMistake }) => {
-      // Log TC mistakes
-      exam.tc.forEach(q => {
-        const ans = tcAnswers[q.id] || [];
-        const correct = q.blanks.every((b, i) => ans[i] === b.answer);
-        if (!correct) logMistake(q, ans, 'verbal');
-      });
-      // Log SE mistakes
-      exam.se.forEach(q => {
-        const ans = seAnswers[q.id] || [];
-        const isFullyCorrect = ans.length === 2 && q.answers.every(a => ans.includes(a));
-        if (!isFullyCorrect) logMistake(q, ans, 'verbal');
-      });
-      // Log RC mistakes
-      exam.rc.forEach(p => {
-        const ans = rcAnswers[p.id] || [];
-        p.questions.forEach((q, qi) => {
-          if (ans[qi] !== q.answer) logMistake({ ...q, passageText: p.text, passageTitle: p.title }, ans[qi], 'verbal');
-        });
-      });
-    }).catch(e => console.error('Error logging mistakes:', e));
-    
     const score = calcScore(exam, tcAnswers, seAnswers, rcAnswers);
-    let timeTaken = 30 * 60;
+    let timeTaken = EXAM_TIME;
     if (startTime) timeTaken = Math.round((Date.now() - startTime) / 1000);
     
-    addScoreEntry({
-      type: 'verbal-mock',
-      scaledScore: score.scaledScore,
-      timeTaken,
-      sections: {
-        tc: { correct: score.tc, total: score.tcMax },
-        se: { correct: score.se, total: score.seMax },
-        rc: { correct: score.rc, total: score.rcMax }
-      }
-    });
+    if (currentSection === 1) {
+      setSection1Score(score);
+      setTotalTimeTaken(timeTaken);
+      setCurrentSection(2);
+      generate(true, score.pct);
+    } else {
+      import('../engine/error-log').then(({ logMistake }) => {
+        // Log mistakes for section 2
+        exam.tc.forEach(q => {
+          const ans = tcAnswers[q.id] || [];
+          const correct = q.blanks.every((b, i) => ans[i] === b.answer);
+          if (!correct) logMistake(q, ans, 'verbal');
+        });
+        exam.se.forEach(q => {
+          const ans = seAnswers[q.id] || [];
+          const isFullyCorrect = ans.length === 2 && q.answers.every(a => ans.includes(a));
+          if (!isFullyCorrect) logMistake(q, ans, 'verbal');
+        });
+        exam.rc.forEach(p => {
+          const ans = rcAnswers[p.id] || [];
+          p.questions.forEach((q, qi) => {
+            if (ans[qi] !== q.answer) logMistake({ ...q, passageText: p.text, passageTitle: p.title }, ans[qi], 'verbal');
+          });
+        });
+      }).catch(e => console.error('Error logging mistakes:', e));
+      
+      const totalScore = {
+        tc: score.tc + section1Score.tc,
+        tcMax: score.tcMax + section1Score.tcMax,
+        se: score.se + section1Score.se,
+        seMax: score.seMax + section1Score.seMax,
+        rc: score.rc + section1Score.rc,
+        rcMax: score.rcMax + section1Score.rcMax,
+        total: score.total + section1Score.total,
+        max: score.max + section1Score.max,
+      };
+      totalScore.pct = totalScore.max > 0 ? totalScore.total / totalScore.max : 0;
+      
+      const scaleMap = [
+        { min: 0.00, max: 0.10, score: 130 }, { min: 0.10, max: 0.18, score: 133 }, { min: 0.18, max: 0.26, score: 136 },
+        { min: 0.26, max: 0.34, score: 139 }, { min: 0.34, max: 0.42, score: 142 }, { min: 0.42, max: 0.50, score: 145 },
+        { min: 0.50, max: 0.56, score: 148 }, { min: 0.56, max: 0.62, score: 151 }, { min: 0.62, max: 0.68, score: 153 },
+        { min: 0.68, max: 0.73, score: 155 }, { min: 0.73, max: 0.78, score: 157 }, { min: 0.78, max: 0.82, score: 159 },
+        { min: 0.82, max: 0.86, score: 161 }, { min: 0.86, max: 0.90, score: 163 }, { min: 0.90, max: 0.93, score: 165 },
+        { min: 0.93, max: 0.96, score: 167 }, { min: 0.96, max: 0.99, score: 168 }, { min: 0.99, max: 1.01, score: 170 },
+      ];
+      totalScore.scaledScore = (scaleMap.find(b => totalScore.pct >= b.min && totalScore.pct < b.max) || scaleMap[0]).score;
 
-    setSubmitted(true);
-    setTimerActive(false);
-  }, [exam, tcAnswers, seAnswers, rcAnswers]);
+      addScoreEntry({
+        type: 'verbal-mock',
+        scaledScore: totalScore.scaledScore,
+        timeTaken: totalTimeTaken + timeTaken,
+        sections: {
+          tc: { correct: totalScore.tc, total: totalScore.tcMax },
+          se: { correct: totalScore.se, total: totalScore.seMax },
+          rc: { correct: totalScore.rc, total: totalScore.rcMax }
+        }
+      });
+
+      // Update local exam state so calcScore returns the total score on the results screen
+      setExam({ tc: [...section1Exam.tc, ...exam.tc], se: [...section1Exam.se, ...exam.se], rc: [...section1Exam.rc, ...exam.rc] });
+      setSubmitted(true);
+      setTimerActive(false);
+    }
+  }, [exam, tcAnswers, seAnswers, rcAnswers, currentSection, section1Score, section1Exam, generate, startTime, totalTimeTaken, EXAM_TIME]);
 
   const handleTimeUp = useCallback(() => { submit(); }, [submit]);
+
+  // ─── EXAM VIEW ──────────────────────────────────────────────────────────────
+  return (
+    <div className={etsMode ? 'ets-mode' : ''} style={{ maxWidth: 760, margin: '0 auto', paddingBottom: 80, transition: 'all 0.3s ease' }}>
+      
+      {/* Header */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '16px 20px', background: C.card, borderRadius: 12,
+        border: `1px solid ${C.border}`, marginBottom: 24,
+        position: 'sticky', top: 16, zIndex: 10,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+      }}>
+        <div>
+          <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 18, color: C.text, margin: '0 0 4px' }}>
+            {submitted ? 'Mock Exam Results' : `Verbal Mock Exam — Section ${currentSection}`}
+          </h2>
+          <p style={{ color: C.textDim, fontSize: 12, margin: 0, fontFamily: 'Courier New,monospace' }}>
+            {submitted ? 'Review your performance below' : `${currentSection === 1 ? 12 : 15} Questions`}
+          </p>
+        </div>
+        {!submitted && <ExamTimer totalSeconds={EXAM_TIME} onTimeUp={handleTimeUp} active={timerActive} />}
+        {submitted && <Tag color={C.greenBr}>Completed</Tag>}
+      </div>
 
   // ─── LANDING ────────────────────────────────────────────────────────────────
   if (!exam && !loading) return (
@@ -504,8 +563,8 @@ export default function MockExam() {
           GRE Verbal Mock Exam
         </h2>
         <p style={{ color: C.textMid, fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
-          A full GRE Verbal Reasoning section — 20 questions in 30 minutes.
-          <br />Uses GRE-level vocabulary beyond your study list.
+          A full 2-stage adaptive GRE Verbal Reasoning Mock Exam.
+          <br />27 questions across 2 sections, fully adaptive routing.
         </p>
 
         <Card style={{ textAlign: 'left', marginBottom: 24 }}>
@@ -513,12 +572,11 @@ export default function MockExam() {
             color: C.textDim, fontSize: 11, textTransform: 'uppercase',
             letterSpacing: '0.1em', marginBottom: 12, fontWeight: 700,
           }}>
-            Exam Format
+            Exam Format (New GRE)
           </p>
           {[
-            { section: 'Text Completion',        count: '6 questions',       desc: 'Single and multi-blank — academic register',      color: C.blue    },
-            { section: 'Sentence Equivalence',   count: '4 questions',       desc: 'Select exactly 2 synonymous answers from 6',     color: C.gold    },
-            { section: 'Reading Comprehension',  count: '2 passages · 5 Qs', desc: 'Short academic passages — inference & analysis', color: C.greenBr },
+            { section: 'Section 1 (Medium)',   count: '12 questions',      desc: 'Sets your baseline difficulty',      color: C.blue    },
+            { section: 'Section 2 (Adaptive)', count: '15 questions',      desc: 'Adapts to Easy, Medium, or Hard',     color: C.gold    },
           ].map(s => (
             <div key={s.section} style={{
               display: 'flex', alignItems: 'center', gap: 12,
@@ -535,7 +593,7 @@ export default function MockExam() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 10, marginTop: 4 }}>
             <span style={{ fontSize: 16 }}>⏱</span>
             <p style={{ color: C.gold, fontSize: 13, fontWeight: 700, margin: 0 }}>
-              30 minutes · Auto-submits when time runs out
+              18 mins (Sec 1) + 23 mins (Sec 2)
             </p>
           </div>
         </Card>

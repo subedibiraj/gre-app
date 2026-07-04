@@ -3,6 +3,7 @@ import C from '../theme';
 import Icon from '../components/Icon';
 import ReadingComp from './ReadingComp';
 import { RC_PASSAGES } from '../../api/_rc-passages';
+import { isPro } from '../lib/subscription';
 
 const loadJSON = (k, fb) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
 
@@ -88,9 +89,9 @@ export default function RcLanding({ onUpsell }) {
 
       <div style={{ display: 'grid', gap: 16 }}>
         {filtered.map((p, i) => {
-          // Find original index to determine if locked (only first passage is free)
+          // Find original index to determine if locked (only first passage is free for non-Pro)
           const origIdx = RC_PASSAGES.findIndex(x => x.id === p.id);
-          const isLocked = origIdx > 0;
+          const isLocked = origIdx > 0 && !isPro();
           const prog = progress[p.id];
           
           return (
