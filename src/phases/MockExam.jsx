@@ -527,29 +527,6 @@ export default function MockExam() {
 
   const handleTimeUp = useCallback(() => { submit(); }, [submit]);
 
-  // ─── EXAM VIEW ──────────────────────────────────────────────────────────────
-  return (
-    <div className={etsMode ? 'ets-mode' : ''} style={{ maxWidth: 760, margin: '0 auto', paddingBottom: 80, transition: 'all 0.3s ease' }}>
-      
-      {/* Header */}
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '16px 20px', background: C.card, borderRadius: 12,
-        border: `1px solid ${C.border}`, marginBottom: 24,
-        position: 'sticky', top: 16, zIndex: 10,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
-      }}>
-        <div>
-          <h2 style={{ fontFamily: 'Georgia,serif', fontSize: 18, color: C.text, margin: '0 0 4px' }}>
-            {submitted ? 'Mock Exam Results' : `Verbal Mock Exam — Section ${currentSection}`}
-          </h2>
-          <p style={{ color: C.textDim, fontSize: 12, margin: 0, fontFamily: 'Courier New,monospace' }}>
-            {submitted ? 'Review your performance below' : `${currentSection === 1 ? 12 : 15} Questions`}
-          </p>
-        </div>
-        {!submitted && <ExamTimer totalSeconds={EXAM_TIME} onTimeUp={handleTimeUp} active={timerActive} />}
-        {submitted && <Tag color={C.greenBr}>Completed</Tag>}
-      </div>
 
   // ─── LANDING ────────────────────────────────────────────────────────────────
   if (!exam && !loading) return (
