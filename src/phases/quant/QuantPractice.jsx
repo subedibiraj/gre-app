@@ -523,15 +523,17 @@ export default function QuantPractice({ topic, onScoreUpdate }) {
       )}
 
       {/* Traps */}
-      <div style={card({ borderLeft: `3px solid ${C.red}`, background: `linear-gradient(135deg, ${C.red}08, ${C.card})` })}>
-        <p style={{ color: C.red, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>⚠️ Common Traps</p>
-        {topicData.traps.slice(0, 4).map((t, i) => (
-          <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
-            <span style={{ color: C.red, fontSize: 11 }}>✗</span>
-            <p style={{ color: C.textMid, fontSize: 12, margin: 0, lineHeight: 1.5 }}>{t}</p>
-          </div>
-        ))}
-      </div>
+      {topicData.traps?.length > 0 && (
+        <div style={card({ borderLeft: `3px solid ${C.red}`, background: `linear-gradient(135deg, ${C.red}08, ${C.card})` })}>
+          <p style={{ color: C.red, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>⚠️ Common Traps</p>
+          {topicData.traps.slice(0, 4).map((t, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 5 }}>
+              <span style={{ color: C.red, fontSize: 11 }}>✗</span>
+              <p style={{ color: C.textMid, fontSize: 12, margin: 0, lineHeight: 1.5 }}>{t}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {error && <p style={{ color: C.red, textAlign: 'center', margin: '12px 0' }}>{error}</p>}
       {!hasGeminiKey() && (

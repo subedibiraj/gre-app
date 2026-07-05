@@ -221,7 +221,10 @@ export default function App() {
               });
               const data = await res.json();
               if (data.topic) {
-                window.__GRE_QUANT_TOPICS[topicIndex] = data.topic;
+                window.__GRE_QUANT_TOPICS[topicIndex] = {
+                  ...window.__GRE_QUANT_TOPICS[topicIndex],
+                  ...data.topic
+                };
                 setForceUpdate(n => n + 1);
               }
             } catch (e) { console.error('Failed to load quant chunk', e); }
