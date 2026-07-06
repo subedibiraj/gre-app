@@ -348,7 +348,6 @@ export default function App() {
       return next;
     });
     addXP(correct * XP_VALUES.practice_correct + (total - correct) * XP_VALUES.practice_wrong, 'Verbal practice');
-    addXP(XP_VALUES.complete_practice, 'Practice completed');
     recordActivity(total);
     const studiedCount = Object.keys(loadJSON('gre_spacedRep', {})).length;
     const achs = checkAchievements({ practiceCompleted: true, streak: streak.current, wordsStudied: studiedCount, perfectScore: correct === total });
@@ -422,7 +421,10 @@ export default function App() {
           dayScores={dayScores[currentDay]}
           cachedQuestions={cachedQs[currentDay] || null}
           onCacheQuestions={(qs) => cacheQuestionsForDay(currentDay, qs)}
-          onSessionComplete={(data) => setSessionComplete(data)}
+          onSessionComplete={(data) => {
+            addXP(XP_VALUES.complete_practice, 'Practice completed');
+            setSessionComplete(data);
+          }}
         />
       )}
     </>;
@@ -759,10 +761,10 @@ export default function App() {
           ))}
         </div>
 
-        {/* Streak + Shield — desktop only */}
+        {/* Streak + Shield */}
         {streak.current > 0 && (
-          <div className="hide-mobile" style={{
-            display: 'flex', alignItems: 'center', gap: 5,
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
             background: streak.current >= 7 ? `linear-gradient(135deg, ${C.goldDim}55, ${C.gold}22)` : C.goldDim + '33',
             border: `1px solid ${streak.current >= 7 ? C.gold : C.goldDim}`,
             borderRadius: 20, padding: '3px 10px',
@@ -777,10 +779,10 @@ export default function App() {
           </div>
         )}
 
-        {/* Test countdown — desktop only */}
+        {/* Test countdown */}
         {daysUntilTest !== null && (
-          <div className="hide-mobile" style={{
-            display: 'flex', alignItems: 'center', gap: 4,
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
             padding: '3px 10px', borderRadius: 20,
             background: daysUntilTest <= 14 ? `${C.red}18` : daysUntilTest <= 30 ? `${C.gold}18` : `${C.green}18`,
             border: `1px solid ${daysUntilTest <= 14 ? C.red : daysUntilTest <= 30 ? C.gold : C.green}44`,
@@ -793,8 +795,8 @@ export default function App() {
           </div>
         )}
 
-        {/* XP — desktop only */}
-        <div className="hide-mobile"><XPBar /></div>
+        {/* XP */}
+        <div><XPBar /></div>
 
         {/* Spacer */}
         <div style={{ flex: 1 }} />

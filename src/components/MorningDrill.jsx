@@ -102,6 +102,12 @@ export default function MorningDrill({ onClose }) {
   const [timeLeft, setTimeLeft] = useState(DRILL_TIME);
   const [flash, setFlash]     = useState(null);     // 'correct' | 'wrong'
   const timerRef              = useRef(null);
+  
+  const hour = new Date().getHours();
+  const timeInfo = hour < 12 ? { text: 'Morning Drill', emoji: '☀️' }
+                 : hour < 17 ? { text: 'Afternoon Sprint', emoji: '☕' }
+                 : hour < 22 ? { text: 'Evening Review', emoji: '🌇' }
+                 : { text: 'Night Owl Session', emoji: '🌙' };
 
   // ─── Timer ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -142,7 +148,7 @@ export default function MorningDrill({ onClose }) {
       if (qIdx + 1 >= questions.length) {
         // Award XP
         const score = newAnswers.filter(a => a.correct).length;
-        addXP(score * 5 + (score === questions.length ? 25 : 0), 'Morning Drill');
+        addXP(score * 5 + (score === questions.length ? 25 : 0), timeInfo.text);
         finishDrill();
       } else {
         setQIdx(i => i + 1);
@@ -190,7 +196,7 @@ export default function MorningDrill({ onClose }) {
                   {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                 </p>
                 <h2 style={{ fontFamily: 'Georgia,serif', color: C.text, fontSize: 22, margin: '4px 0 0' }}>
-                  Morning Drill ☀️
+                  {timeInfo.text} {timeInfo.emoji}
                 </h2>
                 <p style={{ color: C.textMid, fontSize: 12, margin: '4px 0 0' }}>
                   5 questions · 90 seconds · Mixed types

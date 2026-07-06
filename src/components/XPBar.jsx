@@ -24,7 +24,7 @@ export default function XPBar() {
         display: 'flex', alignItems: 'center', gap: 6, padding: '4px 12px',
         background: `linear-gradient(135deg, ${C.gold}22, ${C.gold}08)`,
         border: `1px solid ${C.gold}33`, borderRadius: 20, cursor: 'pointer',
-        transition: 'all 0.2s',
+        transition: 'all 0.2s', flexShrink: 0, whiteSpace: 'nowrap'
       }}>
         <Icon name={level.icon} size={16} color={C.gold} />
         <span style={{ fontFamily: 'Courier New,monospace', fontWeight: 700, fontSize: 12, color: C.gold }}>{xp.total}</span>
