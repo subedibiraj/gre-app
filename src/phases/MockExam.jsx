@@ -416,6 +416,10 @@ export default function MockExam() {
   const [timerActive, setTimerActive] = useState(false);
   const [etsMode, setEtsMode]     = useState(false);
 
+  const [tcAnswers, setTCAnswers] = useState({});
+  const [seAnswers, setSEAnswers] = useState({});
+  const [rcAnswers, setRCAnswers] = useState({});
+
   const [currentSection, setCurrentSection] = useState(1);
   const [section1Score, setSection1Score] = useState(null);
   const [totalTimeTaken, setTotalTimeTaken] = useState(0);
