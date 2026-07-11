@@ -423,6 +423,7 @@ export default function MockExam() {
   const [currentSection, setCurrentSection] = useState(1);
   const [section1Score, setSection1Score] = useState(null);
   const [totalTimeTaken, setTotalTimeTaken] = useState(0);
+  const [startTime, setStartTime] = useState(null);
   const [section1Exam, setSection1Exam] = useState(null);
 
   const EXAM_TIME = currentSection === 1 ? 18 * 60 : 23 * 60;
