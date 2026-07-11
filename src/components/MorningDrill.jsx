@@ -7,6 +7,7 @@ import { addXP, XP_VALUES } from '../engine/xp';
 import Card from '../components/Card';
 import Tag from '../components/Tag';
 import Btn from '../components/Btn';
+import { apiFetch } from '../lib/gemini';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -91,7 +92,20 @@ function Stars({ score, total }) {
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function MorningDrill({ onClose }) {
-  const allWords   = useMemo(() => DAYS.flatMap(d => d.words), []);
+  const [allWords, setAllWords] = useState([]);
+  const [loadingWords, setLoadingWords] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    apiFetch('/api/curriculum', { action: 'all_words' }).then(res => {
+      if (active && res.words) {
+        setAllWords(res.words);
+        setLoadingWords(false);
+      }
+    });
+    return () => { active = false; };
+  }, []);
+
   const questions  = useMemo(() => buildDrillQuestions(allWords), [allWords]);
   const streak     = getStreak();
 
@@ -268,14 +282,14 @@ export default function MorningDrill({ onClose }) {
               <p style={{ color: C.gold, fontSize: 12, margin: 0 }}>Press <strong>1-4</strong> to answer, no mouse needed</p>
             </div>
 
-            <button onClick={() => setPhase('drill')} style={{
-              width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: 'pointer',
-              background: `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
-              color: '#07090F', fontWeight: 700, fontSize: 15, fontFamily: 'Georgia,serif',
-              boxShadow: `0 4px 20px ${C.gold}44`, transition: 'all 0.15s',
+            <button onClick={() => setPhase('drill')} disabled={loadingWords || questions.length === 0} style={{
+              width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: (loadingWords || questions.length === 0) ? 'not-allowed' : 'pointer',
+              background: (loadingWords || questions.length === 0) ? C.surface : `linear-gradient(135deg, ${C.gold}, ${C.goldBr})`,
+              color: (loadingWords || questions.length === 0) ? C.textDim : '#07090F', fontWeight: 700, fontSize: 15, fontFamily: 'Georgia,serif',
+              boxShadow: (loadingWords || questions.length === 0) ? 'none' : `0 4px 20px ${C.gold}44`, transition: 'all 0.15s',
               letterSpacing: '0.02em',
             }}>
-              Start Drill →
+              {loadingWords ? 'Loading Drill...' : 'Start Drill →'}
             </button>
             <button onClick={onClose} style={{
               width: '100%', marginTop: 8, padding: '8px', borderRadius: 8, border: 'none',

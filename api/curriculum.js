@@ -87,6 +87,12 @@ export default async function handler(req, res) {
       return res.status(200).json({ concepts: conceptsMap });
     }
     
+    if (action === 'all_words') {
+      const { data: daysData } = await supabase.from('curriculum_verbal').select('words');
+      const allWords = (daysData || []).flatMap(d => d.words || []);
+      return res.status(200).json({ words: allWords });
+    }
+    
     if (action === 'awa') {
       const { data: awaData } = await supabase.from('curriculum_awa').select('prompts').eq('id', 1).single();
       return res.status(200).json({ prompts: awaData?.prompts || [] });
