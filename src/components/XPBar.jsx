@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import C from '../theme';
 import { getXP, getLevel, getUnlockedAchievements, ACHIEVEMENTS } from '../engine/xp';
 import Icon from './Icon';
@@ -36,22 +37,23 @@ export default function XPBar() {
       </button>
 
       {/* Full XP Panel */}
-      {showPanel && (
+      {showPanel && createPortal(
         <div style={{
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
-          zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backdropFilter: 'blur(4px)',
+          zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(4px)', padding: 16
         }} onClick={() => setShowPanel(false)}>
           <div style={{
             background: C.card, border: `1px solid ${C.border}`, borderRadius: 16,
-            padding: '28px 24px', maxWidth: 500, width: '90%', maxHeight: '80vh', overflowY: 'auto',
+            padding: '28px 24px', maxWidth: 500, width: '100%', maxHeight: '85vh', overflowY: 'auto',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
           }} onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <h3 style={{ fontFamily: 'Georgia,serif', color: C.gold, fontSize: 18, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Icon name={level.icon} size={20} color={C.gold} /> Level: {level.name}
               </h3>
-              <button onClick={() => setShowPanel(false)} style={{ background: 'none', border: 'none', color: C.textDim, cursor: 'pointer', fontSize: 18 }}>✕</button>
+              <button onClick={() => setShowPanel(false)} style={{ background: 'none', border: 'none', color: C.textDim, cursor: 'pointer', fontSize: 24, padding: 4 }}>✕</button>
             </div>
 
             {/* XP Progress */}
@@ -107,7 +109,7 @@ export default function XPBar() {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
     </>
   );
 }

@@ -128,6 +128,21 @@ export default function MorningDrill({ onClose }) {
 
   const finishDrill = () => {
     clearInterval(timerRef.current);
+    
+    // Safety check so we don't award XP twice if finishDrill is called multiple times
+    if (phase === 'result') return;
+    
+    const finalScore = answers.filter(a => a.correct).length;
+    setScore(finalScore);
+    
+    // Award XP based on the number of questions actually answered
+    addXP(finalScore * 5 + (finalScore === questions.length ? 25 : 0), timeInfo.text);
+
+    // Get daily drill score history for streak display
+    const drillKey   = `gre_drill_streak`;
+    let drillStreak  = 0;
+    try { drillStreak = JSON.parse(localStorage.getItem(drillKey))?.current || 0; } catch {}
+
     setPhase('result');
   };
 
@@ -146,9 +161,7 @@ export default function MorningDrill({ onClose }) {
       setFlash(null);
       setSelected(null);
       if (qIdx + 1 >= questions.length) {
-        // Award XP
-        const score = newAnswers.filter(a => a.correct).length;
-        addXP(score * 5 + (score === questions.length ? 25 : 0), timeInfo.text);
+        // Just call finishDrill, it handles XP and phase change
         finishDrill();
       } else {
         setQIdx(i => i + 1);
@@ -276,6 +289,8 @@ export default function MorningDrill({ onClose }) {
 
   // ─── DRILL ────────────────────────────────────────────────────────────────
   if (phase === 'drill') {
+    const q = questions[qIdx];
+    if (!q) return null; // safety check
     const bgFlash = flash === 'correct'
       ? `${C.green}22`
       : flash === 'wrong'
