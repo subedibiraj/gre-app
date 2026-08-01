@@ -212,7 +212,7 @@ RETURN EXACTLY THIS JSON STRUCTURE:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash-lite',
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemPrompt,

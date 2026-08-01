@@ -68,7 +68,7 @@ Type must be "bar", "line", or "pie".
 RETURN EXACTLY: {"qc":[8],"mc":[7],"mcm":[2],"ne":[3]}`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash-lite',
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: { systemInstruction: systemPrompt, temperature: 0.65, maxOutputTokens: 16384, responseMimeType: 'application/json' },
     });

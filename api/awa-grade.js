@@ -49,7 +49,7 @@ Return the response STRICTLY as a JSON object with this exact structure:
     const promptText = `PROMPT:\n"${prompt}"\n\nESSAY:\n"""\n${essay}\n"""\n\nGrade the essay and return the JSON.`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash-lite',
       contents: promptText,
       config: {
         systemInstruction,

@@ -95,7 +95,7 @@ RETURN EXACTLY: {"tc":[5],"se":[4],"rc":[2]}`;
     }
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash-lite',
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: { systemInstruction: systemPrompt, temperature: 0.75, maxOutputTokens: 16384, responseMimeType: 'application/json' },
     });

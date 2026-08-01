@@ -54,7 +54,7 @@ serve(async (req) => {
     }
 
     // 3. Parse the Request Body for Gemini
-    const { contents, systemInstruction, model = 'gemini-2.5-flash' } = await req.json()
+    const { contents, systemInstruction, model = 'gemini-3.5-flash-lite' } = await req.json()
 
     if (!contents) {
       return new Response(JSON.stringify({ error: 'Missing request body (contents)' }), { 

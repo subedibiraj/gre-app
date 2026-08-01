@@ -64,7 +64,7 @@ ${EXPLANATION_FORMAT}`;
 
       promises.push(
         ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.5-flash-lite',
           contents: [{ role: 'user', parts: [{ text: vUser }] }],
           config: { systemInstruction: vSystem, temperature: 0.7, maxOutputTokens: 8192, responseMimeType: 'application/json' }
         }).then(r => {
@@ -111,7 +111,7 @@ RETURN EXACTLY THIS JSON STRUCTURE:
 
       promises.push(
         ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.5-flash-lite',
           contents: [{ role: 'user', parts: [{ text: qUser }] }],
           config: { systemInstruction: qSystem, temperature: 0.7, maxOutputTokens: 8192, responseMimeType: 'application/json' }
         }).then(r => {
